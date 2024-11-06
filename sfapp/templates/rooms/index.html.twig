@@ -12,10 +12,27 @@
 </head>
 <body>
 {% block body %}
-<p> hello world</p>
+    <h1>rooms:</h1>
 
+    <table border="1">
+        <thead>
+        <tr>
+            <th>name</th>
+            <th>floor</th>
+            <th>state</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for room in rooms %}
+            <tr>
+                <td>{{ room.name }}</td>
+                <td>{{ room.floor.value }}</td>
+                <td>{{ room.state.value }}</td>
+            </tr>
 
-
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 </body>
 </html>

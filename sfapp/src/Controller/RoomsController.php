@@ -2,19 +2,23 @@
 
 namespace App\Controller;
 
+use App\Repository\RoomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Room;
+
 
 class RoomsController extends AbstractController
 {
     #[Route('/rooms', name: 'app_rooms')]
-    public function index(): Response
+    public function index(RoomRepository $roomRepository): Response
     {
-        // Utilisation de render() pour retourner une vue Twig
+        // Fetch all rooms, without filtering by name
+        $rooms = $roomRepository->findBy([], ['name' => 'ASC']);
+
         return $this->render('rooms/index.html.twig', [
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/RoomsController.php',
+            'rooms' => $rooms,
         ]);
     }
 }
