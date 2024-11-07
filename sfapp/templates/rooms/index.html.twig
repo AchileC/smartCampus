@@ -40,7 +40,6 @@
                     {% endif %}
                 </div>
             {% else %}
-                <!-- Liste des salles -->
                 {% for room in rooms %}
                     <div class="col-12 mb-3">
                         <div class="card">
@@ -56,13 +55,13 @@
                                 </div>
 
                                 <div>
-                                    <!-- Boutons Details, Update, et Delete -->
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
                                         <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
 
                                         {{ form_start(deleteForms[room.name], {'attr': {'class': 'd-inline-block'}}) }}
-                                        <button type="submit" class="btn btn-outline-danger">Delete</button>
+                                        <button type="submit" class="btn btn-outline-danger"
+                                                onclick="return confirm('Are you sure you want to delete this room?');">Delete</button>
                                         {{ form_end(deleteForms[room.name]) }}
                                     </div>
 

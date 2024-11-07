@@ -5,23 +5,19 @@
 {% endblock %}
 
 {% block stylesheets %}
-    {# Ajoutez ici vos feuilles de style CSS spécifiques si nécessaire #}
 {% endblock %}
 
 {% block javascripts %}
-    {# Ajoutez ici vos scripts JS spécifiques si nécessaire #}
 {% endblock %}
 
 {% block body %}
         <div class="container-fluid">
-            <!-- Fond coloré basé sur l'état de la salle, occupe toute la largeur -->
             <div class="row">
                 <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5">
                     <h1 class="text-center text-white">Room {{ room.name }}</h1>
                 </div>
             </div>
 
-            <!-- Carte de la salle -->
             <div class="card w-75 mx-auto mt-4">
                 <div class="card-body">
                     <p class="card-text"><strong>Floor:</strong> {{ room.floor.value }}</p>
@@ -33,7 +29,6 @@
                 </div>
             </div>
 
-            <!-- Informations supplémentaires dans une autre carte -->
             <div class="card w-75 mx-auto mt-4">
                 <div class="card-body">
                     <h5 class="card-title">Room Details</h5>

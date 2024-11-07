@@ -1,8 +1,5 @@
 <?php
 // RoomType.php
-namespace App\Form;
-
-// RoomFormType.php
 
 namespace App\Form;
 
@@ -37,7 +34,7 @@ class RoomType extends AbstractType
                 'placeholder' => 'Choose Floor',
                 'label' => 'Floor',
                 'choice_label' => function ($choice, $key, $value) {
-                    return $key; // Affiche 'Ground', 'First', etc.
+                    return $key;
                 },
                 'choice_value' => function (?FloorEnum $floor) {
                     return $floor ? $floor->value : null;
@@ -53,7 +50,7 @@ class RoomType extends AbstractType
                 'placeholder' => 'Select a State',
                 'label' => 'State',
                 'choice_label' => function ($choice, $key, $value) {
-                    return $key; // Affiche 'OK', 'Problem', etc.
+                    return $key;
                 },
                 'choice_value' => function (?RoomStateEnum $state) {
                     return $state ? $state->value : null;
@@ -69,7 +66,7 @@ class RoomType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Room::class,
-            'required_fields' => false, // Ajout d'une option pour rendre tous les champs facultatifs pour les filtres
+            'required_fields' => false,
         ]);
     }
 }

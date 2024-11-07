@@ -34,7 +34,6 @@ class RoomsController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(RoomRepository $roomRepository, Request $request): Response
     {
-        // Formulaire de Filtrage
         $filterForm = $this->createForm(RoomType::class);
         $filterForm->handleRequest($request);
 
@@ -42,9 +41,8 @@ class RoomsController extends AbstractController
 
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {
             /** @var Room $data */
-            $data = $filterForm->getData();  // $data est un objet Room
+            $data = $filterForm->getData();
 
-            // Utilisation des getters pour accéder aux données de $data
             if (!empty($data->getName())) {
                 $criteria['name'] = $data->getName();
             }
@@ -58,10 +56,8 @@ class RoomsController extends AbstractController
             }
         }
 
-        // Recherche des salles correspondant aux critères
         $rooms = $roomRepository->findByCriteria($criteria);
 
-        // Générer un formulaire de suppression pour chaque salle
         $deleteForms = [];
         foreach ($rooms as $room) {
             $deleteForms[$room->getName()] = $this->createDeleteForm($room->getName())->createView();
@@ -70,7 +66,7 @@ class RoomsController extends AbstractController
         return $this->render('rooms/index.html.twig', [
             'rooms' => $rooms,
             'filterForm' => $filterForm->createView(),
-            'deleteForms' => $deleteForms, // Passer tous les formulaires à la vue
+            'deleteForms' => $deleteForms,
         ]);
     }
 
@@ -117,11 +113,9 @@ class RoomsController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        // Supprime la salle
         $entityManager->remove($room);
         $entityManager->flush();
 
-        // Redirige vers la liste des salles après la suppression
         return $this->redirectToRoute('app_rooms');
     }
 
@@ -134,7 +128,6 @@ class RoomsController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        // Création du formulaire pour la mise à jour des informations de la salle
         $form = $this->createFormBuilder($room)
             ->add('name', TextType::class, ['label' => 'Room Name'])
             ->add('floor', ChoiceType::class, [
@@ -167,8 +160,8 @@ class RoomsController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush(); // Enregistre les modifications en base de données
-            return $this->redirectToRoute('app_rooms'); // Redirige vers la liste des salles après mise à jour
+            $entityManager->flush();
+            return $this->redirectToRoute('app_rooms');
         }
 
         return $this->render('rooms/update.html.twig', [
