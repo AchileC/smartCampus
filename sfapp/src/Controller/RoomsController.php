@@ -62,4 +62,18 @@ class RoomsController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/rooms/{name}', name: 'app_rooms_details')]
+    public function details(RoomRepository $roomRepository, string $name): Response
+    {
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('The room does not exist');
+        }
+
+        return $this->render('rooms/detail.html.twig', [
+            'room' => $room,
+        ]);
+    }
 }

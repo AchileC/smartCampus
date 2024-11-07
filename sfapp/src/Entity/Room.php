@@ -24,6 +24,9 @@ class Room
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class)]
     private ?RoomStateEnum $state = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,6 +64,18 @@ class Room
     public function setState(RoomStateEnum $state): static
     {
         $this->state = $state;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
         return $this;
     }
 }
