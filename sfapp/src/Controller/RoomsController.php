@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\RoomRepository;
+use App\Utils\FloorEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,13 +19,14 @@ class RoomsController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(RoomRepository $roomRepository, Request $request): Response
     {
-        // filter formulaire
+        // filter form
         $form = $this->createFormBuilder()
             ->add('floor', ChoiceType::class, [
                 'choices' => [
-                    'Ground' => 'ground',
-                    'First' => 'first',
-                    'Second' => 'second',
+                    'Ground' => FloorEnum::GROUND->value,
+                    'First' => FloorEnum::FIRST->value,
+                    'Second' => FloorEnum::SECOND->value,
+                    'Third' => FloorEnum::THIRD->value,
                 ],
                 'required' => false,
                 'placeholder' => 'Choose Floor',
@@ -60,6 +62,7 @@ class RoomsController extends AbstractController
         return $this->render('rooms/index.html.twig', [
             'rooms' => $rooms,
             'form' => $form->createView(),
+            'formSubmitted' => $form->isSubmitted(),
         ]);
     }
 
