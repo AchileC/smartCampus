@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\RoomForm;
 use App\Repository\RoomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,29 +26,8 @@ class RoomsController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(RoomRepository $roomRepository, Request $request): Response
     {
-        // filter formulaire
-        $form = $this->createFormBuilder()
-            ->add('floor', ChoiceType::class, [
-                'choices' => [
-                    'Ground' => 'ground',
-                    'First' => 'first',
-                    'Second' => 'second',
-                ],
-                'required' => false,
-                'placeholder' => 'Choose Floor',
-            ])
-            ->add('state', ChoiceType::class, [
-                'choices' => [
-                    'OK' => 'ok',
-                    'Problem' => 'problem',
-                    'Critical' => 'critical',
-                ],
-                'required' => false,
-                'placeholder' => 'Select a State',
-            ])
-            ->add('filter', SubmitType::class, ['label' => 'Filter'])
-            ->getForm();
-
+        // Utilisation de RoomForm
+        $form = $this->createForm(RoomForm::class);
         $form->handleRequest($request);
 
         $criteria = [];
@@ -67,6 +47,7 @@ class RoomsController extends AbstractController
         return $this->render('rooms/index.html.twig', [
             'rooms' => $rooms,
             'form' => $form->createView(),
+            'formSubmitted' => $form->isSubmitted(),
         ]);
     }
 
