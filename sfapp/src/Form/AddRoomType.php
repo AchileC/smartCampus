@@ -1,8 +1,4 @@
 <?php
-// RoomType.php
-namespace App\Form;
-
-// RoomFormType.php
 
 namespace App\Form;
 
@@ -16,15 +12,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RoomType extends AbstractType
+class AddRoomType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Room Name',
-                'required' => false,
-                'attr' => ['placeholder' => 'Search or add room name'],
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
@@ -33,15 +27,7 @@ class RoomType extends AbstractType
                     'Second' => FloorEnum::SECOND,
                     'Third' => FloorEnum::THIRD,
                 ],
-                'required' => false,
-                'placeholder' => 'Choose Floor',
                 'label' => 'Floor',
-                'choice_label' => function ($choice, $key, $value) {
-                    return $key; // Affiche 'Ground', 'First', etc.
-                },
-                'choice_value' => function (?FloorEnum $floor) {
-                    return $floor ? $floor->value : null;
-                },
             ])
             ->add('state', ChoiceType::class, [
                 'choices' => [
@@ -49,19 +35,15 @@ class RoomType extends AbstractType
                     'Problem' => RoomStateEnum::PROBLEM,
                     'Critical' => RoomStateEnum::CRITICAL,
                 ],
-                'required' => false,
-                'placeholder' => 'Select a State',
                 'label' => 'State',
-                'choice_label' => function ($choice, $key, $value) {
-                    return $key; // Affiche 'OK', 'Problem', etc.
-                },
-                'choice_value' => function (?RoomStateEnum $state) {
-                    return $state ? $state->value : null;
-                },
             ])
-            ->add('filter', SubmitType::class, [
-                'label' => 'Filter',
-                'attr' => ['class' => 'btn btn-primary'],
+            ->add('description', TextType::class, [
+                'label' => 'Description',
+                'required' => false,
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Add Room',
+                'attr' => ['class' => 'btn btn-success'],
             ]);
     }
 
@@ -69,7 +51,6 @@ class RoomType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Room::class,
-            'required_fields' => false, // Ajout d'une option pour rendre tous les champs facultatifs pour les filtres
         ]);
     }
 }
