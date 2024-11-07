@@ -1,43 +1,58 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Welcome!
-{% endblock %}
-
-{% block stylesheets %}
-{% endblock %}
-
-{% block javascripts %}
+    Détails de la Salle
 {% endblock %}
 
 {% block body %}
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5">
-                    <h1 class="text-center text-white">Room {{ room.name }}</h1>
-                </div>
-            </div>
-
-            <div class="card w-75 mx-auto mt-4">
-                <div class="card-body">
-                    <p class="card-text"><strong>Floor:</strong> {{ room.floor.value }}</p>
-                    <p class="card-text"><strong>State:</strong>
-                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
-                        {{ room.state.value | capitalize }}
-                    </span>
-                    </p>
-                </div>
-            </div>
-
-            <div class="card w-75 mx-auto mt-4">
-                <div class="card-body">
-                    <h5 class="card-title">Room Details</h5>
-                    <ul class="list-group">
-                        <li class="list-group-item"><strong>Temperature:</strong> 20°C</li>
-                        <li class="list-group-item"><strong>Humidity:</strong> 38%</li>
-                        <li class="list-group-item"><strong>CO2:</strong> 188 ppm</li>
-                    </ul>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5">
+                <h1 class="text-center text-white">Salle {{ room.name }}</h1>
             </div>
         </div>
+
+        <!-- Carte de description -->
+        <div class="card w-75 mx-auto mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ room.description }}</p>
+                <p class="card-text"><strong>Floor :</strong> {{ room.floor.value }}</p>
+
+            </div>
+        </div>
+
+        <!-- Carte d'état de la salle -->
+
+
+        <!-- Carte d'informations de la salle -->
+        <div class="card w-75 mx-auto mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Room Constants</h5>
+                <p class="card-text"><strong>State :</strong>
+                    <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ room.state.value | capitalize }}
+                    </span>
+                </p>
+                <ul class="list-group">
+                    <!-- Température -->
+                    <li class="list-group-item list-group-item-success">
+                        ✅ <strong>Temperature :</strong> 20,5°C
+                    </li>
+
+
+                    <!-- Humidité -->
+                    <li class="list-group-item list-group-item-success">
+                        ✅ <strong>Humidity :</strong> 20%
+                    </li>
+
+                    <!-- CO₂ -->
+                    <li class="list-group-item list-group-item-warning">
+                        ⚠️ <strong>CO₂ :</strong> 2250 ppm
+                        <a href="">See anomaly</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endblock %}
