@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Add a Room{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">Add a New Room</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.state, 'State', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.state, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="d-grid">
+                            {{ form_widget(form.save, {'attr': {'class': 'btn btn-success'}}) }}
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
