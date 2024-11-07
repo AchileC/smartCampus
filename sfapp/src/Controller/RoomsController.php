@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\RoomForm;
 use App\Repository\RoomRepository;
 use App\Utils\FloorEnum;
 use App\Entity\Room;
@@ -15,6 +16,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use App\Utils\RoomStateEnum;
 
 
 class RoomsController extends AbstractController
@@ -22,35 +25,8 @@ class RoomsController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(RoomRepository $roomRepository, Request $request): Response
     {
-        // Formulaire de filtrage
-        $form = $this->createFormBuilder()
-            ->add('name', TextType::class, [
-                'required' => false,
-                'label' => 'Room Name',
-                'attr' => ['placeholder' => 'Search by room name'],
-            ])
-            ->add('floor', ChoiceType::class, [
-                'choices' => [
-                    'Ground' => FloorEnum::GROUND->value,
-                    'First' => FloorEnum::FIRST->value,
-                    'Second' => FloorEnum::SECOND->value,
-                    'Third' => FloorEnum::THIRD->value,
-                ],
-                'required' => false,
-                'placeholder' => 'Choose Floor',
-            ])
-            ->add('state', ChoiceType::class, [
-                'choices' => [
-                    'OK' => 'ok',
-                    'Problem' => 'problem',
-                    'Critical' => 'critical',
-                ],
-                'required' => false,
-                'placeholder' => 'Select a State',
-            ])
-            ->add('filter', SubmitType::class, ['label' => 'Filter'])
-            ->getForm();
-
+        // Utilisation de RoomForm
+        $form = $this->createForm(RoomForm::class);
         $form->handleRequest($request);
 
         $criteria = [];
@@ -112,6 +88,53 @@ class RoomsController extends AbstractController
 
         return $this->render('rooms/add.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+
+    #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
+    public function update(string $name, RoomRepository $roomRepository, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('Room not found');
+        }
+
+        // Création du formulaire pour la mise à jour des informations de la salle
+        $form = $this->createFormBuilder($room)
+            ->add('name', TextType::class, ['label' => 'Room Name'])
+            ->add('floor', ChoiceType::class, [
+                'choices' => [
+                    'Ground Floor' => FloorEnum::GROUND,
+                    'First Floor' => FloorEnum::FIRST,
+                    'Second Floor' => FloorEnum::SECOND,
+                    'Third Floor' => FloorEnum::THIRD,
+                ],
+                'label' => 'Floor',
+            ])
+            ->add('state', ChoiceType::class, [
+                'choices' => [
+                    'OK' => RoomStateEnum::OK,
+                    'Problem' => RoomStateEnum::PROBLEM,
+                    'Critical' => RoomStateEnum::CRITICAL,
+                ],
+                'label' => 'State',
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Description',
+                'required' => false,
+            ])
+            ->getForm();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush(); // Enregistre les modifications en base de données
+            return $this->redirectToRoute('app_rooms'); // Redirige vers la liste des salles après mise à jour
+        }
+
+        return $this->render('rooms/update.html.twig', [
+            'form' => $form->createView(),
+            'room' => $room,
         ]);
     }
 
