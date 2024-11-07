@@ -18,11 +18,11 @@ class Room
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(enumType: FloorEnum::class)]
+    #[ORM\Column(type: 'string', enumType: FloorEnum::class)]
     private ?FloorEnum $floor = null;
 
-    #[ORM\Column(enumType: RoomStateEnum::class)]
-    private ?RoomStateEnum $State = null;
+    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class)]
+    private ?RoomStateEnum $state = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
@@ -58,13 +58,12 @@ class Room
 
     public function getState(): ?RoomStateEnum
     {
-        return $this->State;
+        return $this->state;
     }
 
-    public function setState(RoomStateEnum $State): static
+    public function setState(RoomStateEnum $state): static
     {
-        $this->State = $State;
-
+        $this->state = $state;
         return $this;
     }
 

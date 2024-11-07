@@ -18,15 +18,14 @@ class AppFixtures extends Fixture
         $room1 = new Room();
         $room1->setName("D001");
         $room1->setFloor(FloorEnum::GROUND);
-        $room1->setState(RoomStateEnum::OK);
         $room1->setDescription("Salle en coin dans le premier etage");
+        $room1->setState(RoomStateEnum::PROBLEM);
 
         $room2 = new Room();
         $room2->setName("D002");
         $room2->setFloor(FloorEnum::GROUND);
-        $room2->setState(RoomStateEnum::OK);
         $room2->setDescription("Salle en pause");
-
+        $room2->setState(RoomStateEnum::CRITICAL);
 
         $room3 = new Room();
         $room3->setName("D204");
