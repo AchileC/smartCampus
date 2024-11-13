@@ -73,6 +73,18 @@ class RoomsController extends AbstractController
     }
 
 
+    /**
+     * Displays the details of a specific room.
+     *
+     * This method retrieves the room information based on its name
+     * and renders the detail view with its properties.
+     *
+     * @param RoomRepository $roomRepository The repository to fetch room data.
+     * @param string $name The name of the room to display.
+     *
+     * @return Response The response rendering the room details page.
+     *
+     */
     #[Route('/rooms/{name}', name: 'app_rooms_details')]
     public function details(RoomRepository $roomRepository, string $name): Response
     {
