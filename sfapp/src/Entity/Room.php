@@ -6,8 +6,16 @@ use App\Repository\RoomRepository;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+
+
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'This room name is already in use. Please choose a different name.'
+)]
 class Room
 {
     #[ORM\Id]
@@ -15,7 +23,8 @@ class Room
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Room name is required.')]
     private ?string $name = null;
 
     #[ORM\Column(type: 'string', enumType: FloorEnum::class)]
