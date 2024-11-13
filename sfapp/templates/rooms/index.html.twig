@@ -60,7 +60,7 @@
                                         <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
                                         <!-- Button to trigger the modal -->
                                         <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
-                                            Supprimer
+                                            Delete
                                         </button>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to do away with the room <span id="roomNameToDelete"></span> ?
+                    Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
