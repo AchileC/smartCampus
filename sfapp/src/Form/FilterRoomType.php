@@ -91,6 +91,7 @@ class FilterRoomType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Room::class,
             'required_fields' => false,
+            'validation_groups' => ['Default'],
         ]);
     }
 }

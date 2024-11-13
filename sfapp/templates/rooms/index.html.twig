@@ -33,8 +33,11 @@
         <div class="row">
             {% if rooms|length == 0 %}
                 <div class="col-12">
-                        <p class="text-center text-dark">Aucune salle</p>
+                    <p class="text-center text-dark">
+                        No match. Check spelling or <a href="{{ path('app_rooms_add') }}" class="text-primary">create a new room</a>.
+                    </p>
                 </div>
+
             {% else %}
                 {% for room in rooms %}
                     <div class="col-12 mb-3">
