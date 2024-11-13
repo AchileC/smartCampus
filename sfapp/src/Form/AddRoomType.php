@@ -44,14 +44,6 @@ class AddRoomType extends AbstractType
                 ],
                 'label' => 'Floor',
             ])
-            ->add('state', ChoiceType::class, [
-                'choices' => [
-                    'OK' => RoomStateEnum::OK,
-                    'Problem' => RoomStateEnum::PROBLEM,
-                    'Critical' => RoomStateEnum::CRITICAL,
-                ],
-                'label' => 'State',
-            ])
             ->add('description', TextType::class, [
                 'label' => 'Description',
                 'required' => false,

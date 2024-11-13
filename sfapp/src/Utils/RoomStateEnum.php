@@ -8,4 +8,6 @@ enum RoomStateEnum: string
     case PROBLEM = 'problem';
     case CRITICAL = 'critical';
 
+    case NOT_LINKED = 'not linked';
+
 }

@@ -47,7 +47,7 @@
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text"><strong>Floor:</strong> {{ room.floor.value }}</p>
                                     <p class="card-text"><strong>State:</strong>
-                                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% else %}bg-danger{% endif %}">
                                         {{ room.state.value | capitalize }}
                                     </span>
                                     </p>

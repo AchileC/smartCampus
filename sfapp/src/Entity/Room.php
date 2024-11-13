@@ -34,6 +34,12 @@ class Room
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+
+    public function __construct()
+    {
+        $this->state = RoomStateEnum::NOT_LINKED;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
