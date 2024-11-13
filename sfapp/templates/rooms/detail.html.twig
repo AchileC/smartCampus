@@ -1,27 +1,66 @@
+{#
+@file detail.html.twig
+@brief Template for displaying room details.
+
+This template displays specific information about a room, including its status,
+description, and other characteristics such as temperature, humidity,
+and CO₂ level.
+
+@param room The specific room whose details are displayed, with properties
+like "name", "description", "floor", and "state".
+#}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Welcome!
-{% endblock %}
-
-{% block stylesheets %}
-    {# Ajoutez ici vos feuilles de style CSS spécifiques si nécessaire #}
-{% endblock %}
-
-{% block javascripts %}
-    {# Ajoutez ici vos scripts JS spécifiques si nécessaire #}
+    Room Details
 {% endblock %}
 
 {% block body %}
-    <h1>Room {{ room.name }}</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-light position-absolute start-5">Back to list</a>
+                <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
+            </div>
+        </div>
 
-    <h3>State: {{ room.state.value }}</h3>
-    <h3>Floor: {{ room.floor.value }}</h3>
-    <h3>Description: {{ room.description }}</h3>
+        <!-- Description Card -->
+        <div class="card w-75 mx-auto mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ room.description }}</p>
+                <p class="card-text"><strong>Floor:</strong> {{ room.floor.value }}</p>
+            </div>
+        </div>
 
-    <ul>
-        <li>Température: 20</li>
-        <li>Humidité: 38</li>
-        <li>CO2: 188</li>
-    </ul>
+        <!-- Room Information Card -->
+        <div class="card w-75 mx-auto mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Room Constants</h5>
+                <p class="card-text"><strong>State:</strong>
+                    <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ room.state.value | capitalize }}
+                    </span>
+                </p>
+                <ul class="list-group">
+                    <!-- Temperature -->
+                    <li class="list-group-item list-group-item-success">
+                        ✅ <strong>Temperature:</strong> 20.5°C
+                    </li>
+
+                    <!-- Humidity -->
+                    <li class="list-group-item list-group-item-success">
+                        ✅ <strong>Humidity:</strong> 20%
+                    </li>
+
+                    <!-- CO₂ -->
+                    <li class="list-group-item list-group-item-warning">
+                        ⚠️ <strong>CO₂:</strong> 2250 ppm
+                        <a href="">See anomaly</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Update Room{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="text-center mb-4">Update Room: {{ room.name }}</h1>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+
+                        <div class="mb-3">
+                            {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.name, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                }
+                            }) }}
+                            {% if form.name.vars.errors|length > 0 %}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.name) }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.floor, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.floor) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.state, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.state, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.state) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '3'}}) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Update Room</button>
+                            <a href="{{ path('app_rooms') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Détecte si le champ 'name' a une erreur
+            const nameInput = document.querySelector('.form-control.is-invalid');
+
+            if (nameInput) {
+                // Ajoute l'effet de tremblement en re-déclenchant l'animation
+                nameInput.classList.remove('shake');
+                void nameInput.offsetWidth; // Hack pour redéclencher l'animation
+                nameInput.classList.add('shake');
+
+                // Change la couleur du bouton "Save Room"
+                const saveButton = document.querySelector('button[type="submit"]');
+                if (saveButton) {
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-danger');
+                }
+            }
+        });
+    </script>
+{% endblock %}
