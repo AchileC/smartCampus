@@ -35,11 +35,6 @@ class Room
     private ?string $description = null;
 
 
-    public function __construct()
-    {
-        $this->state = RoomStateEnum::NOT_LINKED;
-    }
-
     public function getId(): ?int
     {
         return $this->id;

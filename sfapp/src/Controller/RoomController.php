@@ -144,6 +144,7 @@ class RoomController extends AbstractController
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $room = new Room();
+        $room->setState(RoomStateEnum::NOT_LINKED);
         $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
