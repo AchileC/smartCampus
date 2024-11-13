@@ -2,9 +2,6 @@
 
 {% block title %}Update Room{% endblock %}
 
-{% block stylesheets %}
-{% endblock %}
-
 {% block body %}
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -16,9 +13,17 @@
                         {{ form_start(form) }}
 
                         <div class="mb-3">
-                            {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.name) }}
+                            {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.name, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                }
+                            }) }}
+                            {% if form.name.vars.errors|length > 0 %}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.name) }}
+                                </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
@@ -50,4 +55,26 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Détecte si le champ 'name' a une erreur
+            const nameInput = document.querySelector('.form-control.is-invalid');
+
+            if (nameInput) {
+                // Ajoute l'effet de tremblement en re-déclenchant l'animation
+                nameInput.classList.remove('shake');
+                void nameInput.offsetWidth; // Hack pour redéclencher l'animation
+                nameInput.classList.add('shake');
+
+                // Change la couleur du bouton "Save Room"
+                const saveButton = document.querySelector('button[type="submit"]');
+                if (saveButton) {
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-danger');
+                }
+            }
+        });
+    </script>
 {% endblock %}

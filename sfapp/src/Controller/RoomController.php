@@ -1,5 +1,5 @@
 <?php
-
+//RoomController.php
 namespace App\Controller;
 
 use App\Entity\Room;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RoomsController extends AbstractController
+class RoomController extends AbstractController
 {
     private function createDeleteForm(string $name) : FormInterface
     {
@@ -91,7 +91,7 @@ class RoomsController extends AbstractController
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $room = new Room();
-        $form = $this->createForm(AddRoomType::class, $room);
+        $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -130,31 +130,7 @@ class RoomsController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        $form = $this->createFormBuilder($room)
-            ->add('name', TextType::class, ['label' => 'Room Name'])
-            ->add('floor', ChoiceType::class, [
-                'choices' => [
-                    'Ground Floor' => FloorEnum::GROUND,
-                    'First Floor' => FloorEnum::FIRST,
-                    'Second Floor' => FloorEnum::SECOND,
-                    'Third Floor' => FloorEnum::THIRD,
-                ],
-                'label' => 'Floor',
-            ])
-            ->add('state', ChoiceType::class, [
-                'choices' => [
-                    'OK' => RoomStateEnum::OK,
-                    'Problem' => RoomStateEnum::PROBLEM,
-                    'Critical' => RoomStateEnum::CRITICAL,
-                ],
-                'label' => 'State',
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description',
-                'required' => false,
-            ])
-            ->getForm();
-
+        $form = $this->createForm(AddRoomType::class, $room);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
