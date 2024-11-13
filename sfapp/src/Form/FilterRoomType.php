@@ -13,8 +13,23 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class FilterRoomType
+ *
+ * Defines a form to filter Room entities.
+ */
 class FilterRoomType extends AbstractType
 {
+    /**
+     * Builds the filter form for Room entities.
+     *
+     * The form includes fields for filtering by name, floor, and state.
+     *
+     * @param FormBuilderInterface $builder The form builder interface used to create form fields.
+     * @param array $options The options for the form.
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -62,6 +77,15 @@ class FilterRoomType extends AbstractType
             ]);
     }
 
+    /**
+     * Configures the options for the form.
+     *
+     * Sets the data class to be `Room` and allows optional fields.
+     *
+     * @param OptionsResolver $resolver The options resolver.
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

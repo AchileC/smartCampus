@@ -1,5 +1,5 @@
 <?php
-//AddRoomType.php
+// AddRoomType.php
 namespace App\Form;
 
 use App\Entity\Room;
@@ -12,8 +12,23 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class AddRoomType
+ *
+ * Defines a form to add a new Room entity.
+ */
 class AddRoomType extends AbstractType
 {
+    /**
+     * Builds the form for adding a new Room.
+     *
+     * The form includes fields for room name, floor, state, and an optional description.
+     *
+     * @param FormBuilderInterface $builder The form builder interface used to create form fields.
+     * @param array $options The options for the form.
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -40,9 +55,18 @@ class AddRoomType extends AbstractType
             ->add('description', TextType::class, [
                 'label' => 'Description',
                 'required' => false,
-    ]);
+            ]);
     }
 
+    /**
+     * Configures the options for the form.
+     *
+     * Sets the data class to be `Room` and includes validation groups.
+     *
+     * @param OptionsResolver $resolver The options resolver.
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
