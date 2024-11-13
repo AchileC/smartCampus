@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Room;
-use App\Form\RoomType;
+use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
 use App\Utils\FloorEnum;
@@ -34,12 +34,13 @@ class RoomsController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(RoomRepository $roomRepository, Request $request): Response
     {
-        $filterForm = $this->createForm(RoomType::class);
+        $filterForm = $this->createForm(FilterRoomType::class);
         $filterForm->handleRequest($request);
 
         $criteria = [];
+        $formSubmitted = $filterForm->isSubmitted() && $filterForm->isValid();
 
-        if ($filterForm->isSubmitted() && $filterForm->isValid()) {
+        if ($formSubmitted) {
             /** @var Room $data */
             $data = $filterForm->getData();
 
@@ -67,6 +68,7 @@ class RoomsController extends AbstractController
             'rooms' => $rooms,
             'filterForm' => $filterForm->createView(),
             'deleteForms' => $deleteForms,
+            'formSubmitted' => $formSubmitted,
         ]);
     }
 
@@ -150,10 +152,6 @@ class RoomsController extends AbstractController
             ->add('description', TextareaType::class, [
                 'label' => 'Description',
                 'required' => false,
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
-                'attr' => ['class' => 'btn btn-primary'],
             ])
             ->getForm();
 

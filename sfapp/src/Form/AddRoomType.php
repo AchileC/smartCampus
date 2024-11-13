@@ -42,9 +42,8 @@ class AddRoomType extends AbstractType
                 'required' => false,
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Add Room',
-                'attr' => ['class' => 'btn btn-success'],
-            ]);
+            'label' => 'Save Room',
+    ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
