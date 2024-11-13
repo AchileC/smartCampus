@@ -202,7 +202,25 @@ class RoomController extends AbstractController
     }
 
 
-
+    /**
+     * Updates an existing room based on the provided name.
+     *
+     * This function retrieves a room entity by its name, creates a form to edit it, and handles
+     * the form submission. If the form is valid, it persists the changes in the database.
+     * If the room is not found, a 404 error is thrown.
+     *
+     * @param string $name The name of the room to update.
+     * @param RoomRepository $roomRepository The repository to fetch the room data from the database.
+     * @param Request $request The HTTP request object that contains the form data.
+     * @param EntityManagerInterface $entityManager The entity manager to handle database transactions.
+     *
+     * @return Response A redirect to the 'app_rooms' route if the form is successfully submitted,
+     *                  or renders the update form view if the form is not submitted or invalid.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found in the database.
+     *
+     * @Route("/rooms/{name}/update", name="app_rooms_update")
+     */
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
     public function update(string $name, RoomRepository $roomRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
