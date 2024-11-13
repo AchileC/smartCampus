@@ -1,5 +1,5 @@
 <?php
-
+//RoomController.php
 namespace App\Controller;
 
 use App\Entity\Room;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class RoomsController extends AbstractController
+class RoomController extends AbstractController
 {
     private function createDeleteForm(string $name) : FormInterface
     {
@@ -103,7 +103,7 @@ class RoomsController extends AbstractController
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $room = new Room();
-        $form = $this->createForm(AddRoomType::class, $room);
+        $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -119,8 +119,15 @@ class RoomsController extends AbstractController
     }
 
     #[Route('/rooms/{name}/delete', name: 'app_rooms_delete', methods: ['POST'])]
-    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
+        $submittedToken = $request->request->get('_token');
+
+        // Vérification du token CSRF
+        if (!$this->isCsrfTokenValid('delete_room', $submittedToken)) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
         $room = $roomRepository->findOneBy(['name' => $name]);
 
         if (!$room) {
@@ -130,8 +137,11 @@ class RoomsController extends AbstractController
         $entityManager->remove($room);
         $entityManager->flush();
 
+        $this->addFlash('success', 'La salle a été supprimée avec succès.');
+
         return $this->redirectToRoute('app_rooms');
     }
+
 
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
     public function update(string $name, RoomRepository $roomRepository, Request $request, EntityManagerInterface $entityManager): Response
@@ -142,31 +152,7 @@ class RoomsController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        $form = $this->createFormBuilder($room)
-            ->add('name', TextType::class, ['label' => 'Room Name'])
-            ->add('floor', ChoiceType::class, [
-                'choices' => [
-                    'Ground Floor' => FloorEnum::GROUND,
-                    'First Floor' => FloorEnum::FIRST,
-                    'Second Floor' => FloorEnum::SECOND,
-                    'Third Floor' => FloorEnum::THIRD,
-                ],
-                'label' => 'Floor',
-            ])
-            ->add('state', ChoiceType::class, [
-                'choices' => [
-                    'OK' => RoomStateEnum::OK,
-                    'Problem' => RoomStateEnum::PROBLEM,
-                    'Critical' => RoomStateEnum::CRITICAL,
-                ],
-                'label' => 'State',
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description',
-                'required' => false,
-            ])
-            ->getForm();
-
+        $form = $this->createForm(AddRoomType::class, $room);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

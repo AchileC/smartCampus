@@ -1,5 +1,5 @@
 <?php
-
+//AddRoomType.php
 namespace App\Form;
 
 use App\Entity\Room;
@@ -40,9 +40,6 @@ class AddRoomType extends AbstractType
             ->add('description', TextType::class, [
                 'label' => 'Description',
                 'required' => false,
-            ])
-            ->add('save', SubmitType::class, [
-            'label' => 'Save Room',
     ]);
     }
 
@@ -50,6 +47,7 @@ class AddRoomType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Room::class,
+            'validation_groups' => ['Default', 'add'],
         ]);
     }
 }
