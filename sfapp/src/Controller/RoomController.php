@@ -107,8 +107,15 @@ class RoomController extends AbstractController
     }
 
     #[Route('/rooms/{name}/delete', name: 'app_rooms_delete', methods: ['POST'])]
-    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
+        $submittedToken = $request->request->get('_token');
+
+        // Vérification du token CSRF
+        if (!$this->isCsrfTokenValid('delete_room', $submittedToken)) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
         $room = $roomRepository->findOneBy(['name' => $name]);
 
         if (!$room) {
@@ -118,8 +125,11 @@ class RoomController extends AbstractController
         $entityManager->remove($room);
         $entityManager->flush();
 
+        $this->addFlash('success', 'La salle a été supprimée avec succès.');
+
         return $this->redirectToRoute('app_rooms');
     }
+
 
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
     public function update(string $name, RoomRepository $roomRepository, Request $request, EntityManagerInterface $entityManager): Response

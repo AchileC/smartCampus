@@ -58,13 +58,11 @@
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
                                         <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
-
-                                        {{ form_start(deleteForms[room.name], {'attr': {'class': 'd-inline-block'}}) }}
-                                        <button type="submit" class="btn btn-outline-danger"
-                                                onclick="return confirm('Are you sure you want to delete this room?');">Delete</button>
-                                        {{ form_end(deleteForms[room.name]) }}
+                                        <!-- Button to trigger the modal -->
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
+                                            Supprimer
+                                        </button>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -73,4 +71,48 @@
             {% endif %}
         </div>
     </div>
+
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">Deletion confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to do away with the room <span id="roomNameToDelete"></span> ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteRoomForm" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                var deleteRoomModal = document.getElementById('deleteRoomModal');
+                var roomNameToDelete = document.getElementById('roomNameToDelete');
+                var deleteRoomForm = document.getElementById('deleteRoomForm');
+
+                deleteRoomModal.addEventListener('show.bs.modal', function (event) {
+                // Button that triggered the modal
+                var button = event.relatedTarget;
+                var roomName = button.getAttribute('data-room-name');
+
+                // Update modal content
+                roomNameToDelete.textContent = roomName;
+
+                // Update form action dynamically to send correct room name
+                deleteRoomForm.action = '/rooms/' + encodeURIComponent(roomName) + '/delete';
+            });
+            });
+            </script>
 {% endblock %}
