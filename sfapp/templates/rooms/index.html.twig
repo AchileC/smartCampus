@@ -33,11 +33,7 @@
         <div class="row">
             {% if rooms|length == 0 %}
                 <div class="col-12">
-                    {% if formSubmitted %}
-                        <p class="text-center text-dark">Aucune salle correspondante</p>
-                    {% else %}
-                        <p class="text-center text-dark">Aucune salle créée</p>
-                    {% endif %}
+                        <p class="text-center text-dark">Aucune salle</p>
                 </div>
             {% else %}
                 {% for room in rooms %}
