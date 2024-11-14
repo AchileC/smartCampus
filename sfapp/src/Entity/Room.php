@@ -1,5 +1,5 @@
 <?php
-
+//Room.php
 namespace App\Entity;
 
 use App\Repository\RoomRepository;
@@ -30,6 +30,9 @@ class Room
 
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class)]
     private ?RoomStateEnum $state = null;
+
+    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
+    private ?RoomStateEnum $previousState = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
@@ -78,6 +81,17 @@ class Room
         return $this;
     }
 
+    public function getPreviousState(): ?RoomStateEnum
+    {
+        return $this->previousState;
+    }
+
+    public function setPreviousState(?RoomStateEnum $previousState): static
+    {
+        $this->previousState = $previousState;
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -111,4 +125,5 @@ class Room
 
         return $this;
     }
+
 }
