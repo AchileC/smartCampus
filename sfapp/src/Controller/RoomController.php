@@ -144,6 +144,7 @@ class RoomController extends AbstractController
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $room = new Room();
+        $room->setState(RoomStateEnum::NOT_LINKED);
         $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
@@ -153,6 +154,8 @@ class RoomController extends AbstractController
 
             return $this->redirectToRoute('app_rooms');
         }
+
+        $this->addFlash('success', 'Room added successfully.');
 
         return $this->render('rooms/add.html.twig', [
             'form' => $form->createView(),
@@ -196,7 +199,7 @@ class RoomController extends AbstractController
         $entityManager->remove($room);
         $entityManager->flush();
 
-        $this->addFlash('success', 'La salle a été supprimée avec succès.');
+        $this->addFlash('success', 'Room deleted successfully.');
 
         return $this->redirectToRoute('app_rooms');
     }
@@ -238,9 +241,63 @@ class RoomController extends AbstractController
             return $this->redirectToRoute('app_rooms');
         }
 
+        $this->addFlash('success', 'Room updated successfully.');
+
         return $this->render('rooms/update.html.twig', [
             'form' => $form->createView(),
             'room' => $room,
         ]);
     }
+
+    #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
+    public function requestInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    {
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('Room not found');
+        }
+
+        $room->setState(RoomStateEnum::PENDING_ASSIGNMENT);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_rooms');
     }
+
+    #[Route('/rooms/{name}/cancel-installation', name: 'app_rooms_cancel_installation', methods: ['POST'])]
+    public function cancelInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    {
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('Room not found');
+        }
+
+        if ($room->getState() == RoomStateEnum::PENDING_ASSIGNMENT) {
+            $room->setState(RoomStateEnum::NOT_LINKED);
+        }
+        elseif ($room->getState() == RoomStateEnum::PENDING_UNASSIGNMENT) {
+            $room->setState($room->getPreviousState());
+        }
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_rooms');
+    }
+
+    #[Route('/rooms/{name}/request-unassignment', name: 'app_rooms_request_unassignment', methods: ['POST'])]
+    public function requestUnassignment(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    {
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('Room not found');
+        }
+
+        $room->setPreviousState($room->getState());
+        $room->setState(RoomStateEnum::PENDING_UNASSIGNMENT);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_rooms');
+    }
+
+}

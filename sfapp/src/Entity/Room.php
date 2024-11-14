@@ -1,5 +1,5 @@
 <?php
-
+//Room.php
 namespace App\Entity;
 
 use App\Repository\RoomRepository;
@@ -31,8 +31,15 @@ class Room
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class)]
     private ?RoomStateEnum $state = null;
 
+    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
+    private ?RoomStateEnum $previousState = null;
+
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
+
+    #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist', 'remove'])]
+    private ?AcquisitionSystem $acquisitionSystem = null;
+
 
     public function getId(): ?int
     {
@@ -74,6 +81,17 @@ class Room
         return $this;
     }
 
+    public function getPreviousState(): ?RoomStateEnum
+    {
+        return $this->previousState;
+    }
+
+    public function setPreviousState(?RoomStateEnum $previousState): static
+    {
+        $this->previousState = $previousState;
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -85,4 +103,27 @@ class Room
 
         return $this;
     }
+
+    public function getAcquisitionSystem(): ?AcquisitionSystem
+    {
+        return $this->acquisitionSystem;
+    }
+
+    public function setAcquisitionSystem(?AcquisitionSystem $acquisitionSystem): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($acquisitionSystem === null && $this->acquisitionSystem !== null) {
+            $this->acquisitionSystem->setRoom(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($acquisitionSystem !== null && $acquisitionSystem->getRoom() !== $this) {
+            $acquisitionSystem->setRoom($this);
+        }
+
+        $this->acquisitionSystem = $acquisitionSystem;
+
+        return $this;
+    }
+
 }

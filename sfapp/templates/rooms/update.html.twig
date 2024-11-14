@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-
+{# rooms/update.html.twig #}
 {% block title %}Update Room{% endblock %}
 
 {% block body %}
@@ -33,12 +33,6 @@
                         </div>
 
                         <div class="mb-3">
-                            {{ form_label(form.state, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.state, {'attr': {'class': 'form-select'}}) }}
-                            {{ form_errors(form.state) }}
-                        </div>
-
-                        <div class="mb-3">
                             {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '3'}}) }}
                             {{ form_errors(form.description) }}
@@ -52,10 +46,34 @@
                         {{ form_end(form) }}
                     </div>
                 </div>
+
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5>Acquisition system</h5>
+                        {% if room.state.value == 'ok' or room.state.value == 'problem' or room.state.value == 'critical' %}
+                            <p class="mb-3">An acquisition system is assigned to this room. You can request to unassign the linked acquisition system.</p>
+                            <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Request unassignment</button>
+                            </form>
+                        {% elseif room.state.value == 'not linked' %}
+                            <p class="mb-3">You can request the installation of an acquisition system in this room.</p>
+                            <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Request assignment</button>
+                            </form>
+                        {% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}
+                            <p class="mb-3">Assignment/Unassignment of an acquisition system is pending. You can cancel the request.</p>
+                            <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Cancel Installation</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 {% endblock %}
+
 {% block javascripts %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {

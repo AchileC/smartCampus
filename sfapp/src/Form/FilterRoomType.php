@@ -60,6 +60,7 @@ class FilterRoomType extends AbstractType
                     'OK' => RoomStateEnum::OK,
                     'Problem' => RoomStateEnum::PROBLEM,
                     'Critical' => RoomStateEnum::CRITICAL,
+                    'Not Linked' => RoomStateEnum::NOT_LINKED,
                 ],
                 'required' => false,
                 'placeholder' => 'Select a State',
@@ -68,7 +69,7 @@ class FilterRoomType extends AbstractType
                     return $key;
                 },
                 'choice_value' => function (?RoomStateEnum $state) {
-                    return $state ? $state->value : null;
+                    return $state?->value;
                 },
             ])
             ->add('filter', SubmitType::class, [
