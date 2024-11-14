@@ -32,7 +32,6 @@
                             {{ form_errors(form.floor) }}
                         </div>
 
-
                         <div class="mb-3">
                             {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '3'}}) }}
@@ -47,10 +46,25 @@
                         {{ form_end(form) }}
                     </div>
                 </div>
+
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5>Acquisition system</h5>
+
+                        {% if not room.acquisitionSystem %}
+                            <p class="mb-3">You can request the installation of an acquisition system in this room.</p>
+                            <button class="btn btn-warning">Proceed</button>
+                        {% else %}
+                            <p class="mb-3">An acquisition system is assigned to this room. You can request to unassign the linked acquisition system.</p>
+                            <button class="btn btn-warning">Unassign</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 {% endblock %}
+
 {% block javascripts %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {

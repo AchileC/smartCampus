@@ -1,15 +1,3 @@
-{#
-@file detail.html.twig
-@brief Template for displaying room details.
-
-This template displays specific information about a room, including its status,
-description, and other characteristics such as temperature, humidity,
-and CO₂ level.
-
-@param room The specific room whose details are displayed, with properties
-like "name", "description", "floor", and "state".
-#}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
@@ -43,24 +31,45 @@ like "name", "description", "floor", and "state".
                         {{ room.state.value | capitalize }}
                     </span>
                 </p>
-                <ul class="list-group">
-                    <!-- Temperature -->
-                    <li class="list-group-item list-group-item-success">
-                        ✅ <strong>Temperature:</strong> 20.5°C
-                    </li>
 
-                    <!-- Humidity -->
-                    <li class="list-group-item list-group-item-success">
-                        ✅ <strong>Humidity:</strong> 20%
-                    </li>
+                {% if room.acquisitionSystem %}
+                    <ul class="list-group">
+                        <!-- Temperature -->
+                        <li class="list-group-item list-group-item-success">
+                            ✅ <strong>Temperature:</strong>
+                            {{ room.acquisitionSystem.temperature is not null ? room.acquisitionSystem.temperature ~ '°C' : 'No value measured' }}
+                        </li>
 
-                    <!-- CO₂ -->
-                    <li class="list-group-item list-group-item-warning">
-                        ⚠️ <strong>CO₂:</strong> 2250 ppm
-                        <a href="">See anomaly</a>
-                    </li>
-                </ul>
+                        <!-- Humidity -->
+                        <li class="list-group-item list-group-item-success">
+                            ✅ <strong>Humidity:</strong>
+                            {{ room.acquisitionSystem.humidity is not null ? room.acquisitionSystem.humidity ~ '%' : 'No value measured' }}
+                        </li>
+
+                        <!-- CO₂ -->
+                        <li class="list-group-item list-group-item-success">
+                            ✅️ <strong>CO₂:</strong>
+                            {{ room.acquisitionSystem.co2 is not null ? room.acquisitionSystem.co2 ~ ' ppm' : 'No value measured' }}
+                            {% if room.acquisitionSystem.co2 is not null and room.acquisitionSystem.co2 > 1000 %}
+                                <a href="">See anomaly</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No values</p>
+                {% endif %}
             </div>
         </div>
+        {% if not room.acquisitionSystem %}
+            <div class="card w-75 mx-auto mt-4 text-center">
+                <div class="card-body">
+                    <h6 class="card-title">No assigned acquisition system.</h6>
+                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
+
+
+
 {% endblock %}

@@ -34,6 +34,9 @@ class Room
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist', 'remove'])]
+    private ?AcquisitionSystem $acquisitionSystem = null;
+
 
     public function getId(): ?int
     {
@@ -83,6 +86,28 @@ class Room
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getAcquisitionSystem(): ?AcquisitionSystem
+    {
+        return $this->acquisitionSystem;
+    }
+
+    public function setAcquisitionSystem(?AcquisitionSystem $acquisitionSystem): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($acquisitionSystem === null && $this->acquisitionSystem !== null) {
+            $this->acquisitionSystem->setRoom(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($acquisitionSystem !== null && $acquisitionSystem->getRoom() !== $this) {
+            $acquisitionSystem->setRoom($this);
+        }
+
+        $this->acquisitionSystem = $acquisitionSystem;
 
         return $this;
     }

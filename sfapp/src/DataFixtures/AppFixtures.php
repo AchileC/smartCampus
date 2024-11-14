@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
@@ -33,9 +34,18 @@ class AppFixtures extends Fixture
         $room3->setState(RoomStateEnum::OK);
         $room2->setDescription("première salle en entrants");
 
+        $as1 = new AcquisitionSystem();
+        $as1->setTemperature(20.5);
+        $as1->setHumidity(40);
+        $as1->setCo2(100);
+        $as1->setRoom($room1);
+
+
+
         $manager->persist($room1);
         $manager->persist($room2);
         $manager->persist($room3);
+        $manager->persist($as1);
         $manager->flush();
     }
 }
