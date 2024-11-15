@@ -10,11 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-<<<<<<<< HEAD:sfapp/migrations/Version20241113135905.php
-final class Version20241113135905 extends AbstractMigration
-========
-final class Version20241114104425 extends AbstractMigration
->>>>>>>> v1-US7-attribute-AS:sfapp/migrations/Version20241114104425.php
+final class Version20241115073114 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,7 +20,10 @@ final class Version20241114104425 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE TABLE acquisition_system (id INT AUTO_INCREMENT NOT NULL, room_id INT DEFAULT NULL, temperature DOUBLE PRECISION DEFAULT NULL, humidity INT DEFAULT NULL, co2 INT DEFAULT NULL, UNIQUE INDEX UNIQ_13C6162254177093 (room_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE acquisition_system ADD CONSTRAINT FK_13C6162254177093 FOREIGN KEY (room_id) REFERENCES room (id)');
         $this->addSql('DROP TABLE rooms');
+        $this->addSql('DROP INDEX UNIQ_729F519B5E237E06 ON room');
         $this->addSql('ALTER TABLE room ADD previous_state VARCHAR(255) DEFAULT NULL');
     }
 
@@ -32,6 +31,9 @@ final class Version20241114104425 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE rooms (id INT AUTO_INCREMENT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
+        $this->addSql('ALTER TABLE acquisition_system DROP FOREIGN KEY FK_13C6162254177093');
+        $this->addSql('DROP TABLE acquisition_system');
         $this->addSql('ALTER TABLE room DROP previous_state');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_729F519B5E237E06 ON room (name)');
     }
 }
