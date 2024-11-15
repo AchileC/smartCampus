@@ -37,7 +37,7 @@ class Room
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;
 
 

@@ -66,6 +66,11 @@ class RoomController extends AbstractController
         $criteria = [];
         $formSubmitted = $filterForm->isSubmitted() && $filterForm->isValid();
 
+        if ($filterForm->get('reset')->isClicked()) {
+            // Redirige vers la même page sans les filtres
+            return $this->redirectToRoute('app_rooms');
+        }
+
         if ($formSubmitted) {
             /** @var Room $data */
             $data = $filterForm->getData();
@@ -86,6 +91,7 @@ class RoomController extends AbstractController
         $rooms = $roomRepository->findByCriteria($criteria);
 
         $deleteForms = [];
+
         foreach ($rooms as $room) {
             $deleteForms[$room->getName()] = $this->createDeleteForm($room->getName())->createView();
         }
@@ -196,6 +202,11 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
+        $acquisitionSystem = $room->getAcquisitionSystem();
+        if ($acquisitionSystem !== null) {
+            $acquisitionSystem->setRoom(null);
+            $entityManager->persist($acquisitionSystem);
+        }
         $entityManager->remove($room);
         $entityManager->flush();
 

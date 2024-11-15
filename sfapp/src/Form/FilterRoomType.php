@@ -8,6 +8,7 @@ use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -61,6 +62,8 @@ class FilterRoomType extends AbstractType
                     'Problem' => RoomStateEnum::PROBLEM,
                     'Critical' => RoomStateEnum::CRITICAL,
                     'Not Linked' => RoomStateEnum::NOT_LINKED,
+                    'Pending Assignment' => RoomStateEnum::PENDING_ASSIGNMENT,
+                    'Pending Unassignment' => RoomStateEnum::PENDING_UNASSIGNMENT,
                 ],
                 'required' => false,
                 'placeholder' => 'Select a State',
@@ -73,8 +76,15 @@ class FilterRoomType extends AbstractType
                 },
             ])
             ->add('filter', SubmitType::class, [
-                'label' => 'Filter',
-                'attr' => ['class' => 'btn btn-primary'],
+                'label' => 'Search',
+                'attr' => ['class' => 'btn btn-primary']
+            ])
+            ->add('reset', SubmitType::class, [
+                'label' => 'Reset',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                    'formnovalidate' => 'formnovalidate',
+                ],
             ]);
     }
 

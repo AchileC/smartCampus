@@ -3,28 +3,59 @@
 {% block title %}Rooms List{% endblock %}
 
 {% block stylesheets %}
+    <style>
+        /* Styles pour les messages flash flottants */
+        #flash-messages-container {
+            width: 100%;
+            max-width: 500px;
+            pointer-events: none; /* Les clics passent à travers pour le reste de la page */
+        }
+
+        .flash-message {
+            pointer-events: auto; /* Permet le clic sur le bouton de fermeture */
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .flash-message.show {
+            opacity: 1;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="mb-4">Rooms List</h1>
+        <!-- Flash messages block (flottant) -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
 
+        <div class="container mt-4">
+        <h1 class="mb-4">Rooms List</h1>
         <div class="mb-4">
             <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg">Add Room</a>
         </div>
 
         {{ form_start(filterForm, {'attr': {'class': 'mb-4'}}) }}
-        <div class="row align-items-end">
+        <div class="row">
             <div class="col-md-3">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="col-md-3">
                 {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
             </div>
-            <div class="col-md-3 d-flex justify-content-end">
+            <div class="col-md-4 d-flex align-items-end justify-content-between">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary w-100 me-2'}}) }}
                 {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
             </div>
         </div>
@@ -89,6 +120,8 @@
                 </div>
                 <div class="modal-body">
                     Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
+                    <br>
+                    ️<p class="body_alert"> ⚠️<strong>If there is a assigned acquisition system, it will be unassigned automatically.</strong></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -106,6 +139,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
+
+                const flashMessages = document.querySelectorAll('.flash-message');
+                flashMessages.forEach((message) => {
+                    setTimeout(() => {
+                        message.classList.remove('show'); // Bootstrap hide animation
+                        message.classList.add('fade'); // Adding fade effect
+                        setTimeout(() => message.remove(), 150); // Remove from DOM after fade
+                    }, 3000);
+                });
                 var deleteRoomModal = document.getElementById('deleteRoomModal');
                 var roomNameToDelete = document.getElementById('roomNameToDelete');
                 var deleteRoomForm = document.getElementById('deleteRoomForm');
