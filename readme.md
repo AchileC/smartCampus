@@ -1,100 +1,109 @@
-<h1>Stack de développement Symfony de la SAE3</h1>
+# Smart Campus
 
---- 
-Contenu : 
-- [Prérequis](#prérequis)
-- [Démarrage](#démarrage)
-  - [1. Forker le modèle de stack](#1-forker-le-modèle-de-stack)
-  - [2. Cloner la stack du projet](#2-cloner-la-stack-du-projet)
-  - [3. Démarrer la stack du projet](#3-démarrer-la-stack-du-projet)
-- [Initialiser le service `sfapp`](#initialiser-le-service-sfapp)
-- [Partager le projet](#partager-le-projet)
+![Symfony Version](https://img.shields.io/badge/Symfony-6.4-green)
+![PHP Version](https://img.shields.io/badge/PHP-8.1-blue)
 
---- 
+Smart Campus is a Symfony application designed to manage campus rooms. It allows you to track room status, see the température, humidity, CO2 level, and facilitates room management through an intuitive interface. The application includes administration tools for adding, editing, and deleting rooms.
 
-## Prérequis
+---
 
-Sur votre machine Linux ou Mac :
+## 🚀 Features
 
-- Docker 24 
-- Docker Engine sous Linux (ne pas installer Docker Desktop sous Linux)
-- Docker Desktop sous Mac
-- PHPStorm  
-  _Votre email étudiant vous permet de bénéficier d'une licence complète de 12 mois pour tous les produits JetBrains_  
+- **Comprehensive Room Tracking**:
+  - Add, edit, and delete rooms.
+  - Filter and search rooms by name, floor, or status.
+  - Track room statuses (`Ok`, `Problem`, `Critical`, etc.).
+- **Intuitive and Modern Interface**
+- **Extensible System**:
+  - Ready for integration with real-time acquisition systems.
 
-De manière optionnelle, mais fortement recommandée :
+---
 
-- Une [clé SSH](https://forge.iut-larochelle.fr/help/ssh/index#generate-an-ssh-key-pair) active sur votre machine
-  (perso) et [ajoutée dans votre compte gitlab](https://forge.iut-larochelle.fr/help/ssh/index#add-an-ssh-key-to-your-gitlab-account) :  
-  elle vous permettra de ne pas taper votre mot de passe en permanence.
+## 🛠️ Technologies Used
 
-## Démarrage
+- **Backend**: Symfony 6.4, PHP 8.1
+- **Database**: MariaDB (Doctrine ORM)
+- **Frontend**: Bootstrap 5, HTML/CSS
+- **Development Environment**: Docker
 
-### 1. Forker le modèle de stack
+---
 
-**UN.E SEUL.E** des développeuses/développeurs de votre équipe va **fork** le présent dépôt, pour en créer un nouveau, 
-dans le groupe correspondant à votre équipe :  
-_Par exemple pour l'équipe 1 du groupe de TP K1, le groupe est :_ `2024-2025-BUT-INFO2-A-SAE34/K1/K11`
+## ⚙️ Installation
 
-**Remarque** : 
->Il n'est pas nécessaire de conserver le lien avec le modèle de stack, vous pouvez donc aller dans  
-> Settings > General > Advanced (dans Gitlab) pour supprimer le "Fork relationship" de votre projet
+### Prerequisites
 
+- PHPStorm (or other IDE)
+- PHP >= 8.1
+- Composer
+- MariaDB
+- Docker
 
-### 2. Cloner la stack du projet 
+### Steps
 
-Le membre de l'équipe qui a réalisé le fork, doit cloner ce dépôt sur son poste de travail 
+1. Clone the repository:
 
-⚠️ **Si vous êtes sous Linux**  
-> Avant de démarrer la stack, il faut renseigner les variables qui se trouvent dans le fichier `.env` à la racine du dépôt     
-> Vous pouvez obtenir l'id de votre user (et de son groupe) en lançant la commande `id -u ${USER}` dans un terminal
+   ```bash
+   git clone https://forge.iut-larochelle.fr/2024-2025-but-info2-a-sae34/m1/m12/q-team/sae-docker-stack
+   ```
 
-### 3. Démarrer la stack du projet 
+2. Start the containers with Docker Compose:
 
-Dans un terminal positionné dans le dossier de la stack du projet : 
+   ```bash
+   docker-compose up --build
+   ```
 
-- Créer le dossier `sfapp`
-```
-mkdir sfapp
-```
+3. Install backend dependencies:
 
-- démarrer la stack    
-```
-docker compose up --build
-```
+   ```bash
+   composer install
+   ```
 
-- inspecter l'état des services 
-```
-docker compose ps
-```
+4. Create the database and run migrations:
 
-## Initialiser le service `sfapp`
+   ```bash
+   php bin/console doctrine:database:create
+   php bin/console doctrine:migrations:migrate
+   ```
 
-Dans un terminal positionné dans le dossier de la stack du projet : 
- 
- - on se connecte au conteneur associé su service `sfapp` 
-```bash
-docker compose exec sfapp bash
-```
-- après connexion, on doit être dans `/app`, vérifier 
-```
-pwd 
-```
-- créer le projet `sfapp`
-```
-composer create-project symfony/skeleton:"6.3.*" sfapp
-```
+5. Access the application at: `http://localhost:8000`
 
-- vérifier l'exécution du service `sfapp`
-```
-localhost:8000
-```
+---
 
-## Partager le projet
+## 📋 Usage
 
-À ce stade, les services `sfapp`, `database` et `nginx` sont créés et démarrés, autrement dit fonctionnels, alors : 
-- on fait `commit` et `push` pour partager avec les autres membres de l'équipe
-- on déclare tout les membres de l'équipe dans le dépôt du projet avec le rôle `Developer` (si ce n'est pas déjà fait :-))
-- chaque membre de l'équipe peut alors 
-  - cloner ce nouveau dépôt sur son poste de travail 
-  - démarrer toute la stack docker du projet 
+1. **Add a Room**:
+   - Navigate to the "Rooms List" page.
+   - Click on the "Add Room" button.
+   - Fill in the form and submit it.
+
+2. **Edit a Room**:
+   - In the room list, click on the "Update" button of a room.
+   - Modify the required fields and save.
+
+3. **Delete a Room**:
+   - In the room list, click on the "Delete" button.
+   - Confirm deletion in the modal window.
+
+4. **View Room Details**:
+   - Click on "Details".
+
+5. **Search for a Room**:
+   - Filter by name, floor, or status.
+   - Check the list.
+
+---
+
+## 🔒 Security
+
+- CSRF compliance for forms.
+- Field validation via Symfony constraints (Assert).
+- Secure `.env` file.
+
+---
+
+## 👨‍💻 Authors
+
+- Constantin Kylian
+- Beaujouan Paul
+- Lengronne Jules
+- Cornilleau Achile
