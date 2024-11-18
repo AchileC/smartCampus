@@ -37,10 +37,10 @@ class AddRoomType extends AbstractType
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
-                    'Ground' => FloorEnum::GROUND,
-                    'First' => FloorEnum::FIRST,
-                    'Second' => FloorEnum::SECOND,
-                    'Third' => FloorEnum::THIRD,
+                    'Ground' => FloorEnum::GROUND->value,
+                    'First' => FloorEnum::FIRST->value,
+                    'Second' => FloorEnum::SECOND->value,
+                    'Third' => FloorEnum::THIRD->value,
                 ],
                 'label' => 'Floor',
             ])

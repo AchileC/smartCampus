@@ -52,7 +52,7 @@ class FilterRoomType extends AbstractType
                     return $key;
                 },
                 'choice_value' => function (?FloorEnum $floor) {
-                    return $floor ? $floor->value : null;
+                    return $floor?->value;
                 },
             ])
             ->add('state', ChoiceType::class, [
@@ -61,6 +61,8 @@ class FilterRoomType extends AbstractType
                     'Problem' => RoomStateEnum::PROBLEM,
                     'Critical' => RoomStateEnum::CRITICAL,
                     'Not Linked' => RoomStateEnum::NOT_LINKED,
+                    'Pending Assignment' => RoomStateEnum::PENDING_ASSIGNMENT,
+                    'Pending Unassignment' => RoomStateEnum::PENDING_UNASSIGNMENT,
                 ],
                 'required' => false,
                 'placeholder' => 'Select a State',
