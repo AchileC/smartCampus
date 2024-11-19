@@ -53,7 +53,7 @@ class FilterRoomType extends AbstractType
                     return $key;
                 },
                 'choice_value' => function (?FloorEnum $floor) {
-                    return $floor ? $floor->value : null;
+                    return $floor?->value;
                 },
             ])
             ->add('state', ChoiceType::class, [

@@ -260,6 +260,22 @@ class RoomController extends AbstractController
         ]);
     }
 
+    /**
+     * Initiates the request for an assignment of an acquisition system to a room.
+     *
+     * This method sets the state of the specified room to "PENDING_ASSIGNMENT",
+     * indicating that the room is awaiting the assignment of an acquisition system.
+     *
+     * @Route("/rooms/{name}/request-assignment", name="app_rooms_request_assignment", methods={"POST"})
+     *
+     * @param string $name The name of the room to assign an acquisition system.
+     * @param RoomRepository $roomRepository The repository used to fetch room data.
+     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
+     *
+     * @return Response A response that redirects to the room list page.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
+     */
     #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
     public function requestInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
     {
@@ -275,6 +291,22 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_rooms');
     }
 
+    /**
+     * Cancels the assignment or unassignment of an acquisition system to/from a room.
+     *
+     * This method restores the room state to the previous state if it was in "PENDING_UNASSIGNMENT".
+     * If the room was in "PENDING_ASSIGNMENT", it changes the state to "NOT_LINKED".
+     *
+     * @Route("/rooms/{name}/cancel-installation", name="app_rooms_cancel_installation", methods={"POST"})
+     *
+     * @param string $name The name of the room for which the installation request is being canceled.
+     * @param RoomRepository $roomRepository The repository used to fetch room data.
+     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
+     *
+     * @return Response A response that redirects to the room list page.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
+     */
     #[Route('/rooms/{name}/cancel-installation', name: 'app_rooms_cancel_installation', methods: ['POST'])]
     public function cancelInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
     {
@@ -295,6 +327,22 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_rooms');
     }
 
+    /**
+     * Initiates the request to unassign an acquisition system from a room.
+     *
+     * This method sets the state of the specified room to "PENDING_UNASSIGNMENT",
+     * and saves the current state as "previousState" to allow restoration if needed.
+     *
+     * @Route("/rooms/{name}/request-unassignment", name="app_rooms_request_unassignment", methods={"POST"})
+     *
+     * @param string $name The name of the room from which to unassign the acquisition system.
+     * @param RoomRepository $roomRepository The repository used to fetch room data.
+     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
+     *
+     * @return Response A response that redirects to the room list page.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
+     */
     #[Route('/rooms/{name}/request-unassignment', name: 'app_rooms_request_unassignment', methods: ['POST'])]
     public function requestUnassignment(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
     {
