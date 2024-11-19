@@ -55,6 +55,7 @@ Smart Campus is a Symfony application designed to manage campus rooms. It allows
 3. Install backend dependencies:
 
    ```bash
+   docker compose exec sfapp bash
    composer install
    ```
 
