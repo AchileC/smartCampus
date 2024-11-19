@@ -142,7 +142,7 @@ class RoomControllerTest extends WebTestCase
 
         // Check if the message indicating no rooms found is displayed
         $this->assertSelectorTextContains(
-            '.text-center.text-dark',
+            '.text-center',
             'No match. Check spelling or create a new room.',
             'Expected message indicating no rooms found.'
         );

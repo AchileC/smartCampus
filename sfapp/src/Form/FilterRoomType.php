@@ -35,7 +35,7 @@ class FilterRoomType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Room Name',
+                'label' => null,
                 'required' => false,
                 'attr' => ['placeholder' => 'Search or add room name'],
             ])
@@ -48,7 +48,7 @@ class FilterRoomType extends AbstractType
                 ],
                 'required' => false,
                 'placeholder' => 'Choose Floor',
-                'label' => 'Floor',
+                'label' => null,
                 'choice_label' => function ($choice, $key, $value) {
                     return $key;
                 },
@@ -67,7 +67,7 @@ class FilterRoomType extends AbstractType
                 ],
                 'required' => false,
                 'placeholder' => 'Select a State',
-                'label' => 'State',
+                'label' => null,
                 'choice_label' => function ($choice, $key, $value) {
                     return $key;
                 },

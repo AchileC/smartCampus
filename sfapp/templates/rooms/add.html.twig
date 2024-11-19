@@ -52,6 +52,7 @@
     </div>
 {% endblock %}
 {% block javascripts %}
+    {{ parent() }}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Détecte si le champ 'name' a une erreur
