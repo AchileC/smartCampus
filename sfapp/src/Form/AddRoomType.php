@@ -4,10 +4,8 @@ namespace App\Form;
 
 use App\Entity\Room;
 use App\Utils\FloorEnum;
-use App\Utils\RoomStateEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -37,10 +35,10 @@ class AddRoomType extends AbstractType
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
-                    'Ground' => FloorEnum::GROUND->value,
-                    'First' => FloorEnum::FIRST->value,
-                    'Second' => FloorEnum::SECOND->value,
-                    'Third' => FloorEnum::THIRD->value,
+                    'Ground' => FloorEnum::GROUND,
+                    'First' => FloorEnum::FIRST,
+                    'Second' => FloorEnum::SECOND,
+                    'Third' => FloorEnum::THIRD,
                 ],
                 'label' => 'Floor',
             ])

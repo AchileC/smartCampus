@@ -34,17 +34,26 @@ class RoomControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/rooms');
 
-        // Simuler la soumission du formulaire de filtre avec un nom de salle
-        $form = $crawler->selectButton('Filter')->form([
+        // Assert the page loaded successfully
+        $this->assertResponseIsSuccessful();
+
+        // Assert that the filter form is present on the page
+        $this->assertSelectorExists('form[name="filter_room"]', 'Filter form should be present on the page.');
+
+        // Add debug statement to check the HTML content
+        // echo $client->getResponse()->getContent();
+
+        // Simulate submitting the filter form with a room name
+        $form = $crawler->selectButton('Search')->form([
             'filter_room[name]' => 'D001',
         ]);
 
         $crawler = $client->submit($form);
 
-        // Vérifier que la requête a réussi
+        // Assert that the response after submission is successful
         $this->assertResponseIsSuccessful();
 
-        // Vérifier que seule la salle correspondant au filtre est affichée
+        // Check if the expected room with the name 'D001' is present
         $this->assertEquals(
             1,
             $crawler->filter('.card-title:contains("D001")')->count(),
@@ -57,21 +66,27 @@ class RoomControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/rooms');
 
-        // Simuler la soumission du formulaire de filtre par étage
-        $form = $crawler->selectButton('Filter')->form([
-            'filter_room[floor]' => FloorEnum::GROUND->value, // Utilisation de ->value pour obtenir la valeur de l'énumération
+        // Vérifier que la page s'est chargée avec succès
+        $this->assertResponseIsSuccessful();
+
+        // Vérifier que le formulaire de filtre est présent
+        $this->assertSelectorExists('form[name="filter_room"]', 'Le formulaire de filtre devrait être présent sur la page.');
+
+        // Simuler la soumission du formulaire avec le filtre de l'étage
+        $form = $crawler->selectButton('Search')->form([
+            'filter_room[floor]' => FloorEnum::GROUND->value,
         ]);
 
         $crawler = $client->submit($form);
 
-        // Vérifier que la requête a réussi
+        // Vérifier que la réponse après soumission est réussie
         $this->assertResponseIsSuccessful();
 
-        // Vérifier qu'au moins une salle du rez-de-chaussée est affichée
+        // Vérifier qu'il y a au moins une salle au sol
         $this->assertGreaterThan(
             0,
             $crawler->filter('.card-text:contains("Floor: ground")')->count(),
-            'Expected at least one room on the ground floor to be displayed.'
+            'Au moins une salle au sol devrait être affichée.'
         );
     }
 
@@ -80,21 +95,27 @@ class RoomControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/rooms');
 
-        // Simuler la soumission du formulaire de filtre par état
-        $form = $crawler->selectButton('Filter')->form([
-            'filter_room[state]' => RoomStateEnum::PENDING_ASSIGNMENT->value, // Utilisation de ->value pour obtenir la valeur de l'énumération
+        // Vérifier que la page s'est chargée avec succès
+        $this->assertResponseIsSuccessful();
+
+        // Vérifier que le formulaire de filtre est présent
+        $this->assertSelectorExists('form[name="filter_room"]', 'Le formulaire de filtre devrait être présent sur la page.');
+
+        // Simuler la soumission du formulaire avec le filtre d'état
+        $form = $crawler->selectButton('Search')->form([
+            'filter_room[state]' => RoomStateEnum::PENDING_ASSIGNMENT->value,
         ]);
 
         $crawler = $client->submit($form);
 
-        // Vérifier que la requête a réussi
+        // Vérifier que la réponse après soumission est réussie
         $this->assertResponseIsSuccessful();
 
-        // Vérifier qu'au moins une salle dans l'état PENDING_ASSIGNMENT est affichée
+        // Vérifier qu'il y a au moins une salle avec l'état "Pending assignment"
         $this->assertGreaterThan(
             0,
             $crawler->filter('.badge:contains("Pending assignment")')->count(),
-            'Expected at least one room with state "Pending assignment" to be displayed.'
+            'Au moins une salle avec l\'état "Pending assignment" devrait être affichée.'
         );
     }
 
@@ -103,17 +124,23 @@ class RoomControllerTest extends WebTestCase
         $client = static::createClient();
         $crawler = $client->request('GET', '/rooms');
 
-        // Simuler la soumission du formulaire de filtre avec un critère qui ne correspond à aucune salle
-        $form = $crawler->selectButton('Filter')->form([
+        // Assert the page loaded successfully
+        $this->assertResponseIsSuccessful();
+
+        // Assert that the filter form is present
+        $this->assertSelectorExists('form[name="filter_room"]', 'Filter form should be present on the page.');
+
+        // Submit the filter form with a non-existent room name
+        $form = $crawler->selectButton('Search')->form([
             'filter_room[name]' => 'NonExistentRoom',
         ]);
 
         $crawler = $client->submit($form);
 
-        // Vérifier que la requête a réussi
+        // Assert the response after submission is successful
         $this->assertResponseIsSuccessful();
 
-        // Vérifier qu'aucune salle n'est trouvée
+        // Check if the message indicating no rooms found is displayed
         $this->assertSelectorTextContains(
             '.text-center.text-dark',
             'No match. Check spelling or create a new room.',
