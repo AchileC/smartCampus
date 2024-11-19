@@ -154,19 +154,22 @@ class RoomController extends AbstractController
         $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($room);
-            $entityManager->flush();
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $entityManager->persist($room);
+                $entityManager->flush();
 
-            return $this->redirectToRoute('app_rooms');
+                $this->addFlash('success', 'Room added successfully.');
+
+                return $this->redirectToRoute('app_rooms');
+            }
         }
-
-        $this->addFlash('success', 'Room added successfully.');
 
         return $this->render('rooms/add.html.twig', [
             'form' => $form->createView(),
         ]);
     }
+
 
     /**
      * Deletes a specific room from the database.
@@ -247,18 +250,22 @@ class RoomController extends AbstractController
         $form = $this->createForm(AddRoomType::class, $room);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            return $this->redirectToRoute('app_rooms');
-        }
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $entityManager->flush();
 
-        $this->addFlash('success', 'Room updated successfully.');
+                $this->addFlash('success', 'Room updated successfully.');
+
+                return $this->redirectToRoute('app_rooms');
+            }
+        }
 
         return $this->render('rooms/update.html.twig', [
             'form' => $form->createView(),
             'room' => $room,
         ]);
     }
+
 
     /**
      * Initiates the request for an assignment of an acquisition system to a room.

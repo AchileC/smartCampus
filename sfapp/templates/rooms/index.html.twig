@@ -124,11 +124,11 @@
                     ️<p class="body_alert"> ⚠️<strong>If there is a assigned acquisition system, it will be unassigned automatically.</strong></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form id="deleteRoomForm" method="post">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
