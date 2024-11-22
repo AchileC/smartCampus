@@ -7,6 +7,7 @@ use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
 use App\Utils\RoomStateEnum;
+use App\Utils\SensorsStateEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -110,11 +111,11 @@ class RoomController extends AbstractController
      *
      * @return Response The response rendering the add room form or redirecting to the room list page.
      */
-    #[Route('/add', name: 'app_rooms_add')]
+    #[Route('/rooms/add', name: 'app_rooms_add')]
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $room = new Room();
-        $room->setState(RoomStateEnum::NOT_LINKED);
+        $room->setState(SensorsStateEnum::NOT_LINKED);
         $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
@@ -282,7 +283,7 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        $room->setState(RoomStateEnum::PENDING_ASSIGNMENT);
+        $room->setState(SensorsStateEnum::PENDING_ASSIGNMENT);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_rooms');
@@ -314,7 +315,7 @@ class RoomController extends AbstractController
         }
 
         $room->setPreviousState($room->getState());
-        $room->setState(RoomStateEnum::PENDING_UNASSIGNMENT);
+        $room->setState(SensorsStateEnum::PENDING_UNASSIGNMENT);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_rooms');
@@ -345,10 +346,10 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        if ($room->getState() == RoomStateEnum::PENDING_ASSIGNMENT) {
-            $room->setState(RoomStateEnum::NOT_LINKED);
+        if ($room->getState() == SensorsStateEnum::PENDING_ASSIGNMENT) {
+            $room->setState(SensorsStateEnum::NOT_LINKED);
         }
-        elseif ($room->getState() == RoomStateEnum::PENDING_UNASSIGNMENT) {
+        elseif ($room->getState() == SensorsStateEnum::PENDING_UNASSIGNMENT) {
             $room->setState($room->getPreviousState());
         }
         $entityManager->flush();

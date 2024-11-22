@@ -91,9 +91,12 @@
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text"><strong>Floor:</strong> {{ room.floor.value }}</p>
                                     <p class="card-text"><strong>State:</strong>
-                                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment'%}bg-primary{% else %}bg-danger{% endif %}">
+                                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
                                         {{ room.state.value | capitalize }}
-                                    </span>
+                                        </span>
+                                        <span class="badge {% if room.sensor.value == 'pending assignment' or room.state.value == 'pending unassignment'%}bg-success{% elseif room.state.value == 'not linked'%}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ room.sensor.value | capitalize }}
+                                        </span>
                                     </p>
                                 </div>
 
