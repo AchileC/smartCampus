@@ -6,16 +6,9 @@ use App\Entity\Room;
 use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
-use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -105,35 +98,6 @@ class RoomController extends AbstractController
     }
 
     /**
-     * Displays the details of a specific room.
-     *
-     * This method retrieves the room information based on its name
-     * and renders the detail view with its properties.
-     *
-     * @Route("/rooms/{name}", name="app_rooms_details")
-     *
-     * @param RoomRepository $roomRepository The repository to fetch room data.
-     * @param string $name The name of the room to display.
-     *
-     * @return Response The response rendering the room details page.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
-    #[Route('/rooms/{name}', name: 'app_rooms_details')]
-    public function details(RoomRepository $roomRepository, string $name): Response
-    {
-        $room = $roomRepository->findOneBy(['name' => $name]);
-
-        if (!$room) {
-            throw $this->createNotFoundException('The room does not exist');
-        }
-
-        return $this->render('rooms/detail.html.twig', [
-            'room' => $room,
-        ]);
-    }
-
-    /**
      * Adds a new room to the database.
      *
      * This method allows users to add a new room. It includes form validation
@@ -170,54 +134,34 @@ class RoomController extends AbstractController
         ]);
     }
 
-
     /**
-     * Deletes a specific room from the database.
+     * Displays the details of a specific room.
      *
-     * The method checks if the CSRF token is valid before deleting the room.
-     * If the room does not exist, it throws a 404 error.
+     * This method retrieves the room information based on its name
+     * and renders the detail view with its properties.
      *
-     * @Route("/rooms/{name}/delete", name="app_rooms_delete", methods={"POST"})
+     * @Route("/rooms/{name}", name="app_rooms_details")
      *
-     * @param string $name The name of the room to delete.
      * @param RoomRepository $roomRepository The repository to fetch room data.
-     * @param EntityManagerInterface $entityManager The entity manager to remove the room.
-     * @param Request $request The HTTP request object.
+     * @param string $name The name of the room to display.
      *
-     * @return Response Redirects to the list of rooms after successful deletion.
+     * @return Response The response rendering the room details page.
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException If the CSRF token is invalid.
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
      */
-    #[Route('/rooms/{name}/delete', name: 'app_rooms_delete', methods: ['POST'])]
-    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager, Request $request): Response
+    #[Route('/rooms/{name}', name: 'app_rooms_details')]
+    public function details(RoomRepository $roomRepository, string $name): Response
     {
-        $submittedToken = $request->request->get('_token');
-
-        // Vérification du token CSRF
-        if (!$this->isCsrfTokenValid('delete_room', $submittedToken)) {
-            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
-        }
-
         $room = $roomRepository->findOneBy(['name' => $name]);
 
         if (!$room) {
-            throw $this->createNotFoundException('Room not found');
+            throw $this->createNotFoundException('The room does not exist');
         }
 
-        $acquisitionSystem = $room->getAcquisitionSystem();
-        if ($acquisitionSystem !== null) {
-            $acquisitionSystem->setRoom(null);
-            $entityManager->persist($acquisitionSystem);
-        }
-        $entityManager->remove($room);
-        $entityManager->flush();
-
-        $this->addFlash('success', 'Room deleted successfully.');
-
-        return $this->redirectToRoute('app_rooms');
+        return $this->render('rooms/detail.html.twig', [
+            'room' => $room,
+        ]);
     }
-
 
     /**
      * Updates an existing room based on the provided name.
@@ -266,6 +210,52 @@ class RoomController extends AbstractController
         ]);
     }
 
+    /**
+     * Deletes a specific room from the database.
+     *
+     * The method checks if the CSRF token is valid before deleting the room.
+     * If the room does not exist, it throws a 404 error.
+     *
+     * @Route("/rooms/{name}/delete", name="app_rooms_delete", methods={"POST"})
+     *
+     * @param string $name The name of the room to delete.
+     * @param RoomRepository $roomRepository The repository to fetch room data.
+     * @param EntityManagerInterface $entityManager The entity manager to remove the room.
+     * @param Request $request The HTTP request object.
+     *
+     * @return Response Redirects to the list of rooms after successful deletion.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException If the CSRF token is invalid.
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
+     */
+    #[Route('/rooms/{name}/delete', name: 'app_rooms_delete', methods: ['POST'])]
+    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $submittedToken = $request->request->get('_token');
+
+        // Vérification du token CSRF
+        if (!$this->isCsrfTokenValid('delete_room', $submittedToken)) {
+            throw $this->createAccessDeniedException('Jeton CSRF invalide.');
+        }
+
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('Room not found');
+        }
+
+        $acquisitionSystem = $room->getAcquisitionSystem();
+        if ($acquisitionSystem !== null) {
+            $acquisitionSystem->setRoom(null);
+            $entityManager->persist($acquisitionSystem);
+        }
+        $entityManager->remove($room);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Room deleted successfully.');
+
+        return $this->redirectToRoute('app_rooms');
+    }
 
     /**
      * Initiates the request for an assignment of an acquisition system to a room.
@@ -293,6 +283,38 @@ class RoomController extends AbstractController
         }
 
         $room->setState(RoomStateEnum::PENDING_ASSIGNMENT);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_rooms');
+    }
+
+    /**
+     * Initiates the request to unassign an acquisition system from a room.
+     *
+     * This method sets the state of the specified room to "PENDING_UNASSIGNMENT",
+     * and saves the current state as "previousState" to allow restoration if needed.
+     *
+     * @Route("/rooms/{name}/request-unassignment", name="app_rooms_request_unassignment", methods={"POST"})
+     *
+     * @param string $name The name of the room from which to unassign the acquisition system.
+     * @param RoomRepository $roomRepository The repository used to fetch room data.
+     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
+     *
+     * @return Response A response that redirects to the room list page.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
+     */
+    #[Route('/rooms/{name}/request-unassignment', name: 'app_rooms_request_unassignment', methods: ['POST'])]
+    public function requestUnassignment(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    {
+        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        if (!$room) {
+            throw $this->createNotFoundException('Room not found');
+        }
+
+        $room->setPreviousState($room->getState());
+        $room->setState(RoomStateEnum::PENDING_UNASSIGNMENT);
         $entityManager->flush();
 
         return $this->redirectToRoute('app_rooms');
@@ -333,37 +355,4 @@ class RoomController extends AbstractController
 
         return $this->redirectToRoute('app_rooms');
     }
-
-    /**
-     * Initiates the request to unassign an acquisition system from a room.
-     *
-     * This method sets the state of the specified room to "PENDING_UNASSIGNMENT",
-     * and saves the current state as "previousState" to allow restoration if needed.
-     *
-     * @Route("/rooms/{name}/request-unassignment", name="app_rooms_request_unassignment", methods={"POST"})
-     *
-     * @param string $name The name of the room from which to unassign the acquisition system.
-     * @param RoomRepository $roomRepository The repository used to fetch room data.
-     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
-     *
-     * @return Response A response that redirects to the room list page.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
-    #[Route('/rooms/{name}/request-unassignment', name: 'app_rooms_request_unassignment', methods: ['POST'])]
-    public function requestUnassignment(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
-    {
-        $room = $roomRepository->findOneBy(['name' => $name]);
-
-        if (!$room) {
-            throw $this->createNotFoundException('Room not found');
-        }
-
-        $room->setPreviousState($room->getState());
-        $room->setState(RoomStateEnum::PENDING_UNASSIGNMENT);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_rooms');
-    }
-
 }

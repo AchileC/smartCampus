@@ -1,0 +1,12 @@
+# translations/messages.en.yaml
+room:
+  add_success: "Room added successfully."
+  delete_success: "Room deleted successfully."
+  name_label: "Room Name"
+  floor_label: "Floor"
+  description_label: "Description"
+  submit_button: "Add Room"
+  cancel_button: "Cancel"
+  validation:
+    name_not_blank: "Room name cannot be empty."
+    name_regex: "The name must start with a letter followed by at least three numbers."

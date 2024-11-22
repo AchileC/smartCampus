@@ -9,7 +9,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * Class AddRoomType
@@ -33,6 +34,12 @@ class AddRoomType extends AbstractType
         $builder
             ->add('name', TextType::class, [
                 'label' => 'Room Name',
+                'constraints' => [
+                    new Assert\Regex([
+                        'pattern' => '/^[A-Za-z]\d{3,}$/',
+                        'message' => 'Le nom doit commencer par une lettre suivie d\'au moins trois chiffres.',
+                    ]),
+                ],
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
