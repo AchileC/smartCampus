@@ -1,13 +1,11 @@
 {% extends 'base.html.twig' %}
 {# rooms/detail.html.twig #}
-{% block title %}
-    Room Details
-{% endblock %}
+{% block title %}Room Details - {{ room.name }}{% endblock %}
 
 {% block body %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}bg-primary{% else %}bg-danger{% endif %} py-5 position-relative">
+            <div class="col-12 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
                 <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
             </div>
         </div>
@@ -17,7 +15,7 @@
             <div class="card-body">
                 <h5 class="card-title">Description</h5>
                 <p class="card-text description">{{ room.description }}</p>
-                <p class="card-text floor"><strong>Floor:</strong> {{ room.floor.value }}</p>
+                <p class="card-text floor"><strong>Floor:</strong> {{ room.floor.value | capitalize}}</p>
             </div>
         </div>
 
@@ -25,9 +23,9 @@
         <div class="card w-75 mx-auto mt-4">
             <div class="card-body">
                 <h5 class="card-title">Room Constants</h5>
-                <p class="card-text"><strong>State:</strong>
-                    <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}bg-primary{% else %}bg-danger{% endif %}">
-                        {{ room.state.value | capitalize }}
+                <p class="card-text"><strong>Ambient Room State </strong>
+                    <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ room.state.value | upper }}
                     </span>
                 </p>
 
@@ -62,13 +60,17 @@
         {% if not room.acquisitionSystem %}
             <div class="card w-75 mx-auto mt-4 text-center">
                 <div class="card-body">
-                    {% if room.state.value == 'pending' %}
+                    {% if room.sensorState.value == 'assignment'%}
                         <h6 class="card-title">Pending installation of an acquisition system.</h6>
-                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
+                        <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
+                    {% elseif room.sensorState.value == 'unassignment'%}
+                        <h6 class="card-title">Pending uninstallation of an acquisition system.</h6>
+                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
                         <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
                     {% elseif not room.acquisitionSystem %}
                         <h6 class="card-title">No assigned acquisition system.</h6>
-                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
                         <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
                     {% endif %}
                 </div>
@@ -77,7 +79,7 @@
             <div class="card w-75 mx-auto mt-4 text-center">
                 <div class="card-body">
                     <h6 class="card-title">An acquisition system is assigned to this room.</h6>
-                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
                     <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
                 </div>
             </div>

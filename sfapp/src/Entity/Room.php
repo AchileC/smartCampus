@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RoomRepository;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
+use App\Utils\SensorStateEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -28,11 +29,17 @@ class Room
     #[ORM\Column(type: 'string', enumType: FloorEnum::class)]
     private ?FloorEnum $floor = null;
 
-    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class)]
+    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
     private ?RoomStateEnum $state = null;
 
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
     private ?RoomStateEnum $previousState = null;
+
+    #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
+    private ?SensorStateEnum $sensorState = null;
+
+    #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
+    private ?SensorStateEnum $previousSensorState = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
@@ -89,6 +96,28 @@ class Room
     public function setPreviousState(?RoomStateEnum $previousState): static
     {
         $this->previousState = $previousState;
+        return $this;
+    }
+
+    public function getSensorState(): ?SensorStateEnum
+    {
+        return $this->sensorState;
+    }
+
+    public function setSensorState(SensorStateEnum $sensorState): static
+    {
+        $this->sensorState = $sensorState;
+        return $this;
+    }
+
+    public function getPreviousSensorState(): ?SensorStateEnum
+    {
+        return $this->previousSensorState;
+    }
+
+    public function setPreviousSensorState(SensorStateEnum $previousSensorState): static
+    {
+        $this->previousSensorState = $previousSensorState;
         return $this;
     }
 

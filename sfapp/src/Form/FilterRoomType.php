@@ -8,7 +8,7 @@ use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\ResetType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,7 +37,7 @@ class FilterRoomType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => null,
                 'required' => false,
-                'attr' => ['placeholder' => 'Search or add room name'],
+                'attr' => ['placeholder' => 'Search for a room by name'],
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
@@ -47,7 +47,7 @@ class FilterRoomType extends AbstractType
                     'Third' => FloorEnum::THIRD,
                 ],
                 'required' => false,
-                'placeholder' => 'Choose Floor',
+                'placeholder' => 'Select a Floor',
                 'label' => null,
                 'choice_label' => function ($choice, $key, $value) {
                     return $key;
@@ -61,9 +61,6 @@ class FilterRoomType extends AbstractType
                     'OK' => RoomStateEnum::OK,
                     'Problem' => RoomStateEnum::PROBLEM,
                     'Critical' => RoomStateEnum::CRITICAL,
-                    'Not Linked' => RoomStateEnum::NOT_LINKED,
-                    'Pending Assignment' => RoomStateEnum::PENDING_ASSIGNMENT,
-                    'Pending Unassignment' => RoomStateEnum::PENDING_UNASSIGNMENT,
                 ],
                 'required' => false,
                 'placeholder' => 'Select a State',
@@ -74,6 +71,11 @@ class FilterRoomType extends AbstractType
                 'choice_value' => function (?RoomStateEnum $state) {
                     return $state?->value;
                 },
+            ])
+            ->add('sensorStatus', CheckboxType::class, [
+                'label' => 'Only show rooms with linked or probably broken sensors',
+                'required' => false,
+                'mapped' => false,
             ])
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',

@@ -22,7 +22,8 @@ class AcquisitionSystem
     #[ORM\Column(nullable: true)]
     private ?int $co2 = null;
 
-    #[ORM\OneToOne(inversedBy: 'acquisitionSystem', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'acquisitionSystem', targetEntity: Room::class, cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Room $room = null;
 
     public function getId(): ?int
@@ -74,6 +75,10 @@ class AcquisitionSystem
     public function setRoom(?Room $room): static
     {
         $this->room = $room;
+
+        if ($room->getAcquisitionSystem() !== $this) {
+            $room->setAcquisitionSystem($this);
+        }
 
         return $this;
     }

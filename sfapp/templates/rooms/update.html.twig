@@ -55,12 +55,12 @@
                             <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
                                 <button type="submit" class="btn btn-warning">Request unassignment</button>
                             </form>
-                        {% elseif room.state.value == 'not linked' %}
+                        {% elseif room.sensorState.value == 'not linked' %}
                             <p class="mb-3">You can request the installation of an acquisition system in this room.</p>
                             <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
                                 <button type="submit" class="btn btn-warning">Request assignment</button>
                             </form>
-                        {% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}
+                        {% elseif room.sensorState.value == 'assignment' or room.sensorState.value == 'unassignment' %}
                             <p class="mb-3">Assignment/Unassignment of an acquisition system is pending. You can cancel the request.</p>
                             <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
                                 <button type="submit" class="btn btn-warning">Cancel Installation</button>
