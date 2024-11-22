@@ -1,58 +1,89 @@
 {% extends 'base.html.twig' %}
-
+{# rooms/detail.html.twig #}
 {% block title %}
-    Détails de la Salle
+    Room Details
 {% endblock %}
 
 {% block body %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5">
-                <h1 class="text-center text-white">Salle {{ room.name }}</h1>
+            <div class="col-12 {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}bg-primary{% else %}bg-danger{% endif %} py-5 position-relative">
+                <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
             </div>
         </div>
 
-        <!-- Carte de description -->
+        <!-- Description Card -->
         <div class="card w-75 mx-auto mt-4">
             <div class="card-body">
                 <h5 class="card-title">Description</h5>
-                <p class="card-text">{{ room.description }}</p>
-                <p class="card-text"><strong>Floor :</strong> {{ room.floor.value }}</p>
-
+                <p class="card-text description">{{ room.description }}</p>
+                <p class="card-text floor"><strong>Floor:</strong> {{ room.floor.value }}</p>
             </div>
         </div>
 
-        <!-- Carte d'état de la salle -->
-
-
-        <!-- Carte d'informations de la salle -->
+        <!-- Room Information Card -->
         <div class="card w-75 mx-auto mt-4">
             <div class="card-body">
                 <h5 class="card-title">Room Constants</h5>
-                <p class="card-text"><strong>State :</strong>
-                    <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                <p class="card-text"><strong>State:</strong>
+                    <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}bg-primary{% else %}bg-danger{% endif %}">
                         {{ room.state.value | capitalize }}
                     </span>
                 </p>
-                <ul class="list-group">
-                    <!-- Température -->
-                    <li class="list-group-item list-group-item-success">
-                        ✅ <strong>Temperature :</strong> 20,5°C
-                    </li>
 
+                {% if room.acquisitionSystem %}
+                    <ul class="list-group">
+                        <!-- Temperature -->
+                        <li class="list-group-item list-group-item-success">
+                            ✅ <strong>Temperature:</strong>
+                            {{ room.acquisitionSystem.temperature is not null ? room.acquisitionSystem.temperature ~ '°C' : 'No value measured' }}
+                        </li>
 
-                    <!-- Humidité -->
-                    <li class="list-group-item list-group-item-success">
-                        ✅ <strong>Humidity :</strong> 20%
-                    </li>
+                        <!-- Humidity -->
+                        <li class="list-group-item list-group-item-success">
+                            ✅ <strong>Humidity:</strong>
+                            {{ room.acquisitionSystem.humidity is not null ? room.acquisitionSystem.humidity ~ '%' : 'No value measured' }}
+                        </li>
 
-                    <!-- CO₂ -->
-                    <li class="list-group-item list-group-item-warning">
-                        ⚠️ <strong>CO₂ :</strong> 2250 ppm
-                        <a href="">See anomaly</a>
-                    </li>
-                </ul>
+                        <!-- CO₂ -->
+                        <li class="list-group-item list-group-item-success">
+                            ✅️ <strong>CO₂:</strong>
+                            {{ room.acquisitionSystem.co2 is not null ? room.acquisitionSystem.co2 ~ ' ppm' : 'No value measured' }}
+                            {% if room.acquisitionSystem.co2 is not null and room.acquisitionSystem.co2 > 1000 %}
+                                <a href="">See anomaly</a>
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No values</p>
+                {% endif %}
             </div>
         </div>
+        {% if not room.acquisitionSystem %}
+            <div class="card w-75 mx-auto mt-4 text-center">
+                <div class="card-body">
+                    {% if room.state.value == 'pending' %}
+                        <h6 class="card-title">Pending installation of an acquisition system.</h6>
+                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                        <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
+                    {% elseif not room.acquisitionSystem %}
+                        <h6 class="card-title">No assigned acquisition system.</h6>
+                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                        <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card w-75 mx-auto mt-4 text-center">
+                <div class="card-body">
+                    <h6 class="card-title">An acquisition system is assigned to this room.</h6>
+                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                    <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
+
+
+
 {% endblock %}

@@ -1,9 +1,6 @@
 {% extends 'base.html.twig' %}
-
+{# rooms/update.html.twig #}
 {% block title %}Update Room{% endblock %}
-
-{% block stylesheets %}
-{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
@@ -16,21 +13,23 @@
                         {{ form_start(form) }}
 
                         <div class="mb-3">
-                            {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.name) }}
+                            {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.name, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                }
+                            }) }}
+                            {% if form.name.vars.errors|length > 0 %}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.name) }}
+                                </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
                             {{ form_label(form.floor, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
                             {{ form_errors(form.floor) }}
-                        </div>
-
-                        <div class="mb-3">
-                            {{ form_label(form.state, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.state, {'attr': {'class': 'form-select'}}) }}
-                            {{ form_errors(form.state) }}
                         </div>
 
                         <div class="mb-3">
@@ -47,7 +46,54 @@
                         {{ form_end(form) }}
                     </div>
                 </div>
+
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5>Acquisition system</h5>
+                        {% if room.state.value == 'ok' or room.state.value == 'problem' or room.state.value == 'critical' %}
+                            <p class="mb-3">An acquisition system is assigned to this room. You can request to unassign the linked acquisition system.</p>
+                            <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Request unassignment</button>
+                            </form>
+                        {% elseif room.state.value == 'not linked' %}
+                            <p class="mb-3">You can request the installation of an acquisition system in this room.</p>
+                            <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Request assignment</button>
+                            </form>
+                        {% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment' %}
+                            <p class="mb-3">Assignment/Unassignment of an acquisition system is pending. You can cancel the request.</p>
+                            <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Cancel Installation</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Détecte si le champ 'name' a une erreur
+            const nameInput = document.querySelector('.form-control.is-invalid');
+
+            if (nameInput) {
+                // Ajoute l'effet de tremblement en re-déclenchant l'animation
+                nameInput.classList.remove('shake');
+                void nameInput.offsetWidth; // Hack pour redéclencher l'animation
+                nameInput.classList.add('shake');
+
+                // Change la couleur du bouton "Save Room"
+                const saveButton = document.querySelector('button[type="submit"]');
+                if (saveButton) {
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-danger');
+                }
+            }
+        });
+    </script>
 {% endblock %}

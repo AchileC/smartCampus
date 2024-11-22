@@ -9,3 +9,4 @@ enum FloorEnum: string
     case SECOND = 'second';
     case THIRD = 'third';
 }
+

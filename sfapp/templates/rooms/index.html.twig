@@ -1,30 +1,74 @@
 {% extends 'base.html.twig' %}
-
+{# rooms/index.html.twig #}
 {% block title %}Rooms List{% endblock %}
 
 {% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #theme-label {
+            font-weight: 500;
+            color: var(--bs-body-color);
+            transition: color 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] #theme-label {
+            color: #ffffff;
+        }
+
+        [data-bs-theme="light"] #theme-label {
+            color: #000000;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="mb-4">Rooms List</h1>
+        <h1>Rooms List</h1>
+        <!-- Bouton de Basculement Mode Sombre uniquement sur la page index -->
+        <div class="d-flex justify-content-end mb-3 theme-switch-wrapper">
+            <span id="theme-label">Mode Sombre</span>
+            <i class="bi bi-moon-fill theme-icon moon"></i>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="theme-toggle-switch">
+                <label class="form-check-label" for="theme-toggle-switch"></label>
+            </div>
+        </div>
+
+        <!-- Flash messages block (flottant) -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
 
         <div class="mb-4">
             <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg">Add Room</a>
         </div>
 
         {{ form_start(filterForm, {'attr': {'class': 'mb-4'}}) }}
-        <div class="row align-items-end">
+        <div class="row">
             <div class="col-md-3">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="col-md-3">
                 {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
             </div>
-            <div class="col-md-3 d-flex justify-content-end">
+            <div class="col-md-4 d-flex align-items-end justify-content-between">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary w-100 me-2'}}) }}
                 {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
             </div>
         </div>
@@ -33,12 +77,11 @@
         <div class="row">
             {% if rooms|length == 0 %}
                 <div class="col-12">
-                    {% if formSubmitted %}
-                        <p class="text-center text-dark">Aucune salle correspondante</p>
-                    {% else %}
-                        <p class="text-center text-dark">Aucune salle créée</p>
-                    {% endif %}
+                    <p class="text-center">
+                        No match. Check spelling or <a href="{{ path('app_rooms_add') }}" class="text-primary">create a new room</a>.
+                    </p>
                 </div>
+
             {% else %}
                 {% for room in rooms %}
                     <div class="col-12 mb-3">
@@ -48,7 +91,7 @@
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text"><strong>Floor:</strong> {{ room.floor.value }}</p>
                                     <p class="card-text"><strong>State:</strong>
-                                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        <span class="badge {% if room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% elseif room.state.value == 'not linked' %}bg-secondary{% elseif room.state.value == 'pending assignment' or room.state.value == 'pending unassignment'%}bg-primary{% else %}bg-danger{% endif %}">
                                         {{ room.state.value | capitalize }}
                                     </span>
                                     </p>
@@ -58,13 +101,11 @@
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
                                         <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
-
-                                        {{ form_start(deleteForms[room.name], {'attr': {'class': 'd-inline-block'}}) }}
-                                        <button type="submit" class="btn btn-outline-danger"
-                                                onclick="return confirm('Are you sure you want to delete this room?');">Delete</button>
-                                        {{ form_end(deleteForms[room.name]) }}
+                                        <!-- Button to trigger the modal -->
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
+                                            Delete
+                                        </button>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -73,4 +114,93 @@
             {% endif %}
         </div>
     </div>
+
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">Deletion confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
+                    <br>
+                    ️<p class="body_alert"> ⚠️<strong>If there is a assigned acquisition system, it will be unassigned automatically.</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <form id="deleteRoomForm" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((message) => {
+                setTimeout(() => {
+                    message.classList.remove('show'); // Bootstrap hide animation
+                    message.classList.add('fade'); // Adding fade effect
+                    setTimeout(() => message.remove(), 150); // Remove from DOM after fade
+                }, 3000);
+            });
+            var deleteRoomModal = document.getElementById('deleteRoomModal');
+            var roomNameToDelete = document.getElementById('roomNameToDelete');
+            var deleteRoomForm = document.getElementById('deleteRoomForm');
+
+            deleteRoomModal.addEventListener('show.bs.modal', function (event) {
+                // Button that triggered the modal
+                var button = event.relatedTarget;
+                var roomName = button.getAttribute('data-room-name');
+
+                // Update modal content
+                roomNameToDelete.textContent = roomName;
+
+                // Update form action dynamically to send correct room name
+                deleteRoomForm.action = '/rooms/' + encodeURIComponent(roomName) + '/delete';
+            });
+        });
+    </script>
+
+    {% if app.request.attributes.get('_route') == 'app_rooms' %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const toggleSwitch = document.getElementById('theme-toggle-switch');
+                const themeLabel = document.getElementById('theme-label');
+                const savedTheme = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const defaultTheme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
+
+                // Appliquer le thème sauvegardé ou la préférence du système
+                document.documentElement.setAttribute('data-bs-theme', defaultTheme);
+
+                // Définir l'état du switch basé sur le thème actuel
+                if (defaultTheme === 'dark') {
+                    toggleSwitch.checked = true;
+                    themeLabel.textContent = 'Mode Sombre';
+                } else {
+                    toggleSwitch.checked = false;
+                    themeLabel.textContent = 'Mode Sombre';
+                }
+
+                toggleSwitch.addEventListener('change', function () {
+                    if (this.checked) {
+                        document.documentElement.setAttribute('data-bs-theme', 'dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.setAttribute('data-bs-theme', 'light');
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
+            });
+        </script>
+    {% endif %}
 {% endblock %}

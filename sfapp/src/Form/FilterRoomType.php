@@ -1,5 +1,5 @@
 <?php
-// RoomType.php
+// FilterRoomType.php
 
 namespace App\Form;
 
@@ -8,18 +8,34 @@ use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RoomType extends AbstractType
+/**
+ * Class FilterRoomType
+ *
+ * Defines a form to filter Room entities.
+ */
+class FilterRoomType extends AbstractType
 {
+    /**
+     * Builds the filter form for Room entities.
+     *
+     * The form includes fields for filtering by name, floor, and state.
+     *
+     * @param FormBuilderInterface $builder The form builder interface used to create form fields.
+     * @param array $options The options for the form.
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Room Name',
+                'label' => null,
                 'required' => false,
                 'attr' => ['placeholder' => 'Search or add room name'],
             ])
@@ -32,12 +48,12 @@ class RoomType extends AbstractType
                 ],
                 'required' => false,
                 'placeholder' => 'Choose Floor',
-                'label' => 'Floor',
+                'label' => null,
                 'choice_label' => function ($choice, $key, $value) {
                     return $key;
                 },
                 'choice_value' => function (?FloorEnum $floor) {
-                    return $floor ? $floor->value : null;
+                    return $floor?->value;
                 },
             ])
             ->add('state', ChoiceType::class, [
@@ -45,28 +61,48 @@ class RoomType extends AbstractType
                     'OK' => RoomStateEnum::OK,
                     'Problem' => RoomStateEnum::PROBLEM,
                     'Critical' => RoomStateEnum::CRITICAL,
+                    'Not Linked' => RoomStateEnum::NOT_LINKED,
+                    'Pending Assignment' => RoomStateEnum::PENDING_ASSIGNMENT,
+                    'Pending Unassignment' => RoomStateEnum::PENDING_UNASSIGNMENT,
                 ],
                 'required' => false,
                 'placeholder' => 'Select a State',
-                'label' => 'State',
+                'label' => null,
                 'choice_label' => function ($choice, $key, $value) {
                     return $key;
                 },
                 'choice_value' => function (?RoomStateEnum $state) {
-                    return $state ? $state->value : null;
+                    return $state?->value;
                 },
             ])
             ->add('filter', SubmitType::class, [
-                'label' => 'Filter',
-                'attr' => ['class' => 'btn btn-primary'],
+                'label' => 'Search',
+                'attr' => ['class' => 'btn btn-primary']
+            ])
+            ->add('reset', SubmitType::class, [
+                'label' => 'Reset',
+                'attr' => [
+                    'class' => 'btn btn-secondary',
+                    'formnovalidate' => 'formnovalidate',
+                ],
             ]);
     }
 
+    /**
+     * Configures the options for the form.
+     *
+     * Sets the data class to be `Room` and allows optional fields.
+     *
+     * @param OptionsResolver $resolver The options resolver.
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Room::class,
             'required_fields' => false,
+            'validation_groups' => ['Default'],
         ]);
     }
 }
