@@ -37,7 +37,7 @@ class AddRoomType extends AbstractType
                 'constraints' => [
                     new Assert\Regex([
                         'pattern' => '/^[A-Za-z]\d{3,}$/',
-                        'message' => 'Le nom doit commencer par une lettre suivie d\'au moins trois chiffres.',
+                        'message' => 'The name must start with a letter followed by three digits.',
                     ]),
                 ],
             ])
