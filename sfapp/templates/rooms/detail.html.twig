@@ -5,12 +5,22 @@
 {% block body %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
+            <div class="col-12 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
                 <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
             </div>
         </div>
 
         <!-- Description Card -->
+        <div class="card w-75 mx-auto mt-4">
+            <div class="card-body">
+                <h5 class="card-title">General Information</h5>
+                <p class="card-text"><strong>Number of Windows :</strong> {{ room.nbWindows }}</p>
+                <p class="card-text"><strong>Number of Heaters :</strong> {{ room.nbHeaters }}</p>
+                <p class="card-text"><strong>Surface :</strong> {{ room.surface }} m²</p>
+                <p class="card-text"><strong>Cardinal Direction:</strong> {{ room.cardinalDirection ? room.cardinalDirection.value | capitalize : 'Non spécifiée' }}</p>
+            </div>
+        </div>
+
         <div class="card w-75 mx-auto mt-4">
             <div class="card-body">
                 <h5 class="card-title">Description</h5>
@@ -24,7 +34,7 @@
             <div class="card-body">
                 <h5 class="card-title">Room Constants</h5>
                 <p class="card-text"><strong>Ambient Room State </strong>
-                    <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
+                    <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %}">
                         {{ room.state.value | upper }}
                     </span>
                 </p>

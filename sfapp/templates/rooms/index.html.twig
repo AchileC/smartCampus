@@ -1,5 +1,5 @@
+{# templates/rooms/index.html.twig #}
 {% extends 'base.html.twig' %}
-{# rooms/index.html.twig #}
 {% block title %}Rooms List{% endblock %}
 
 {% block stylesheets %}
@@ -13,7 +13,6 @@
 
         #theme-label {
             font-weight: 500;
-            color: var(--bs-body-color);
             transition: color 0.3s ease;
         }
 
@@ -56,26 +55,48 @@
             <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg">Add Room</a>
         </div>
 
-        {{ form_start(filterForm, {'attr': {'class': 'mb-4'}}) }}
-        <div class="row">
-            <div class="col-md-3">
-                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
-            </div>
-            <div class="col-md-3">
-                {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
-            </div>
-            <div class="col-md-2">
-                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
-            </div>
-            <div class="col-md-3 d-flex align-items-center">
+        {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
+        <div class="row align-items-center">
+            <!-- Checkbox Sensor Status -->
+            <div class="mb-3">
                 <div class="form-check">
-                    {{ form_widget(filterForm.sensorStatus, {'attr': {'class': 'form-check-input'}}) }}
-                    {{ form_label(filterForm.sensorStatus, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                    {{ form_widget(filterForm.sensorStatus, {
+                        'attr': {
+                            'class': 'form-check-input sensor-status-checkbox',
+                            'id': 'filter_room_sensorStatus'
+                        }
+                    }) }}
+                    {{ form_label(filterForm.sensorStatus, null, {
+                        'label_attr': {
+                            'class': 'form-check-label',
+                            'for': 'filter_room_sensorStatus'
+                        }
+                    }) }}
                 </div>
             </div>
-            <div class="col-md-4 d-flex align-items-end justify-content-between">
-                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary w-100 me-2'}}) }}
-                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
+
+            <!-- Champ de Recherche par Nom -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- Champ de Filtrage par Étage -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <!-- Champ de Filtrage par État -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <div class="col-md-1">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
+            </div>
+
+            <!-- Boutons Reset et Search alignés à droite -->
+            <div class="col-md-2 d-flex justify-content-end">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
             </div>
         </div>
         {{ form_end(filterForm) }}
@@ -87,7 +108,6 @@
                         No match. Check spelling or <a href="{{ path('app_rooms_add') }}" class="text-primary">create a new room</a>.
                     </p>
                 </div>
-
             {% else %}
                 {% for room in rooms %}
                     <div class="col-12 mb-3">
@@ -95,13 +115,35 @@
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="card-title">{{ room.name }}</h5>
-                                    <p class="card-text"><strong>Floor:</strong> {{ room.floor.value | capitalize}}</p>
+                                    <p class="card-text"><strong>Floor:</strong> {{ room.floor.value | capitalize }}</p>
                                     <p class="card-text"><strong>State:</strong>
-                                        <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{% elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'ok' %}bg-success{% elseif room.state.value == 'problem' %}bg-warning{% else %}bg-danger{% endif %}">
-                                        {{ room.state.value | upper }}
+                                        <span class="badge-custom-size
+                                            {% if room.state.value == 'none' %}
+                                                bg-secondary
+                                            {% elseif room.state.value == 'waiting' %}
+                                                bg-primary
+                                            {% elseif room.state.value == 'stable' %}
+                                                bg-success
+                                            {% elseif room.state.value == 'at risk' %}
+                                                bg-warning
+                                            {% else %}
+                                                bg-danger
+                                            {% endif %}
+                                        ">
+                                            {{ room.state.value | upper }}
                                         </span>
-                                        <span class="badge-custom-size {% if room.sensorState.value == 'not linked' %}bg-secondary{% elseif room.sensorState.value == 'assignment' or room.sensorState.value == 'unassignment'%}bg-primary{% elseif room.sensorState.value == 'linked'%}bg-success{% else %}bg-danger{% endif %}">
-                                        {{ room.sensorState.value | upper }}
+                                        <span class="badge-custom-size
+                                            {% if room.sensorState.value == 'linked' or room.sensorState.value == 'probably broken' %}
+                                                bg-success
+                                            {% elseif room.sensorState.value == 'not linked' %}
+                                                bg-warning
+                                            {% elseif room.sensorState.value == 'assignment' or room.sensorState.value == 'unassignment' %}
+                                                bg-primary
+                                            {% else %}
+                                                bg-danger
+                                            {% endif %}
+                                        ">
+                                            {{ room.sensorState.value | upper }}
                                         </span>
                                     </p>
                                 </div>
@@ -110,7 +152,6 @@
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
                                         <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
-                                        <!-- Button to trigger the modal -->
                                         <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
                                             Delete
                                         </button>
@@ -124,6 +165,7 @@
         </div>
     </div>
 
+    <!-- Modal de Suppression de Salle -->
     <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -134,7 +176,7 @@
                 <div class="modal-body">
                     Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
                     <br>
-                    ️<p class="body_alert"> ⚠️<strong>If there is a assigned acquisition system, it will be unassigned automatically.</strong></p>
+                    <p class="body_alert"> ⚠️<strong>If there is an assigned acquisition system, it will be unassigned automatically.</strong></p>
                 </div>
                 <div class="modal-footer">
                     <form id="deleteRoomForm" method="post">
@@ -174,8 +216,25 @@
                 roomNameToDelete.textContent = roomName;
 
                 // Update form action dynamically to send correct room name
-                deleteRoomForm.action = '/rooms/' + encodeURIComponent(roomName) + '/delete';
+                deleteRoomForm.action = '{{ path('app_rooms_delete', { name: 'ROOM_NAME_PLACEHOLDER' }) }}'.replace('ROOM_NAME_PLACEHOLDER', encodeURIComponent(roomName));
             });
+
+            // Ajouter un écouteur d'événement pour la case à cocher sensorStatus
+            const sensorStatusId = '{{ filterForm.sensorStatus.vars.id }}';
+            const sensorStatusCheckbox = document.getElementById(sensorStatusId);
+            console.log('sensorStatusCheckbox:', sensorStatusCheckbox);
+            if (sensorStatusCheckbox) {
+                sensorStatusCheckbox.addEventListener('change', function() {
+                    if (this.form) {
+                        console.log('Submitting form using this.form.submit()');
+                        this.form.submit();
+                    } else {
+                        console.error('Le formulaire n\'a pas été trouvé pour la case à cocher sensorStatus.');
+                    }
+                });
+            } else {
+                console.error('La case à cocher sensorStatus n\'a pas été trouvée.');
+            }
         });
     </script>
 

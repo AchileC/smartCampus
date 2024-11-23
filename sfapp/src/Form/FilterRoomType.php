@@ -58,8 +58,8 @@ class FilterRoomType extends AbstractType
             ])
             ->add('state', ChoiceType::class, [
                 'choices' => [
-                    'OK' => RoomStateEnum::OK,
-                    'Problem' => RoomStateEnum::PROBLEM,
+                    'Stable' => RoomStateEnum::STABLE,
+                    'At Risk' => RoomStateEnum::AT_RISK,
                     'Critical' => RoomStateEnum::CRITICAL,
                 ],
                 'required' => false,
@@ -73,7 +73,7 @@ class FilterRoomType extends AbstractType
                 },
             ])
             ->add('sensorStatus', CheckboxType::class, [
-                'label' => 'Only show rooms with linked or probably broken sensors',
+                'label' => 'Only show linked rooms',
                 'required' => false,
                 'mapped' => false,
             ])

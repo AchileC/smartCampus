@@ -6,8 +6,8 @@ enum RoomStateEnum: string
 {
     case NONE = 'none';
     case WAITING = 'waiting';
-    case OK = 'ok';
-    case PROBLEM = 'problem';
+    case STABLE = 'stable';
+    case AT_RISK = 'at risk';
     case CRITICAL = 'critical';
 }
 

@@ -7,40 +7,100 @@
         <h1 class="mb-4 text-center">Add a New Room</h1>
 
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
                         {{ form_start(form) }}
 
-                        <div class="mb-3">
-                            {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.name, {
-                                'attr': {
-                                    'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                }
-                            }) }}
-                            {% if form.name.vars.errors|length > 0 %}
-                                <div class="invalid-feedback">
-                                    {{ form_errors(form.name) }}
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <!-- Room Name -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.name, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.name.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.name) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Floor -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
+                                        {{ form_errors(form.floor) }}
+                                    </div>
                                 </div>
-                            {% endif %}
+                            </div>
                         </div>
 
+                        <!-- Physical Characteristics -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <!-- Number of Windows -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.nbWindows, 'Number of Windows', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nbWindows, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.nbWindows) }}
+                                    </div>
 
-                        <div class="mb-3">
-                            {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
-                            {{ form_errors(form.floor) }}
+                                    <!-- Number of Heaters -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.nbHeaters, 'Number of Heaters', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nbHeaters, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.nbHeaters) }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.description) }}
+                        <!-- Dimensions and Orientation -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <!-- Surface -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.surface, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.surface) }}
+                                    </div>
+
+                                    <!-- Cardinal Direction -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.cardinalDirection, 'Cardinal Orientation', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.cardinalDirection, {'attr': {'class': 'form-select'}}) }}
+                                        {{ form_errors(form.cardinalDirection) }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Description -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.description, {
+                                    'attr': {
+                                        'class': 'form-control',
+                                        'rows': 5,
+                                        'style': 'height:120px; padding-bottom: 80px;',
+                                        'placeholder': 'Optional: Add a detailed description of the room here...'
+                                    }
+                                }) }}
+                                {{ form_errors(form.description) }}
+                            </div>
+                        </div>
+
+                        <!-- Boutons Submit et Cancel -->
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Add Room</button>
+                            <button type="submit" class="btn btn-primary me-3">Add Room</button>
                             <a href="{{ path('app_rooms') }}" class="btn btn-secondary">Cancel</a>
                         </div>
 

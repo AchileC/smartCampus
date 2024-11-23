@@ -81,10 +81,6 @@ class RoomController extends AbstractController
                 $criteria['state'] = $data->getState();
             }
 
-            if ($data->getSensorState()) {
-                $criteria['sensorStatus'] = ['linked', 'probably broken'];
-            }
-
             if ($filterForm->get('sensorStatus')->getData()) {
                 $criteria['sensorStatus'] = ['linked', 'probably broken'];
             }

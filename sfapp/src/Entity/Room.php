@@ -6,6 +6,7 @@ use App\Repository\RoomRepository;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
+use App\Utils\CardinalEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -21,29 +22,29 @@ class Room
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Room name is required.', groups: ['add'])]
     private ?string $name = null;
-
     #[ORM\Column(type: 'string', enumType: FloorEnum::class)]
     private ?FloorEnum $floor = null;
-
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
     private ?RoomStateEnum $state = null;
-
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
     private ?RoomStateEnum $previousState = null;
-
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $sensorState = null;
-
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $previousSensorState = null;
-
+    #[ORM\Column(type: 'string', enumType: CardinalEnum::class, nullable: true)]
+    private ?CardinalEnum $cardinalDirection = null;
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
-
+    #[ORM\Column(nullable: true)]
+    private ?int $nbHeaters = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $nbWindows = null;
+    #[ORM\Column]
+    private ?float $surface = null;
     #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;
 
@@ -121,6 +122,17 @@ class Room
         return $this;
     }
 
+    public function getCardinalDirection(): ?CardinalEnum
+    {
+        return $this->cardinalDirection;
+    }
+
+    public function setCardinalDirection(CardinalEnum $cardinalDirection): static
+    {
+        $this->cardinalDirection = $cardinalDirection;
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -129,6 +141,43 @@ class Room
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+
+    public function getNbHeaters(): ?int
+    {
+        return $this->nbHeaters;
+    }
+
+    public function setNbHeaters(?int $nbHeaters): static
+    {
+        $this->nbHeaters = $nbHeaters;
+
+        return $this;
+    }
+
+    public function getNbWindows(): ?int
+    {
+        return $this->nbWindows;
+    }
+
+    public function setNbWindows(?int $nbWindows): static
+    {
+        $this->nbWindows = $nbWindows;
+
+        return $this;
+    }
+
+    public function getSurface(): ?float
+    {
+        return $this->surface;
+    }
+
+    public function setSurface(float $surface): static
+    {
+        $this->surface = $surface;
 
         return $this;
     }
