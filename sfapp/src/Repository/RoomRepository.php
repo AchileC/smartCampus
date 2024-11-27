@@ -1,5 +1,5 @@
 <?php
-
+//RoomRepository.php
 namespace App\Repository;
 
 use App\Entity\Room;
@@ -34,6 +34,11 @@ class RoomRepository extends ServiceEntityRepository
         if (isset($criteria['state'])) {
             $queryBuilder->andWhere('r.state = :state')
                 ->setParameter('state', $criteria['state']);
+        }
+
+        if (isset($criteria['sensorStatus']) && is_array($criteria['sensorStatus'])) {
+            $queryBuilder->andWhere('r.sensorState IN (:sensorStatus)')
+                ->setParameter('sensorStatus', $criteria['sensorStatus']);
         }
 
         return $queryBuilder->orderBy('r.name', 'ASC')
