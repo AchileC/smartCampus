@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Utils\UserRoleEnum;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -18,6 +20,21 @@ class User
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
+
+    #[ORM\Column(type: 'string', enumType: UserRoleEnum::class)]
+    private UserRoleEnum $role;
+
+    public function getRole(): UserRoleEnum
+    {
+        return $this->role;
+    }
+
+    public function setRole(UserRoleEnum $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {

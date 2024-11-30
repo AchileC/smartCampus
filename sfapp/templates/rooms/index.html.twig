@@ -23,12 +23,49 @@
         [data-bs-theme="light"] #theme-label {
             color: #000000;
         }
+
+        .menu-button {
+            font-size: 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .offcanvas-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-4">
         <h1>Rooms List</h1>
+
+        <!-- Bouton du menu (style hamburger ou grille) -->
+        <div class="d-flex justify-content-start">
+            <button class="menu-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuOffcanvas" aria-controls="menuOffcanvas">
+                <i class="bi bi-list"></i> <!-- Icône hamburger -->
+            </button>
+        </div>
+
+        <!-- Menu Offcanvas -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="menuOffcanvas" aria-labelledby="menuOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="menuOffcanvasLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button id="toggleOptionsButton" class="btn btn-primary w-100">Activate Options</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         <!-- Bouton de Basculement Mode Sombre uniquement sur la page index -->
         <div class="d-flex justify-content-end mb-3 theme-switch-wrapper">
             <span id="theme-label">Mode Sombre</span>
@@ -51,13 +88,14 @@
             {% endfor %}
         </div>
 
-        <div class="mb-4">
+        <!-- Bouton "Add Room" (masqué avant activation) -->
+        <div class="mb-4 hidden-options">
             <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg">Add Room</a>
         </div>
 
+        <!-- Formulaire de tri et de filtre (toujours visible) -->
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row align-items-center">
-            <!-- Checkbox Sensor Status -->
             <div class="mb-3">
                 <div class="form-check">
                     {{ form_widget(filterForm.sensorStatus, {
@@ -75,17 +113,14 @@
                 </div>
             </div>
 
-            <!-- Champ de Recherche par Nom -->
             <div class="col-md-3 mb-4">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
             </div>
 
-            <!-- Champ de Filtrage par Étage -->
             <div class="col-md-3 mb-4">
                 {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
             </div>
 
-            <!-- Champ de Filtrage par État -->
             <div class="col-md-3 mb-4">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
             </div>
@@ -94,13 +129,13 @@
                 {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
             </div>
 
-            <!-- Boutons Reset et Search alignés à droite -->
             <div class="col-md-2 d-flex justify-content-end">
                 {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
             </div>
         </div>
         {{ form_end(filterForm) }}
 
+        <!-- Liste des salles -->
         <div class="row">
             {% if rooms|length == 0 %}
                 <div class="col-12">
@@ -151,8 +186,8 @@
                                 <div>
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
-                                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
-                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
+                                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary hidden-options">Update</a>
+                                        <button type="button" class="btn btn-outline-danger hidden-options" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
                                             Delete
                                         </button>
                                     </div>
@@ -174,9 +209,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
-                    <br>
-                    <p class="body_alert"> ⚠️<strong>If there is an assigned acquisition system, it will be unassigned automatically.</strong></p>
+                    Are you sure you want to delete the room <span id="roomNameToDelete"></span>?
                 </div>
                 <div class="modal-footer">
                     <form id="deleteRoomForm" method="post">
@@ -193,82 +226,69 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
+        document.addEventListener('DOMContentLoaded', function () {
+            // Gestion des flash messages
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach((message) => {
                 setTimeout(() => {
-                    message.classList.remove('show'); // Bootstrap hide animation
-                    message.classList.add('fade'); // Adding fade effect
-                    setTimeout(() => message.remove(), 150); // Remove from DOM after fade
+                    message.classList.remove('show');
+                    message.classList.add('fade');
+                    setTimeout(() => message.remove(), 150);
                 }, 3000);
             });
-            var deleteRoomModal = document.getElementById('deleteRoomModal');
-            var roomNameToDelete = document.getElementById('roomNameToDelete');
-            var deleteRoomForm = document.getElementById('deleteRoomForm');
+
+            // Gestion de la suppression des salles
+            const deleteRoomModal = document.getElementById('deleteRoomModal');
+            const roomNameToDelete = document.getElementById('roomNameToDelete');
+            const deleteRoomForm = document.getElementById('deleteRoomForm');
 
             deleteRoomModal.addEventListener('show.bs.modal', function (event) {
-                // Button that triggered the modal
-                var button = event.relatedTarget;
-                var roomName = button.getAttribute('data-room-name');
-
-                // Update modal content
+                const button = event.relatedTarget;
+                const roomName = button.getAttribute('data-room-name');
                 roomNameToDelete.textContent = roomName;
-
-                // Update form action dynamically to send correct room name
                 deleteRoomForm.action = '{{ path('app_rooms_delete', { name: 'ROOM_NAME_PLACEHOLDER' }) }}'.replace('ROOM_NAME_PLACEHOLDER', encodeURIComponent(roomName));
             });
 
-            // Ajouter un écouteur d'événement pour la case à cocher sensorStatus
-            const sensorStatusId = '{{ filterForm.sensorStatus.vars.id }}';
-            const sensorStatusCheckbox = document.getElementById(sensorStatusId);
-            console.log('sensorStatusCheckbox:', sensorStatusCheckbox);
-            if (sensorStatusCheckbox) {
-                sensorStatusCheckbox.addEventListener('change', function() {
-                    if (this.form) {
-                        console.log('Submitting form using this.form.submit()');
-                        this.form.submit();
-                    } else {
-                        console.error('Le formulaire n\'a pas été trouvé pour la case à cocher sensorStatus.');
-                    }
-                });
-            } else {
-                console.error('La case à cocher sensorStatus n\'a pas été trouvée.');
+            // Activer/Désactiver les options masquées
+            const toggleOptionsButton = document.getElementById('toggleOptionsButton');
+            const hiddenOptionsElements = document.querySelectorAll('.hidden-options');
+            const optionsState = localStorage.getItem('optionsEnabled') === 'true';
+
+            function updateOptionsState(enabled) {
+                hiddenOptionsElements.forEach(el => el.style.display = enabled ? '' : 'none');
+                toggleOptionsButton.textContent = enabled ? 'Deactivate Options' : 'Activate Options';
+                localStorage.setItem('optionsEnabled', enabled);
             }
+
+            updateOptionsState(optionsState);
+
+            toggleOptionsButton.addEventListener('click', () => {
+                const currentState = localStorage.getItem('optionsEnabled') === 'true';
+                updateOptionsState(!currentState);
+            });
+
+            // Gestion du mode sombre
+            const toggleSwitch = document.getElementById('theme-toggle-switch');
+            const themeLabel = document.getElementById('theme-label');
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const defaultTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+            document.documentElement.setAttribute('data-bs-theme', defaultTheme);
+            toggleSwitch.checked = defaultTheme === 'dark';
+            themeLabel.textContent = defaultTheme === 'dark' ? 'Mode Sombre' : 'Mode Clair';
+
+            toggleSwitch.addEventListener('change', function () {
+                const theme = this.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                localStorage.setItem('theme', theme);
+                themeLabel.textContent = theme === 'dark' ? 'Mode Sombre' : 'Mode Clair';
+            });
         });
     </script>
-
-    {% if app.request.attributes.get('_route') == 'app_rooms' %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const toggleSwitch = document.getElementById('theme-toggle-switch');
-                const themeLabel = document.getElementById('theme-label');
-                const savedTheme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const defaultTheme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
-
-                // Appliquer le thème sauvegardé ou la préférence du système
-                document.documentElement.setAttribute('data-bs-theme', defaultTheme);
-
-                // Définir l'état du switch basé sur le thème actuel
-                if (defaultTheme === 'dark') {
-                    toggleSwitch.checked = true;
-                    themeLabel.textContent = 'Mode Sombre';
-                } else {
-                    toggleSwitch.checked = false;
-                    themeLabel.textContent = 'Mode Sombre';
-                }
-
-                toggleSwitch.addEventListener('change', function () {
-                    if (this.checked) {
-                        document.documentElement.setAttribute('data-bs-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                    } else {
-                        document.documentElement.setAttribute('data-bs-theme', 'light');
-                        localStorage.setItem('theme', 'light');
-                    }
-                });
-            });
-        </script>
-    {% endif %}
 {% endblock %}
+
+
+
+
+
