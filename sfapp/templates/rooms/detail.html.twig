@@ -1,5 +1,4 @@
 {% extends 'base.html.twig' %}
-{# rooms/detail.html.twig #}
 {% block title %}Room Details - {{ room.name }}{% endblock %}
 
 {% block body %}
@@ -35,8 +34,8 @@
                 <h5 class="card-title">Room Constants</h5>
                 <p class="card-text"><strong>Ambient Room State </strong>
                     <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %}">
-                        {{ room.state.value | upper }}
-                    </span>
+                    {{ room.state.value | upper }}
+                </span>
                 </p>
 
                 {% if room.acquisitionSystem %}
@@ -67,35 +66,63 @@
                 {% endif %}
             </div>
         </div>
-        {% if not room.acquisitionSystem %}
-            <div class="card w-75 mx-auto mt-4 text-center">
-                <div class="card-body">
-                    {% if room.sensorState.value == 'assignment'%}
-                        <h6 class="card-title">Pending installation of an acquisition system.</h6>
-                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
-                        <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
-                    {% elseif room.sensorState.value == 'unassignment'%}
-                        <h6 class="card-title">Pending uninstallation of an acquisition system.</h6>
-                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
-                        <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
-                    {% elseif not room.acquisitionSystem %}
-                        <h6 class="card-title">No assigned acquisition system.</h6>
-                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
-                        <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
-                    {% endif %}
-                </div>
-            </div>
-        {% else %}
-            <div class="card w-75 mx-auto mt-4 text-center">
-                <div class="card-body">
+
+        <!-- Action Buttons (Update/Delete, initially hidden) -->
+        <div class="card w-75 mx-auto mt-4 text-center">
+            <div class="card-body hidden-options">
+                {% if not room.acquisitionSystem %}
+                    <h6 class="card-title">No assigned acquisition system.</h6>
+                {% else %}
                     <h6 class="card-title">An acquisition system is assigned to this room.</h6>
-                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
-                    <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to list</a>
+                {% endif %}
+                <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal">Delete</button>
+            </div>
+        </div>
+
+        <!-- Modal for Deletion -->
+        <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteRoomModalLabel">Delete Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this room? This action cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <form id="deleteRoomForm" method="post" action="{{ path('app_rooms_delete', { name: room.name }) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
                 </div>
             </div>
-        {% endif %}
+        </div>
+
+        <!-- Back to List Button -->
+        <div class="card w-75 mx-auto mt-4 text-center">
+            <div class="card-body">
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to Room List</a>
+            </div>
+        </div>
     </div>
+{% endblock %}
 
+{% block javascripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleOptionsState = localStorage.getItem('optionsEnabled') === 'true';
+            const hiddenOptions = document.querySelectorAll('.hidden-options');
 
+            // Update visibility of hidden options
+            function updateVisibility(enabled) {
+                hiddenOptions.forEach(el => el.style.display = enabled ? '' : 'none');
+            }
 
+            updateVisibility(toggleOptionsState);
+        });
+    </script>
 {% endblock %}

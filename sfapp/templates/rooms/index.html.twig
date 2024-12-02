@@ -23,12 +23,57 @@
         [data-bs-theme="light"] #theme-label {
             color: #000000;
         }
+
+        .menu-button {
+            font-size: 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .offcanvas-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        h1 {
+            text-align: center;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-4">
+        <!-- Bouton du menu (style hamburger ou grille) -->
+        <div class="d-flex justify-content-start">
+            <button class="menu-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuOffcanvas" aria-controls="menuOffcanvas">
+                <i class="bi bi-list"></i> <!-- Icône hamburger -->
+            </button>
+        </div>
+
         <h1>Rooms List</h1>
+
+        <!-- Menu Offcanvas -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="menuOffcanvas" aria-labelledby="menuOffcanvasLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="menuOffcanvasLabel">Menu</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button id="toggleOptionsButton" class="btn btn-primary w-100">Activate Options</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bouton Add Room -->
+        <div class="mb-4">
+            <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg add-room-link hidden-options">Add Room</a>
+        </div>
+
         <!-- Bouton de Basculement Mode Sombre uniquement sur la page index -->
         <div class="d-flex justify-content-end mb-3 theme-switch-wrapper">
             <span id="theme-label">Mode Sombre</span>
@@ -39,7 +84,7 @@
             </div>
         </div>
 
-        <!-- Flash messages block (flottant) -->
+        <!-- Flash messages block -->
         <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
             {% for type, messages in app.flashes %}
                 {% for message in messages %}
@@ -51,9 +96,6 @@
             {% endfor %}
         </div>
 
-        <div class="mb-4">
-            <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg">Add Room</a>
-        </div>
 
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row align-items-center">
@@ -103,9 +145,13 @@
 
         <div class="row">
             {% if rooms|length == 0 %}
-                <div class="col-12">
-                    <p class="text-center">
-                        No match. Check spelling or <a href="{{ path('app_rooms_add') }}" class="text-primary">create a new room</a>.
+                <div class="col-12 text-center">
+                    <p id="no-match-message" data-add-room-link="{{ path('app_rooms_add') }}">
+                        {% if optionsEnabled %}
+                            No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.
+                        {% else %}
+                            No match. Check spelling or change filter.
+                        {% endif %}
                     </p>
                 </div>
             {% else %}
@@ -118,41 +164,31 @@
                                     <p class="card-text"><strong>Floor:</strong> {{ room.floor.value | capitalize }}</p>
                                     <p class="card-text"><strong>State:</strong>
                                         <span class="badge-custom-size
-                                            {% if room.state.value == 'none' %}
-                                                bg-secondary
-                                            {% elseif room.state.value == 'waiting' %}
-                                                bg-primary
-                                            {% elseif room.state.value == 'stable' %}
-                                                bg-success
-                                            {% elseif room.state.value == 'at risk' %}
-                                                bg-warning
-                                            {% else %}
-                                                bg-danger
-                                            {% endif %}
-                                        ">
-                                            {{ room.state.value | upper }}
-                                        </span>
+                                        {% if room.state.value == 'none' %}bg-secondary
+                                        {% elseif room.state.value == 'waiting' %}bg-primary
+                                        {% elseif room.state.value == 'stable' %}bg-success
+                                        {% elseif room.state.value == 'at risk' %}bg-warning
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ room.state.value | upper }}
+                                    </span>
+                                    </p>
+                                    <p class="card-text hidden-options">
+                                        <strong>Sensor State:</strong>
                                         <span class="badge-custom-size
-                                            {% if room.sensorState.value == 'linked' or room.sensorState.value == 'probably broken' %}
-                                                bg-success
-                                            {% elseif room.sensorState.value == 'not linked' %}
-                                                bg-warning
-                                            {% elseif room.sensorState.value == 'assignment' or room.sensorState.value == 'unassignment' %}
-                                                bg-primary
-                                            {% else %}
-                                                bg-danger
-                                            {% endif %}
-                                        ">
-                                            {{ room.sensorState.value | upper }}
-                                        </span>
+                                        {% if room.sensorState.value == 'linked' %}bg-success
+                                        {% elseif room.sensorState.value == 'probably broken' %}bg-warning
+                                        {% elseif room.sensorState.value == 'not linked' %}bg-secondary
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ room.sensorState.value | upper }}
+                                    </span>
                                     </p>
                                 </div>
 
                                 <div>
                                     <div class="d-flex gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
-                                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
-                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
+                                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary hidden-options">Update</a>
+                                        <button type="button" class="btn btn-outline-danger hidden-options" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
                                             Delete
                                         </button>
                                     </div>
@@ -164,111 +200,90 @@
             {% endif %}
         </div>
     </div>
-
-    <!-- Modal de Suppression de Salle -->
-    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteRoomModalLabel">Deletion confirmation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
-                    <br>
-                    <p class="body_alert"> ⚠️<strong>If there is an assigned acquisition system, it will be unassigned automatically.</strong></p>
-                </div>
-                <div class="modal-footer">
-                    <form id="deleteRoomForm" method="post">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
+        document.addEventListener('DOMContentLoaded', function () {
+            // Flash messages fade-out
             const flashMessages = document.querySelectorAll('.flash-message');
             flashMessages.forEach((message) => {
                 setTimeout(() => {
-                    message.classList.remove('show'); // Bootstrap hide animation
-                    message.classList.add('fade'); // Adding fade effect
-                    setTimeout(() => message.remove(), 150); // Remove from DOM after fade
+                    message.classList.add('fade');
+                    setTimeout(() => message.remove(), 150);
                 }, 3000);
             });
-            var deleteRoomModal = document.getElementById('deleteRoomModal');
-            var roomNameToDelete = document.getElementById('roomNameToDelete');
-            var deleteRoomForm = document.getElementById('deleteRoomForm');
 
-            deleteRoomModal.addEventListener('show.bs.modal', function (event) {
-                // Button that triggered the modal
-                var button = event.relatedTarget;
-                var roomName = button.getAttribute('data-room-name');
+            // Delete Room Modal Setup
+            const deleteRoomModal = document.getElementById('deleteRoomModal');
+            const deleteRoomForm = document.getElementById('deleteRoomForm');
 
-                // Update modal content
-                roomNameToDelete.textContent = roomName;
+            if (deleteRoomModal) {
+                deleteRoomModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget;
+                    const roomName = button.getAttribute('data-room-name');
+                    deleteRoomForm.action = '{{ path('app_rooms_delete', { name: 'ROOM_NAME_PLACEHOLDER' }) }}'.replace('ROOM_NAME_PLACEHOLDER', encodeURIComponent(roomName));
+                });
+            }
 
-                // Update form action dynamically to send correct room name
-                deleteRoomForm.action = '{{ path('app_rooms_delete', { name: 'ROOM_NAME_PLACEHOLDER' }) }}'.replace('ROOM_NAME_PLACEHOLDER', encodeURIComponent(roomName));
+            // Manage "Only show linked rooms" checkbox
+            const sensorStatusCheckbox = document.querySelector('.sensor-status-checkbox');
+            if (sensorStatusCheckbox) {
+                sensorStatusCheckbox.addEventListener('change', function () {
+                    document.getElementById('filterForm').submit();
+                });
+            }
+
+            // Toggle Options Button
+            const toggleOptionsButton = document.getElementById('toggleOptionsButton');
+            const optionsElements = document.querySelectorAll('.hidden-options');
+            let optionsState = localStorage.getItem('optionsEnabled') === 'true';
+
+            function updateOptionsState(enabled) {
+                optionsElements.forEach(el => el.style.display = enabled ? '' : 'none');
+                toggleOptionsButton.textContent = enabled ? 'Deactivate Options' : 'Activate Options';
+                localStorage.setItem('optionsEnabled', enabled);
+
+                // Update the "No match" message
+                const noMatchMessage = document.getElementById('no-match-message');
+                if (noMatchMessage) {
+                    noMatchMessage.innerHTML = enabled
+                        ? 'No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.'
+                        : 'No match. Check spelling or change filter.';
+                }
+            }
+
+            updateOptionsState(optionsState);
+
+            toggleOptionsButton.addEventListener('click', () => {
+                optionsState = !optionsState;
+                updateOptionsState(optionsState);
             });
 
-            // Ajouter un écouteur d'événement pour la case à cocher sensorStatus
-            const sensorStatusId = '{{ filterForm.sensorStatus.vars.id }}';
-            const sensorStatusCheckbox = document.getElementById(sensorStatusId);
-            console.log('sensorStatusCheckbox:', sensorStatusCheckbox);
-            if (sensorStatusCheckbox) {
-                sensorStatusCheckbox.addEventListener('change', function() {
-                    if (this.form) {
-                        console.log('Submitting form using this.form.submit()');
-                        this.form.submit();
-                    } else {
-                        console.error('Le formulaire n\'a pas été trouvé pour la case à cocher sensorStatus.');
-                    }
-                });
+            // Manage Theme Switch
+            const toggleSwitch = document.getElementById('theme-toggle-switch');
+            const themeLabel = document.getElementById('theme-label');
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const defaultTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+            document.documentElement.setAttribute('data-bs-theme', defaultTheme);
+
+            if (defaultTheme === 'dark') {
+                toggleSwitch.checked = true;
+                themeLabel.textContent = 'Mode Sombre';
             } else {
-                console.error('La case à cocher sensorStatus n\'a pas été trouvée.');
+                toggleSwitch.checked = false;
+                themeLabel.textContent = 'Mode Clair';
             }
+
+            toggleSwitch.addEventListener('change', function () {
+                const newTheme = this.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                themeLabel.textContent = this.checked ? 'Mode Sombre' : 'Mode Clair';
+            });
         });
     </script>
-
-    {% if app.request.attributes.get('_route') == 'app_rooms' %}
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                const toggleSwitch = document.getElementById('theme-toggle-switch');
-                const themeLabel = document.getElementById('theme-label');
-                const savedTheme = localStorage.getItem('theme');
-                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const defaultTheme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
-
-                // Appliquer le thème sauvegardé ou la préférence du système
-                document.documentElement.setAttribute('data-bs-theme', defaultTheme);
-
-                // Définir l'état du switch basé sur le thème actuel
-                if (defaultTheme === 'dark') {
-                    toggleSwitch.checked = true;
-                    themeLabel.textContent = 'Mode Sombre';
-                } else {
-                    toggleSwitch.checked = false;
-                    themeLabel.textContent = 'Mode Sombre';
-                }
-
-                toggleSwitch.addEventListener('change', function () {
-                    if (this.checked) {
-                        document.documentElement.setAttribute('data-bs-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                    } else {
-                        document.documentElement.setAttribute('data-bs-theme', 'light');
-                        localStorage.setItem('theme', 'light');
-                    }
-                });
-            });
-        </script>
-    {% endif %}
 {% endblock %}
