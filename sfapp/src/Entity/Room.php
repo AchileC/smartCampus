@@ -37,8 +37,6 @@ class Room
     private ?SensorStateEnum $previousSensorState = null;
     #[ORM\Column(type: 'string', enumType: CardinalEnum::class, nullable: true)]
     private ?CardinalEnum $cardinalDirection = null;
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $description = null;
     #[ORM\Column(nullable: true)]
     private ?int $nbHeaters = null;
     #[ORM\Column(nullable: true)]
@@ -133,17 +131,7 @@ class Room
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
 
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
 
 
     public function getNbHeaters(): ?int

@@ -45,29 +45,7 @@
 
 {% block body %}
     <div class="container mt-4">
-        <!-- Bouton du menu (style hamburger ou grille) -->
-        <div class="d-flex justify-content-start">
-            <button class="menu-button" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuOffcanvas" aria-controls="menuOffcanvas">
-                <i class="bi bi-list"></i> <!-- Icône hamburger -->
-            </button>
-        </div>
 
-        <h1>Rooms List</h1>
-
-        <!-- Menu Offcanvas -->
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="menuOffcanvas" aria-labelledby="menuOffcanvasLabel">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="menuOffcanvasLabel">Menu</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <ul class="list-group">
-                    <li class="list-group-item">
-                        <button id="toggleOptionsButton" class="btn btn-primary w-100">Activate Options</button>
-                    </li>
-                </ul>
-            </div>
-        </div>
 
         <!-- Bouton Add Room -->
         <div class="mb-4">

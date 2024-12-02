@@ -18,7 +18,6 @@ class AppFixtures extends Fixture
         $room1 = new Room();
         $room1->setName("D001");
         $room1->setFloor(FloorEnum::GROUND);
-        $room1->setDescription("Not a chill room");
         $room1->setNbHeaters(2);
         $room1->setNbWindows(3);
         $room1->setSurface(20);
@@ -35,7 +34,6 @@ class AppFixtures extends Fixture
         $room2 = new Room();
         $room2->setName("D002");
         $room2->setFloor(FloorEnum::GROUND);
-        $room2->setDescription("Classroom without computer");
         $room2->setNbHeaters(3);
         $room2->setNbWindows(3);
         $room2->setSurface(30);
@@ -46,7 +44,6 @@ class AppFixtures extends Fixture
         $room3 = new Room();
         $room3->setName("D204");
         $room3->setFloor(FloorEnum::SECOND);
-        $room3->setDescription("Room for sae autonomies");
         $room3->setNbHeaters(4);
         $room3->setNbWindows(3);
         $room3->setSurface(25);
@@ -57,7 +54,6 @@ class AppFixtures extends Fixture
         $room4 = new Room();
         $room4->setName('T001');
         $room4->setFloor(FloorEnum::FIRST);
-        $room4->setDescription('Room for testing pending assignment state');
         $room4->setNbHeaters(1);
         $room4->setNbWindows(1);
         $room4->setSurface(1);

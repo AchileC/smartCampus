@@ -57,13 +57,7 @@ class AddRoomType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('description', TextType::class, [
-                'label' => 'Description',
-                'required' => false,
-                'attr' => [
-                    'placeholder' => 'Optional: Add a room description',
-                ],
-            ])
+
             ->add('nbWindows', IntegerType::class, [
                 'label' => 'Number of windows',
                 'required' => false,
