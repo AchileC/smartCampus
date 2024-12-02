@@ -69,7 +69,7 @@ class RoomController extends AbstractController
             /** @var Room $data */
             $data = $filterForm->getData();
 
-            if (!empty($data->getName())) {
+            if (!empty($data->getName()))  {
                 $criteria['name'] = $data->getName();
             }
 
@@ -99,6 +99,7 @@ class RoomController extends AbstractController
             'filterForm' => $filterForm->createView(),
             'deleteForms' => $deleteForms,
             'formSubmitted' => $formSubmitted,
+            'optionsEnabled' => false,
         ]);
     }
 

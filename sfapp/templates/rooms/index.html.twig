@@ -148,9 +148,9 @@
                 <div class="col-12 text-center">
                     <p id="no-match-message" data-add-room-link="{{ path('app_rooms_add') }}">
                         {% if optionsEnabled %}
-                            No match. Check spelling or change filter.
+                            No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.
                         {% else %}
-                            No match. Check spelling.
+                            No match. Check spelling or change filter.
                         {% endif %}
                     </p>
                 </div>
@@ -227,7 +227,7 @@
                 });
             }
 
-            // Manage "Only show linked rooms"
+            // Manage "Only show linked rooms" checkbox
             const sensorStatusCheckbox = document.querySelector('.sensor-status-checkbox');
             if (sensorStatusCheckbox) {
                 sensorStatusCheckbox.addEventListener('change', function () {
@@ -238,51 +238,38 @@
             // Toggle Options Button
             const toggleOptionsButton = document.getElementById('toggleOptionsButton');
             const optionsElements = document.querySelectorAll('.hidden-options');
-            const optionsState = localStorage.getItem('optionsEnabled') === 'true';
+            let optionsState = localStorage.getItem('optionsEnabled') === 'true';
 
             function updateOptionsState(enabled) {
                 optionsElements.forEach(el => el.style.display = enabled ? '' : 'none');
                 toggleOptionsButton.textContent = enabled ? 'Deactivate Options' : 'Activate Options';
+                localStorage.setItem('optionsEnabled', enabled);
 
-                // Gérer le lien "Add Room"
-                const addRoomLink = document.querySelector('.add-room-link');
-                if (addRoomLink) {
-                    addRoomLink.style.display = enabled ? '' : 'none';
-                }
-
-                // Update "No match" message
+                // Update the "No match" message
                 const noMatchMessage = document.getElementById('no-match-message');
                 if (noMatchMessage) {
                     noMatchMessage.innerHTML = enabled
-                        ? 'No match. Check spelling or change filter.'
-                        : 'No match. Check spelling.';
+                        ? 'No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.'
+                        : 'No match. Check spelling or change filter.';
                 }
-
-                localStorage.setItem('optionsEnabled', enabled);
             }
 
-            // Initial Options State
             updateOptionsState(optionsState);
 
-            // Toggle Options Click
             toggleOptionsButton.addEventListener('click', () => {
-                const currentState = localStorage.getItem('optionsEnabled') === 'true';
-                updateOptionsState(!currentState);
+                optionsState = !optionsState;
+                updateOptionsState(optionsState);
             });
 
             // Manage Theme Switch
             const toggleSwitch = document.getElementById('theme-toggle-switch');
             const themeLabel = document.getElementById('theme-label');
-
-            // Check local storage for saved theme preference
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             const defaultTheme = savedTheme || (prefersDark ? 'dark' : 'light');
 
-            // Apply the saved or default theme
             document.documentElement.setAttribute('data-bs-theme', defaultTheme);
 
-            // Set the toggle switch state and label text based on the theme
             if (defaultTheme === 'dark') {
                 toggleSwitch.checked = true;
                 themeLabel.textContent = 'Mode Sombre';
@@ -291,19 +278,12 @@
                 themeLabel.textContent = 'Mode Clair';
             }
 
-            // Toggle theme on switch change
             toggleSwitch.addEventListener('change', function () {
-                if (this.checked) {
-                    document.documentElement.setAttribute('data-bs-theme', 'dark');
-                    localStorage.setItem('theme', 'dark');
-                    themeLabel.textContent = 'Mode Sombre';
-                } else {
-                    document.documentElement.setAttribute('data-bs-theme', 'light');
-                    localStorage.setItem('theme', 'light');
-                    themeLabel.textContent = 'Mode Clair';
-                }
+                const newTheme = this.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                themeLabel.textContent = this.checked ? 'Mode Sombre' : 'Mode Clair';
             });
         });
     </script>
 {% endblock %}
-
