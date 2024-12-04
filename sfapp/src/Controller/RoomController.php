@@ -56,6 +56,13 @@ class RoomController extends AbstractController
     {
         $filterForm = $this->createForm(FilterRoomType::class);
         $filterForm->handleRequest($request);
+        $rooms = $roomRepository->findAll();
+
+        // Met à jour les données des salles qui ont un système d'acquisition
+        foreach ($rooms as $room) {
+            $roomRepository->updateAcquisitionSystemFromJson($room);
+        }
+
 
         $criteria = [];
         $formSubmitted = $filterForm->isSubmitted() && $filterForm->isValid();
@@ -164,6 +171,8 @@ class RoomController extends AbstractController
         if (!$room) {
             throw $this->createNotFoundException('The room does not exist');
         }
+
+        $roomRepository->updateAcquisitionSystemFromJson($room);
 
         return $this->render('rooms/detail.html.twig', [
             'room' => $room,
