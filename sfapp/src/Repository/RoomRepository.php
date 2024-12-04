@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Room;
+use App\Utils\RoomStateEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
@@ -133,6 +134,76 @@ class RoomRepository extends ServiceEntityRepository
         $entityManager = $this->getEntityManager();
         $entityManager->persist($acquisitionSystem);
         $entityManager->flush();
+    }
+
+
+
+    public function updateRoomState(Room $room): void
+    {
+        // Vérifie s'il y a un système d'acquisition associé
+        $acquisitionSystem = $room->getAcquisitionSystem();
+
+        if (!$acquisitionSystem) {
+            $room->setState(RoomStateEnum::NONE);
+            return;
+        }
+
+        // Récupère les données actuelles
+        $temperature = $acquisitionSystem->getTemperature();
+        $humidity = $acquisitionSystem->getHumidity();
+        $co2 = $acquisitionSystem->getCo2();
+
+        // Définit les périodes
+        $currentMonth = (int)(new \DateTime())->format('m');
+        $isHeatingPeriod = $currentMonth >= 11 || $currentMonth <= 4;
+
+        $state = RoomStateEnum::STABLE; // Par défaut
+
+        // Évaluation de la température
+        if ($temperature !== null) {
+            if ($isHeatingPeriod) {
+                if ($temperature < 17) {
+                    $state = RoomStateEnum::AT_RISK;
+                } elseif ($temperature > 21) {
+                    $state = RoomStateEnum::AT_RISK;
+                }
+            } else {
+                if ($temperature < 24) {
+                    $state = RoomStateEnum::AT_RISK;
+                } elseif ($temperature > 28) {
+                    $state = RoomStateEnum::AT_RISK;
+                }
+            }
+        }
+
+        // Évaluation de la qualité de l'air (CO2)
+        if ($co2 !== null) {
+            if ($co2 < 440 || $co2 > 2000) {
+                $state = RoomStateEnum::CRITICAL;
+            } elseif ($co2 > 1500) {
+                $state = RoomStateEnum::CRITICAL;
+            } elseif ($co2 > 1000) {
+                $state = max($state, RoomStateEnum::AT_RISK);
+            }
+        }
+
+        // Évaluation de l'humidité
+        if ($humidity !== null) {
+            if ($humidity < 30) {
+                $state = max($state, RoomStateEnum::AT_RISK);
+            } elseif ($humidity > 70 && $temperature > 20) {
+                $state = RoomStateEnum::CRITICAL;
+            } elseif ($humidity > 60) {
+                $state = max($state, RoomStateEnum::AT_RISK);
+            }
+        }
+
+        // Met à jour l'état de la salle
+        $room->setState($state);
+
+        // Persiste les changements
+        $this->getEntityManager()->persist($room);
+        $this->getEntityManager()->flush();
     }
 
 

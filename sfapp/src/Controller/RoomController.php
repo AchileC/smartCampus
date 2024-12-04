@@ -61,6 +61,8 @@ class RoomController extends AbstractController
         // Met à jour les données des salles qui ont un système d'acquisition
         foreach ($rooms as $room) {
             $roomRepository->updateAcquisitionSystemFromJson($room);
+            $roomRepository->updateRoomState($room);
+
         }
 
 
@@ -173,6 +175,8 @@ class RoomController extends AbstractController
         }
 
         $roomRepository->updateAcquisitionSystemFromJson($room);
+        $roomRepository->updateRoomState($room);
+
 
         return $this->render('rooms/detail.html.twig', [
             'room' => $room,
