@@ -29,7 +29,16 @@ class AppFixtures extends Fixture
         $as1->setTemperature(19);
         $as1->setHumidity(45);
         $as1->setCo2(420);
+        $as1->setName("ESP-001");
+        $as1->setState(SensorStateEnum::LINKED);
         $as1->setRoom($room1);
+
+        $as2 = new AcquisitionSystem();
+        $as2->setTemperature(20);
+        $as2->setHumidity(50);
+        $as2->setCo2(600);
+        $as2->setName("ESP-002");
+        $as2->setState(SensorStateEnum::NOT_LINKED);
 
         $room2 = new Room();
         $room2->setName("D002");
@@ -66,6 +75,7 @@ class AppFixtures extends Fixture
         $manager->persist($room3);
         $manager->persist($room4);
         $manager->persist($as1);
+        $manager->persist($as2);
 
         $manager->flush();
     }

@@ -7,37 +7,39 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<AcquisitionSystem>
+ * Repository for managing AcquisitionSystem entities.
+ * Extends Doctrine's ServiceEntityRepository to provide custom query logic.
  */
 class AcquisitionSystemRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
+        // Initializes the repository with the AcquisitionSystem entity class.
         parent::__construct($registry, AcquisitionSystem::class);
     }
-
-    //    /**
-    //     * @return AcquisitionSystem[] Returns an array of AcquisitionSystem objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?AcquisitionSystem
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Finds AcquisitionSystem entities based on given criteria.
+     * Supports filtering by name and state.
+     * Results are ordered alphabetically by name.
+     *
+     * @param array $criteria Key-value pairs for filtering (e.g., ['name' => 'test', 'state' => 'active']).
+     * @return AcquisitionSystem[] Array of matching AcquisitionSystem entities.
+     */
+    public function findByCriteria(array $criteria): array
+    {
+        $queryBuilder = $this->createQueryBuilder('r');
+        // name criteria
+        if (isset($criteria['name']) && !empty($criteria['name'])) {
+            $queryBuilder->andWhere('r.name LIKE :name')
+                ->setParameter('name', '%' . $criteria['name'] . '%');
+        }
+        // state criteria
+        if (isset($criteria['state'])) {
+            $queryBuilder->andWhere('r.state = :state')
+                ->setParameter('state', $criteria['state']);
+        }
+        return $queryBuilder->orderBy('r.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

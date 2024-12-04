@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AcquisitionSystemRepository;
+use App\Utils\SensorStateEnum;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AcquisitionSystemRepository::class)]
@@ -23,8 +24,14 @@ class AcquisitionSystem
     private ?int $co2 = null;
 
     #[ORM\OneToOne(inversedBy: 'acquisitionSystem', targetEntity: Room::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Room $room = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $name = null;
+
+    #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
+    private ?SensorStateEnum $state = null;
 
     public function getId(): ?int
     {
@@ -72,6 +79,17 @@ class AcquisitionSystem
         return $this->room;
     }
 
+    public function getState(): ?SensorStateEnum
+    {
+        return $this->state;
+    }
+
+    public function setState(SensorStateEnum $state): static
+    {
+        $this->state = $state;
+        return $this;
+    }
+
     public function setRoom(?Room $room): static
     {
         $this->room = $room;
@@ -79,6 +97,18 @@ class AcquisitionSystem
         if ($room->getAcquisitionSystem() !== $this) {
             $room->setAcquisitionSystem($this);
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
 
         return $this;
     }
