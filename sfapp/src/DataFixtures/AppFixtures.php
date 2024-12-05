@@ -4,10 +4,13 @@ namespace App\DataFixtures;
 
 use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
+use App\Entity\Action;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\CardinalEnum;
+use App\Utils\ActionStateEnum;
+use App\Utils\ActionInfoEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -24,12 +27,6 @@ class AppFixtures extends Fixture
         $room1->setState(RoomStateEnum::STABLE);
         $room1->setSensorState(SensorStateEnum::LINKED);
         $room1->setCardinalDirection(CardinalEnum::EAST);
-
-        $as1 = new AcquisitionSystem();
-        $as1->setTemperature(19);
-        $as1->setHumidity(45);
-        $as1->setCo2(420);
-        $as1->setRoom($room1);
 
         $room2 = new Room();
         $room2->setName("D002");
@@ -61,11 +58,48 @@ class AppFixtures extends Fixture
         $room4->setSensorState(SensorStateEnum::ASSIGNMENT);
         $room4->setCardinalDirection(CardinalEnum::EAST);
 
+        $as1 = new AcquisitionSystem();
+        $as1->setTemperature(19);
+        $as1->setHumidity(45);
+        $as1->setCo2(420);
+        $as1->setName("ESP-001");
+        $as1->setRoom($room1);
+
+        $action1 = new Action();
+        $action1->setInfo(ActionInfoEnum::ASSIGNMENT);
+        $action1->setState(ActionStateEnum::TO_DO);
+        $action1->setCreatedAt(new \DateTime('2024-12-01 10:00:00'));
+        $action1->setRoom($room1);
+
+        $action2 = new Action();
+        $action2->setInfo(ActionInfoEnum::UNASSIGNMENT);
+        $action2->setState(ActionStateEnum::DOING);
+        $action2->setCreatedAt(new \DateTime('2024-12-02 14:00:00'));
+        $action2->setStartedAt(new \DateTime('2024-12-02 16:00:00'));
+        $action2->setRoom($room2);
+
+        $action3 = new Action();
+        $action3->setInfo(ActionInfoEnum::SWITCH);
+        $action3->setState(ActionStateEnum::DOING);
+        $action3->setCreatedAt(new \DateTime('2024-12-03 09:30:00'));
+        $action3->setStartedAt(new \DateTime('2024-12-5 14:00:00'));
+        $action3->setRoom($room3);
+
+        $action4 = new Action();
+        $action4->setInfo(ActionInfoEnum::REPLACEMENT);
+        $action4->setState(ActionStateEnum::TO_DO);
+        $action4->setCreatedAt(new \DateTime('2024-12-04 11:15:00'));
+        $action4->setRoom($room2);
+
         $manager->persist($room1);
         $manager->persist($room2);
         $manager->persist($room3);
         $manager->persist($room4);
         $manager->persist($as1);
+        $manager->persist($action1);
+        $manager->persist($action2);
+        $manager->persist($action3);
+        $manager->persist($action4);
 
         $manager->flush();
     }

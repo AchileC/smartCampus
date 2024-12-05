@@ -1,0 +1,107 @@
+{# templates/home/todolist.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}To-Do-List{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">To-Do-List of Technician</h1>
+
+        <h2 class="text-center">{{ awaitingTasksCount }} awaiting tasks</h2>
+
+        <!-- Bouton Ajouter une Action -->
+        <div class="text-start mb-3">
+            <a href="{{ path('app_todolist') }}" class="btn btn-outline-success btn-sm">Add Action</a>
+            <a href="{{ path('app_todolist_done') }}" class="btn btn-outline-secondary btn-sm">
+                View Completed Actions
+            </a>
+        </div>
+
+        <!-- Conteneur des Actions -->
+        <div class="card">
+            <div class="card-body">
+                {% for action in actions %}
+                    <div class="d-flex align-items-center justify-content-between border rounded p-3 mb-2">
+                        <div>
+                            <p class="mb-1"><strong>{{ action.info.value | capitalize }} {{ action.room.name }}</strong></p>
+                            <p class="mb-0 text-muted">
+                                {% if action.state.value == 'to do' %}
+                                    created {{ action.createdAt|date('l d F, H:i') }}
+                                {% elseif action.state.value == 'doing' %}
+                                    started {{ action.createdAt|date('l d F, H:i') }}
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <!-- Badge État -->
+                            <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-dark{% else %}bg-success{% endif %} me-2">
+                                {{ action.state.value | upper }}
+                            </span>
+
+                            <!-- Boutons d'Action -->
+                            <a href="{{ path('app_todolist_edit', {id: action.id}) }}" class="btn btn-outline-warning btn-sm me-2">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <button
+                                    class="btn btn-outline-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteActionModal"
+                                    data-action-id="{{ action.id }}"
+                                    data-delete-url="{{ path('app_todolist_delete', { id: action.id }) }}"
+                                    data-csrf-token="{{ csrf_token('delete_action_' ~ action.id) }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Dernière Mise à Jour -->
+        <p class="text-end text-muted mt-3">Last updated : {{ "now"|date("d/m/Y - H:i") }}</p>
+    </div>
+
+    <!-- Modale de Suppression -->
+    <div class="modal fade" id="deleteActionModal" tabindex="-1" aria-labelledby="deleteActionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="w-100 text-center">
+                        <h5 class="modal-title" id="deleteActionModalLabel">Cancel Action</h5>
+                    </div>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center">
+                    Are you sure you want to delete the action associated with the technician?<br>This is definitive.
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <form id="deleteActionForm" method="post" action="">
+                        <input type="hidden" name="_token" value="">
+                        <button type="button" class="btn btn-success mx-2" data-bs-dismiss="modal">I changed my mind</button>
+                        <button type="submit" class="btn btn-danger mx-2">Confirm Cancelling</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript pour la Modale -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteActionModal = document.getElementById('deleteActionModal');
+            const deleteForm = document.getElementById('deleteActionForm');
+            const csrfTokenInput = deleteForm.querySelector('input[name="_token"]');
+
+            deleteActionModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget; // Button that triggered the modal
+                const actionId = button.getAttribute('data-action-id');
+                const deleteUrl = button.getAttribute('data-delete-url');
+                const csrfToken = button.getAttribute('data-csrf-token');
+
+                deleteForm.action = deleteUrl;
+                csrfTokenInput.value = csrfToken;
+            });
+        });
+    </script>
+{% endblock %}

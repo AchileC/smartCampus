@@ -10,9 +10,8 @@ use App\Utils\CardinalEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-
-
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: RoomRepository::class)]
 #[UniqueEntity(fields: ['name'], message: 'The room name must be unique. This name is already in use.', groups: ['add'])]
@@ -46,6 +45,13 @@ class Room
     #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;
 
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Action::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $actions;
+
+    public function __construct()
+    {
+        $this->actions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -131,9 +137,6 @@ class Room
         return $this;
     }
 
-
-
-
     public function getNbHeaters(): ?int
     {
         return $this->nbHeaters;
@@ -188,6 +191,32 @@ class Room
         }
 
         $this->acquisitionSystem = $acquisitionSystem;
+
+        return $this;
+    }
+
+    public function getActions(): Collection
+    {
+        return $this->actions;
+    }
+
+    public function addAction(Action $action): self
+    {
+        if (!$this->actions->contains($action)) {
+            $this->actions[] = $action;
+            $action->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAction(Action $action): self
+    {
+        if ($this->actions->removeElement($action)) {
+            if ($action->getRoom() === $this) {
+                $action->setRoom(null);
+            }
+        }
 
         return $this;
     }

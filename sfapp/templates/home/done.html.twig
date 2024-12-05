@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Completed Actions History{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">Completed Actions History</h1>
+
+        <a href="{{ path('app_todolist') }}" class="btn btn-outline-secondary btn-sm mb-3">Back to To-Do List</a>
+
+        {% if doneActions is empty %}
+            <div class="alert alert-info text-center mt-6">
+                No completed actions to display.
+            </div>
+        {% else %}
+            <div class="row mt-4">
+                {% for action in doneActions %}
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <!-- Type d'Action et Salle -->
+                                <h5>
+                                    <span class="badge bg-{{ actionTypes[action.info.value]|default('secondary') }} text-uppercase">
+                                        {{ action.info.value | capitalize }}
+                                    </span>
+                                    on <strong>{{ action.room.name }}</strong>
+                                </h5>
+
+                                <!-- Timeline -->
+                                <ul class="list-unstyled text-muted mt-2">
+                                    <li>
+                                        <strong>Created:</strong> {{ action.createdAt | date('l d F, H:i') }}
+                                    </li>
+                                    {% if action.startedAt is defined and action.startedAt is not null %}
+                                        <li>
+                                            <strong>Started:</strong> {{ action.startedAt | date('l d F, H:i') }}
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <strong>Completed:</strong> {{ action.completedAt | date('l d F, H:i') }}
+                                    </li>
+                                </ul>
+
+                                <!-- Acquisition System -->
+                                {% if action.acquisitionSystem is not null %}
+                                    <p class="mt-3">
+                                        <strong>Acquisition System:</strong> {{ action.acquisitionSystem.name }}
+                                    </p>
+                                {% else %}
+                                    <p class="mt-3 text-muted">
+                                        <em>No acquisition system linked to this action.</em>
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
