@@ -1,0 +1,196 @@
+{# templates/rooms/index.html.twig #}
+{% extends 'base.html.twig' %}
+{% block title %}Acquisition System List{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Theme switch wrapper styling */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Theme label styling */
+        #theme-label {
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] #theme-label {
+            color: #ffffff;
+        }
+
+        [data-bs-theme="light"] #theme-label {
+            color: #000000;
+        }
+
+        /* Menu button styling */
+        .menu-button {
+            font-size: 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        /* Offcanvas header styling */
+        .offcanvas-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Centered title styling */
+        h1 {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+    <h1>Acquisition System List</h1>
+    <div class="container mt-4">
+
+        <!-- Button to add an acquisition system -->
+        <div class="mb-4">
+            <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg add-room-link hidden-options">Add AS</a>
+        </div>
+
+        <!-- Dark mode toggle switch -->
+        <div class="d-flex justify-content-end mb-3 theme-switch-wrapper">
+            <span id="theme-label">Dark Mode</span>
+            <i class="bi bi-moon-fill theme-icon moon"></i>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="theme-toggle-switch">
+                <label class="form-check-label" for="theme-toggle-switch"></label>
+            </div>
+        </div>
+
+        <!-- Flash messages block -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Filter form -->
+        {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
+        <div class="row align-items-center">
+
+            <!-- Name search field -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- State filter field -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <!-- Reset button -->
+            <div class="col-md-1">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
+            </div>
+
+            <!-- Filter button -->
+            <div class="col-md-2 d-flex justify-content-end">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+        </div>
+        {{ form_end(filterForm) }}
+
+        <div class="row">
+            {% if as|length == 0 %}
+                <!-- Message when no results match the filters -->
+                <div class="col-12 text-center">
+                    <p id="no-match-message" data-add-room-link="{{ path('app_acquisition_system') }}">
+                        {% if optionsEnabled %}
+                            No match. Check spelling or <a href="{{ path('app_acquisition_system') }}">create a new room</a>.
+                        {% else %}
+                            No match. Check spelling or change filter.
+                        {% endif %}
+                    </p>
+                </div>
+            {% else %}
+                {% for system in as %}
+                    <div class="col-12 mb-3">
+                        <div class="card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <!-- Display system name and state -->
+                                    <h5 class="card-title">{{ system.name }}</h5>
+                                    <p class="card-text"><strong>State:</strong>
+                                        <span class="badge-custom-size
+                                        {% if system.state.value == 'linked' %}bg-success
+                                        {% elseif system.state.value == 'not linked' %}bg-secondary
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ system.state.value | upper }}
+                                    </span>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <!-- Actions for accessing or displaying the linked room -->
+                                    <div class="d-flex gap-2">
+                                        {% if system.room is not null %}
+                                            <a href="{{ path('app_rooms_details', { name: system.room.name }) }}" class="btn btn-outline-secondary">Access to linked room</a>
+                                        {% else %}
+                                            <button type="button" class="btn btn-outline-secondary disabled">No linked room</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Automatically fade out flash messages
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach((message) => {
+                setTimeout(() => {
+                    message.classList.add('fade');
+                    setTimeout(() => message.remove(), 150);
+                }, 3000);
+            });
+
+            // Toggle dark/light mode
+            const toggleSwitch = document.getElementById('theme-toggle-switch');
+            const themeLabel = document.getElementById('theme-label');
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const defaultTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+
+            document.documentElement.setAttribute('data-bs-theme', defaultTheme);
+
+            if (defaultTheme === 'dark') {
+                toggleSwitch.checked = true;
+                themeLabel.textContent = 'Dark Mode';
+            } else {
+                toggleSwitch.checked = false;
+                themeLabel.textContent = 'Light Mode';
+            }
+
+            toggleSwitch.addEventListener('change', function () {
+                const newTheme = this.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                themeLabel.textContent = this.checked ? 'Dark Mode' : 'Light Mode';
+            });
+        });
+    </script>
+{% endblock %}
