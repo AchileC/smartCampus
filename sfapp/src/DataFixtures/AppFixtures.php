@@ -29,7 +29,7 @@ class AppFixtures extends Fixture
         $room1->setCardinalDirection(CardinalEnum::EAST);
 
         $room2 = new Room();
-        $room2->setName("D002");
+        $room2->setName("D100");
         $room2->setFloor(FloorEnum::GROUND);
         $room2->setNbHeaters(3);
         $room2->setNbWindows(3);
@@ -39,7 +39,7 @@ class AppFixtures extends Fixture
         $room2->setCardinalDirection(CardinalEnum::WEST);
 
         $room3 = new Room();
-        $room3->setName("D204");
+        $room3->setName("D302");
         $room3->setFloor(FloorEnum::SECOND);
         $room3->setNbHeaters(4);
         $room3->setNbWindows(3);
@@ -59,19 +59,19 @@ class AppFixtures extends Fixture
         $room4->setCardinalDirection(CardinalEnum::EAST);
 
         $as1 = new AcquisitionSystem();
-        $as1->setTemperature(19);
-        $as1->setHumidity(45);
-        $as1->setCo2(420);
         $as1->setName("ESP-001");
         $as1->setState(SensorStateEnum::LINKED);
         $as1->setRoom($room1);
 
         $as2 = new AcquisitionSystem();
-        $as2->setTemperature(20);
-        $as2->setHumidity(50);
-        $as2->setCo2(600);
         $as2->setName("ESP-002");
-        $as2->setState(SensorStateEnum::NOT_LINKED);
+        $as2->setState(SensorStateEnum::LINKED);
+        $as2->setRoom($room2);
+
+        $as3 = new AcquisitionSystem();
+        $as3->setName("ESP-003");
+        $as3->setState(SensorStateEnum::LINKED);
+        $as3->setRoom($room3);
 
 
         $action1 = new Action();
