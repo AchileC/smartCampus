@@ -2,7 +2,7 @@
   {
     "id": 1,
     "nom": "temp",
-    "valeur": "20",
+    "valeur": "22",
     "dateCapture": "2024-12-01 15:30:00",
     "location": "D302",
     "description": "Température mesurée.",
