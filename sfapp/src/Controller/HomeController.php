@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
+use App\Form\FilterASType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
 use App\Repository\AcquisitionSystemRepository;
@@ -27,7 +28,7 @@ class HomeController extends AbstractController
     #[Route('/home', name: 'app_home')]
     public function home(): Response
     {
-        return $this->render('home/index.html.twig', [
+        return $this->render('home/aslist.html.twig', [
             'controller_name' => 'HomeController',
         ]);
     }
@@ -173,8 +174,48 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[Route('/as', name: 'app_acquisition_system')]
+    public function asList(Request $request, AcquisitionSystemRepository $acquisitionSystemRepository): Response
+    {
+        $filterForm = $this->createForm(FilterASType::class);
+        $filterForm->handleRequest($request);
+
+        $criteria = [];
+        $formSubmitted = $filterForm->isSubmitted() && $filterForm->isValid();
+
+        if ($filterForm->get('reset')->isClicked()) {
+            // Redirige vers la même page sans les filtres
+            return $this->redirectToRoute('app_acquisition_system');
+        }
+
+        if ($formSubmitted) {
+            /** @var Room $data */
+            $data = $filterForm->getData();
+
+            if (!empty($data->getName())) {
+                $criteria['name'] = $data->getName();
+            }
 
 
+            if ($data->getState()) {
+                $criteria['state'] = $data->getState();
+            }
 
+        }
+
+        $as = $acquisitionSystemRepository->findByCriteria($criteria);
+
+        $deleteForms = [];
+
+
+        return $this->render('home/aslist.html.twig', [
+            'as' => $as,
+            'filterForm' => $filterForm->createView(),
+            'formSubmitted' => $formSubmitted,
+            'optionsEnabled' => false,
+        ]);
+
+
+    }
 
 }
