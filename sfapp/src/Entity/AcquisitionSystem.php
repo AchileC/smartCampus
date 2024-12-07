@@ -5,8 +5,15 @@ namespace App\Entity;
 use App\Repository\AcquisitionSystemRepository;
 use App\Utils\SensorStateEnum;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: AcquisitionSystemRepository::class)]
+#[UniqueEntity(
+    fields: ['name'],
+    message: 'The acquisition system name must be unique. This name is already in use.',
+    errorPath: 'name',
+    groups: ['add']
+)]
 class AcquisitionSystem
 {
     #[ORM\Id]
@@ -27,7 +34,7 @@ class AcquisitionSystem
     #[ORM\JoinColumn(nullable: true)]
     private ?Room $room = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
 
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
