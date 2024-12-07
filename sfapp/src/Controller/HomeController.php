@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
+use App\Form\AddASType;
 use App\Form\FilterASType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
@@ -16,6 +17,7 @@ use App\Form\AssignFormType;
 use App\Form\UnassignFormType;
 use App\Form\ChangementFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
@@ -202,11 +204,9 @@ class HomeController extends AbstractController
             }
 
         }
-
         $as = $acquisitionSystemRepository->findByCriteria($criteria);
 
         $deleteForms = [];
-
 
         return $this->render('home/aslist.html.twig', [
             'as' => $as,
@@ -214,8 +214,37 @@ class HomeController extends AbstractController
             'formSubmitted' => $formSubmitted,
             'optionsEnabled' => false,
         ]);
-
-
     }
 
+    #[Route('/as/add', name: 'app_add_acquisition_system')]
+    public function addAS(Request $request, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response
+    {
+        $as = new AcquisitionSystem();
+        $as->setState(SensorStateEnum::NOT_LINKED);
+        $form = $this->createForm(AddASType::class, $as, ['validation_groups' => ['Default', 'add']]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $name = $as->getName();
+            $formattedName = 'ESP-' . str_pad($name, 3, '0', STR_PAD_LEFT);
+            $as->setName($formattedName);
+
+            // Vérification de l'unicité
+            $existingAS = $acquisitionSystemRepository->findOneBy(['name' => $formattedName]);
+            if ($existingAS) {
+                $form->get('name')->addError(new FormError('This acquisition system name already exists.'));
+            } else {
+                $entityManager->persist($as);
+                $entityManager->flush();
+
+                $this->addFlash('success', 'Acquisition system added successfully.');
+
+                return $this->redirectToRoute('app_acquisition_system');
+            }
+        }
+
+        return $this->render('acquisition_system/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 }

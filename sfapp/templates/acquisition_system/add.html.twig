@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+{# acquisition_system/add.html.twig #}
+{% block title %}Add an Acquisition System{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">Add an Acquisition System</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row justify-content-center">
+                                    <!-- AS Name with ESP- prefix -->
+                                    <div class="col-md-8">
+                                        {{ form_label(form.name, 'Name', {'label_attr': {'class': 'form-label text-center'}}) }}
+                                        <div class="input-group mb-2" style="max-width: 400px; margin: 0 auto;">
+                                            <!-- Fixed prefix -->
+                                            <span class="input-group-text">ESP-</span>
+                                            <!-- Input field -->
+                                            {{ form_widget(form.name, {
+                                                'attr': {
+                                                    'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                                    'placeholder': 'Enter a number (e.g., 123)'
+                                                }
+                                            }) }}
+                                        </div>
+                                        {% if form.name.vars.errors|length > 0 %}
+                                            <!-- Error messages under the input field -->
+                                            <div class="invalid-feedback text-center" style="max-width: 400px; margin: 0 auto;">
+                                                {% for error in form.name.vars.errors %}
+                                                    {{ error.message }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit and Cancel Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary me-3">Add Acquisition System</button>
+                            <a href="{{ path('app_acquisition_system') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Detect if the 'name' field has an error
+            const nameInput = document.querySelector('.form-control.is-invalid');
+
+            if (nameInput) {
+                // Add shake effect by re-triggering animation
+                nameInput.classList.remove('shake');
+                void nameInput.offsetWidth; // Hack to re-trigger animation
+                nameInput.classList.add('shake');
+
+                // Change the color of the submit button if errors exist
+                const saveButton = document.querySelector('button[type="submit"]');
+                if (saveButton) {
+                    saveButton.classList.remove('btn-primary');
+                    saveButton.classList.add('btn-danger');
+                }
+            }
+        });
+    </script>
+{% endblock %}
