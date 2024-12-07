@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+    <div class="container mt-4 text-center">
+        <h1>Hello user!</h1>
+        <h3 id="current-date" style="color: #FFFFFF;">{{ "now"|date("l d, F Y H:i:s") }}</h3>
+
+        <div class="card mt-5 mx-auto" style="max-width: 500px; padding: 20px;">
+            <h3>Infos</h3>
+            <div class="row mt-4">
+                <div class="col-6">
+                    <div class="border p-3">
+                        <h4>{{ rooms_count }} rooms</h4>
+                    </div>
+                    <div class="border p-3 mt-3">
+                        <h4>{{ as_count }} AS</h4>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="border p-3 d-flex align-items-center justify-content-center" style="background-color: #FF6347; color: #FFFFFF; border-radius: 5px;">
+                        <h4 class="mb-0">{{ critical_count }}</h4>
+                        <span class="ms-2">Critical</span>
+                    </div>
+                    <div class="border p-3 mt-3 d-flex align-items-center justify-content-center" style="background-color: #FFD700; color: #000000; border-radius: 5px;">
+                        <h4 class="mb-0">{{ at_risk_count }}</h4>
+                        <span class="ms-2">At risk</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<h3 class="mt-5">Prévisions météo à La Rochelle</h3>
+{% if forecast is not null %}
+    <div class="d-flex justify-content-center mt-4 flex-wrap">
+        {% for day in forecast %}
+            <div class="card text-center m-2" style="width: 10rem;">
+                <div class="card-body">
+                    <h6 class="card-title">{{ day.date|date('l d')|capitalize }}</h6> <!-- Date formatée en français -->
+                    <div class="my-2">
+                        {% if day.pictocode == 'Pluie' %}
+                            🌧️ Pluie
+                        {% elseif day.pictocode == 'Couvert' %}
+                            ☁️ Couvert
+                        {% else %}
+                            ☀️ Ensoleillé
+                        {% endif %}
+                    </div>
+                    <p class="card-text">
+                        <span>Min : <strong>{{ day.temperature_min|round }}</strong>°C</span><br>
+                        <span>Max : <strong>{{ day.temperature_max|round }}</strong>°C</span>
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-warning mt-4" role="alert">
+        Impossible de récupérer les données météo pour les 4 prochains jours.
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateDateTime() {
+                const dateElement = document.getElementById('current-date');
+
+                if (dateElement) {
+                    const now = new Date();
+                    const options = {
+                        weekday: 'long',
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                    };
+                    const formattedDate = now.toLocaleDateString('en-US', options);
+                    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+
+                    dateElement.textContent = formattedDate.replace(',', '') + " " + time;
+                }
+            }
+
+            setInterval(updateDateTime, 1000);
+        });
+    </script>
+{% endblock %}

@@ -10,6 +10,7 @@ use App\Form\FilterASType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
 use App\Repository\AcquisitionSystemRepository;
+use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\SensorStateEnum;
@@ -24,16 +25,70 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HomeController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
-    public function home(): Response
-    {
+    public function home(
+        RoomRepository $roomRepository,
+        AcquisitionSystemRepository $acquisitionSystemRepository,
+        HttpClientInterface $httpClient
+    ): Response {
+        // Données des repositories
+        $roomsCount = $roomRepository->count([]);
+        $asCount = $acquisitionSystemRepository->count([]);
+        $criticalCount = $roomRepository->countByState('critical');
+        $atRiskCount = $roomRepository->countByState('at risk');
+
+        // URL API météo
+        $weatherUrl = 'https://my.meteoblue.com/packages/basic-day?apikey=Xu9ot3p6Bx4iIcfE&lat=46.16&lon=-1.15&asl=46&format=json&forecast_days=4';
+
+        try {
+            // Récupérer les données de l'API
+            $response = $httpClient->request('GET', $weatherUrl);
+            $weatherData = $response->toArray();
+
+            // Traiter les données pour Twig
+            $forecast = [];
+            $dates = $weatherData['data_day']['time'];
+            $tempsMax = $weatherData['data_day']['temperature_max'];
+            $tempsMin = $weatherData['data_day']['temperature_min'];
+            $precipitations = $weatherData['data_day']['precipitation'];
+            $pictocodes = $weatherData['data_day']['pictocode'];
+
+            $pictocodeMapping = [
+                1 => 'Clair',
+                2 => 'Partiellement nuageux',
+                3 => 'Nuageux',
+                4 => 'Couvert',
+                5 => 'Pluie légère',
+                6 => 'Pluie',
+                // Ajoutez d'autres codes en fonction de la documentation
+            ];
+            foreach ($dates as $index => $date) {
+                $forecast[] = [
+                    'date' => $date,
+                    'temperature_max' => $tempsMax[$index] ?? null,
+                    'temperature_min' => $tempsMin[$index] ?? null,
+                    'precipitation' => $precipitations[$index] ?? null,
+                    'pictocode' => $pictocodeMapping[$pictocodes[$index]] ?? 'Inconnu',
+                ];
+            }
+        } catch (\Exception $e) {
+            $forecast = null;
+            $this->addFlash('error', 'Erreur lors de la récupération des données météo : ' . $e->getMessage());
+        }
+
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
+            'rooms_count' => $roomsCount,
+            'as_count' => $asCount,
+            'critical_count' => $criticalCount,
+            'at_risk_count' => $atRiskCount,
+            'forecast' => $forecast,
         ]);
     }
+
 
     #[Route('/todolist', name: 'app_todolist')]
     public function index(ActionRepository $actionRepository): Response

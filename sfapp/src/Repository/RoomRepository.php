@@ -72,10 +72,6 @@ class RoomRepository extends ServiceEntityRepository
         return $data;
     }
 
-
-
-
-
     public function updateAcquisitionSystemFromJson(Room $room): void
     {
         // Vérifie s'il y a un système d'acquisition associé
@@ -178,4 +174,16 @@ class RoomRepository extends ServiceEntityRepository
         $this->getEntityManager()->persist($room);
         $this->getEntityManager()->flush();
     }
+
+    public function countByState(string $state): int
+    {
+        return $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)') // Sélectionne uniquement le nombre d'ID
+            ->where('a.state = :state') // Ajoute un filtre par état
+            ->setParameter('state', $state) // Définit la valeur du paramètre
+            ->getQuery()
+            ->getSingleScalarResult(); // Récupère le résultat unique (le nombre)
+    }
+
+
 }
