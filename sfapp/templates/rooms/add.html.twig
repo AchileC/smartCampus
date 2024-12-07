@@ -96,26 +96,3 @@
         </div>
     </div>
 {% endblock %}
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Détecte si le champ 'name' a une erreur
-            const nameInput = document.querySelector('.form-control.is-invalid');
-
-            if (nameInput) {
-                // Ajoute l'effet de tremblement en re-déclenchant l'animation
-                nameInput.classList.remove('shake');
-                void nameInput.offsetWidth; // Hack pour redéclencher l'animation
-                nameInput.classList.add('shake');
-
-                // Change la couleur du bouton "Save Room"
-                const saveButton = document.querySelector('button[type="submit"]');
-                if (saveButton) {
-                    saveButton.classList.remove('btn-success');
-                    saveButton.classList.add('btn-danger');
-                }
-            }
-        });
-    </script>
-{% endblock %}

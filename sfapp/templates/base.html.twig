@@ -222,23 +222,31 @@
         <hr>
 
         <nav class="nav flex-column">
-            <a href="{{ path('app_home') }}" class="nav-link active">
+            {# Récupérer la route actuelle #}
+            {% set current_route = app.request.attributes.get('_route') %}
+
+            <a href="{{ path('app_home') }}"
+               class="nav-link {{ current_route starts with 'app_home' ? 'active' : '' }}">
                 <i class="bi bi-house-door"></i>
                 Home
             </a>
-            <a href="{{ path('app_rooms') }}" class="nav-link">
+            <a href="{{ path('app_rooms') }}"
+               class="nav-link {{ current_route starts with 'app_rooms' ? 'active' : '' }}">
                 <i class="bi bi-box"></i>
                 Rooms
             </a>
-            <a href="{{ path('app_todolist') }}" class="nav-link">
+            <a href="{{ path('app_todolist') }}"
+               class="nav-link {{ current_route starts with 'app_todolist' ? 'active' : '' }}">
                 <i class="bi bi-speedometer2"></i>
                 To-Do-List
             </a>
-            <a href="{{ path('app_acquisition_system') }}" class="nav-link">
+            <a href="{{ path('app_acquisition_system') }}"
+               class="nav-link {{ current_route starts with 'app_acquisition_system' ? 'active' : '' }}">
                 <i class="bi bi-grid"></i>
                 AS List
             </a>
         </nav>
+
 
         <div class="d-flex justify-content-start mb-2 theme-switch-wrapper">
             <span id="theme-label">Mode Sombre</span>
@@ -274,23 +282,41 @@
         {% endblock %}
     </div>
 
-{% block javascripts %}
+    {% block javascripts %}
     <script>
+        /**
+         * @file base.html.twig
+         * @brief Main Twig template for the Smart Campus application.
+         *
+         * This script handles the interactivity of the sidebar, theme toggling, and options activation.
+         */
+
         document.addEventListener("DOMContentLoaded", function () {
+            /**
+             * @var {HTMLElement} sidebar - The sidebar element.
+             * @var {HTMLElement} mainContent - The main content area.
+             * @var {HTMLElement} toggleIcon - The icon used to toggle the sidebar.
+             */
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
             const toggleIcon = document.getElementById('sidebarToggleIcon');
 
-            // Initialiser l'état fermé de la sidebar et définir l'icône initiale
+            // Initialize the sidebar as closed and set the initial icon
             sidebar.classList.add('closed');
             toggleIcon.classList.add('bi-list');
 
-            // Fonction pour basculer la sidebar et l'icône
+            /**
+             * @function toggleSidebar
+             * @brief Toggles the visibility of the sidebar and updates the toggle icon.
+             *
+             * This function adds or removes the 'closed' class on the sidebar and 'with-sidebar' on the main content.
+             * It also switches the toggle icon between the hamburger and close icons.
+             */
             window.toggleSidebar = function () {
                 sidebar.classList.toggle('closed');
                 mainContent.classList.toggle('with-sidebar');
 
-                // Bascule entre l'icône hamburger (bi-list) et l'icône de fermeture (bi-x)
+                // Toggle between hamburger (bi-list) and close (bi-arrow-bar-left) icons
                 if (sidebar.classList.contains('closed')) {
                     toggleIcon.classList.remove('bi-arrow-bar-left');
                     toggleIcon.classList.add('bi-list');
@@ -300,20 +326,31 @@
                 }
             };
 
+            /**
+             * @var {HTMLInputElement} themeToggleSwitch - The theme toggle switch element.
+             * @var {HTMLElement} themeLabel - The label displaying the current theme.
+             */
             const themeToggleSwitch = document.getElementById("theme-toggle-switch");
             const themeLabel = document.getElementById("theme-label");
 
-            // Définir le thème initial
+            // Set the initial theme based on localStorage or system preferences
             const savedTheme = localStorage.getItem("theme");
             const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
             const currentTheme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
 
-            // Appliquer le thème actuel
+            // Apply the current theme
             document.documentElement.setAttribute("data-bs-theme", currentTheme);
             themeToggleSwitch.checked = currentTheme === "dark";
             themeLabel.innerText = "Dark Mode";
 
-            // Basculer le thème lors du changement d'état du switch
+            /**
+             * @event change
+             * @memberof themeToggleSwitch
+             * @brief Event listener for theme toggling.
+             *
+             * Updates the theme attribute, saves the preference to localStorage,
+             * and updates the theme label accordingly.
+             */
             themeToggleSwitch.addEventListener("change", function () {
                 const newTheme = themeToggleSwitch.checked ? "dark" : "light";
                 document.documentElement.setAttribute("data-bs-theme", newTheme);
@@ -321,31 +358,64 @@
                 themeLabel.innerText = "Dark Mode";
             });
 
+            /**
+             * @var {HTMLButtonElement} toggleOptionsButton - The button to toggle additional options.
+             * @var {NodeListOf<HTMLElement>} optionsElements - The elements representing additional options.
+             * @var {boolean} optionsState - The current state of options (enabled/disabled).
+             */
             const toggleOptionsButton = document.getElementById('toggleOptionsButton');
             const optionsElements = document.querySelectorAll('.hidden-options');
             let optionsState = localStorage.getItem('optionsEnabled') === 'true';
 
+            /**
+             * @function updateOptionsState
+             * @brief Updates the visibility of additional options and the button label.
+             *
+             * @param {boolean} enabled - Whether to enable or disable the options.
+             */
             function updateOptionsState(enabled) {
                 optionsElements.forEach(el => el.style.display = enabled ? '' : 'none');
-                toggleOptionsButton.textContent = enabled ? 'Desactivate' : 'Activate Options';
+                toggleOptionsButton.textContent = enabled ? 'Deactivate' : 'Activate Options';
                 localStorage.setItem('optionsEnabled', enabled);
 
-                // Update the "No match" message
+                // Update the "No match" message if it exists
                 const noMatchMessage = document.getElementById('no-match-message');
                 if (noMatchMessage) {
                     noMatchMessage.innerHTML = enabled
                         ? 'No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.'
-                        : 'No match. Check spelling or change filter.';
+                : 'No match. Check spelling or change filter.';
                 }
             }
 
+            // Initialize the options state
             updateOptionsState(optionsState);
 
+            /**
+             * @event click
+             * @memberof toggleOptionsButton
+             * @brief Event listener to toggle additional options.
+             */
             toggleOptionsButton.addEventListener('click', () => {
                 optionsState = !optionsState;
                 updateOptionsState(optionsState);
             });
+
+            const nameInput = document.querySelector('.form-control.is-invalid');
+
+            if (nameInput) {
+                // Ajoute l'effet de tremblement en re-déclenchant l'animation
+                nameInput.classList.remove('shake');
+                void nameInput.offsetWidth; // Hack pour redéclencher l'animation
+                nameInput.classList.add('shake');
+
+                // Change la couleur du bouton "Save Room"
+                const saveButton = document.querySelector('button[type="submit"]');
+                if (saveButton) {
+                    saveButton.classList.remove('btn-success');
+                    saveButton.classList.add('btn-danger');
+                }
+            }
         });
     </script>
-{% endblock %}
-</html>
+    {% endblock %}
+</html

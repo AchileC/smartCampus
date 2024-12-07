@@ -1,5 +1,5 @@
-{# templates/rooms/aslist.html.twig #}
 {% extends 'base.html.twig' %}
+{# rooms/index.html.twig #}
 {% block title %}Rooms List{% endblock %}
 
 {% block body %}
@@ -151,9 +151,31 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+        /**
+         * @file base.html.twig
+         * @brief Handles frontend interactivity for flash messages, modals, checkboxes, and auto-reloading.
+         *
+         * This script manages the following functionalities:
+         * - Fading out flash messages after a specified duration.
+         * - Setting up the Delete Room modal by dynamically updating the form action.
+         * - Managing the "Only show linked rooms" checkbox to filter room listings.
+         * - Automatically reloading the page every 30 minutes to ensure data freshness.
+         */
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Flash messages fade-out
+            /**
+             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
+             *
+             * Selects all elements that display flash messages to the user.
+             */
             const flashMessages = document.querySelectorAll('.flash-message');
+
+            /**
+             * @brief Fades out and removes flash messages after 3 seconds.
+             *
+             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
+             * and removes the element from the DOM shortly after the fade-out animation completes.
+             */
             flashMessages.forEach((message) => {
                 setTimeout(() => {
                     message.classList.add('fade');
@@ -161,20 +183,42 @@
                 }, 3000);
             });
 
-            // Delete Room Modal Setup
+            /**
+             * @var {HTMLElement|null} deleteRoomModal - The modal element for deleting a room.
+             * @var {HTMLFormElement|null} deleteRoomForm - The form inside the delete room modal.
+             *
+             * Selects the Delete Room modal and its corresponding form.
+             */
             const deleteRoomModal = document.getElementById('deleteRoomModal');
             const deleteRoomForm = document.getElementById('deleteRoomForm');
 
+            /**
+             * @brief Sets up the Delete Room modal by updating the form action with the selected room's name.
+             *
+             * Listens for the 'show.bs.modal' event to dynamically set the form's action URL based on the room
+             * that the user intends to delete. This ensures that the correct room is targeted when the form is submitted.
+             */
             if (deleteRoomModal) {
                 deleteRoomModal.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget;
-                    const roomName = button.getAttribute('data-room-name');
+                    const button = event.relatedTarget; // Button that triggered the modal
+                    const roomName = button.getAttribute('data-room-name'); // Extract room name from data attribute
                     deleteRoomForm.action = '{{ path('app_rooms_delete', { name: 'ROOM_NAME_PLACEHOLDER' }) }}'.replace('ROOM_NAME_PLACEHOLDER', encodeURIComponent(roomName));
                 });
             }
 
-            // Manage "Only show linked rooms" checkbox
+            /**
+             * @var {HTMLInputElement|null} sensorStatusCheckbox - The checkbox to filter rooms based on sensor status.
+             *
+             * Selects the checkbox that, when toggled, filters the room listings to show only linked rooms.
+             */
             const sensorStatusCheckbox = document.querySelector('.sensor-status-checkbox');
+
+            /**
+             * @brief Submits the filter form automatically when the "Only show linked rooms" checkbox is toggled.
+             *
+             * Adds an event listener to the checkbox to detect changes. When the checkbox state changes,
+             * the associated filter form is submitted to update the room listings accordingly.
+             */
             if (sensorStatusCheckbox) {
                 sensorStatusCheckbox.addEventListener('change', function () {
                     document.getElementById('filterForm').submit();
@@ -182,10 +226,12 @@
             }
         });
 
-
-            // Recharger automatiquement la page toutes les 30 minutes (1800000 ms)
-            setInterval(() => {location.reload();}, 1800000);
-
-
+        /**
+         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 1,800,000 milliseconds (30 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 1800000);
     </script>
 {% endblock %}

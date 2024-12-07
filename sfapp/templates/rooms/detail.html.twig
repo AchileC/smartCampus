@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{# rooms/detail.html.twig #}
 {% block title %}Room Details - {{ room.name }}{% endblock %}
 
 {% block body %}
@@ -101,21 +102,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const toggleOptionsState = localStorage.getItem('optionsEnabled') === 'true';
-            const hiddenOptions = document.querySelectorAll('.hidden-options');
-
-            // Update visibility of hidden options
-            function updateVisibility(enabled) {
-                hiddenOptions.forEach(el => el.style.display = enabled ? '' : 'none');
-            }
-
-            updateVisibility(toggleOptionsState);
-        });
-    </script>
 {% endblock %}

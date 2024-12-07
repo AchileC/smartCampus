@@ -1,13 +1,39 @@
 <?php
+// SensorStateEnum.php
 
 namespace App\Utils;
 
+/**
+ * Enum SensorStateEnum
+ *
+ * Defines the possible states of sensors associated with a room.
+ *
+ * @package App\Utils
+ */
 enum SensorStateEnum: string
 {
+    /**
+     * Indicates that the sensors are not linked to any acquisition system.
+     */
     case NOT_LINKED = 'not linked';
-    case LINKED = 'linked';
-    case ASSIGNMENT = 'assignment';
-    case UNASSIGNMENT = 'unassignment';
-    case PROBABLY_BROKEN = 'probably broken';
 
+    /**
+     * Indicates that the sensors are linked and operational.
+     */
+    case LINKED = 'linked';
+
+    /**
+     * Indicates that an assignment of sensors to an acquisition system is in progress.
+     */
+    case ASSIGNMENT = 'assignment';
+
+    /**
+     * Indicates that an unassignment of sensors from an acquisition system is in progress.
+     */
+    case UNASSIGNMENT = 'unassignment';
+
+    /**
+     * Indicates that the sensors are probably broken and require maintenance.
+     */
+    case PROBABLY_BROKEN = 'probably broken';
 }

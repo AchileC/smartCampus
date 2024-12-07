@@ -8,12 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: AcquisitionSystemRepository::class)]
-#[UniqueEntity(
-    fields: ['name'],
-    message: 'The acquisition system name must be unique. This name is already in use.',
-    errorPath: 'name',
-    groups: ['add']
-)]
+#[UniqueEntity(fields: ['name'], message: 'The acquisition system name must be unique. This name is already in use.', groups: ['add'])]
 class AcquisitionSystem
 {
     #[ORM\Id]

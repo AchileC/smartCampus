@@ -1,61 +1,15 @@
-{# templates/rooms/aslist.html.twig #}
 {% extends 'base.html.twig' %}
+{# home/aslist.html.twig #}
 {% block title %}Acquisition System List{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        /* Theme switch wrapper styling */
-        .theme-switch-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Theme label styling */
-        #theme-label {
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        [data-bs-theme="dark"] #theme-label {
-            color: #ffffff;
-        }
-
-        [data-bs-theme="light"] #theme-label {
-            color: #000000;
-        }
-
-        /* Menu button styling */
-        .menu-button {
-            font-size: 24px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            padding: 0;
-        }
-
-        /* Offcanvas header styling */
-        .offcanvas-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        /* Centered title styling */
-        h1 {
-            text-align: center;
-        }
-    </style>
-{% endblock %}
 
 {% block body %}
 
-    <h1>Acquisition System List</h1>
     <div class="container mt-4">
+        <h1 class="mb-4 text-center">Acquisition System List</h1>
 
         <!-- Button to add an acquisition system -->
         <div class="mb-4">
-            <a href="{{ path('app_add_acquisition_system') }}" class="btn btn-success btn-lg add-room-link hidden-options">Add AS</a>
+            <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link hidden-options">Add AS</a>
         </div>
 
         <!-- Dark mode toggle switch -->
@@ -159,37 +113,24 @@
     {{ parent() }}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Automatically fade out flash messages
+            /**
+             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
+             *
+             * Selects all elements that display flash messages to the user.
+             */
             const flashMessages = document.querySelectorAll('.flash-message');
+
+            /**
+             * @brief Fades out and removes flash messages after 3 seconds.
+             *
+             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
+             * and removes the element from the DOM shortly after the fade-out animation completes.
+             */
             flashMessages.forEach((message) => {
                 setTimeout(() => {
                     message.classList.add('fade');
                     setTimeout(() => message.remove(), 150);
                 }, 3000);
-            });
-
-            // Toggle dark/light mode
-            const toggleSwitch = document.getElementById('theme-toggle-switch');
-            const themeLabel = document.getElementById('theme-label');
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const defaultTheme = savedTheme || (prefersDark ? 'dark' : 'light');
-
-            document.documentElement.setAttribute('data-bs-theme', defaultTheme);
-
-            if (defaultTheme === 'dark') {
-                toggleSwitch.checked = true;
-                themeLabel.textContent = 'Dark Mode';
-            } else {
-                toggleSwitch.checked = false;
-                themeLabel.textContent = 'Light Mode';
-            }
-
-            toggleSwitch.addEventListener('change', function () {
-                const newTheme = this.checked ? 'dark' : 'light';
-                document.documentElement.setAttribute('data-bs-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                themeLabel.textContent = this.checked ? 'Dark Mode' : 'Light Mode';
             });
         });
     </script>

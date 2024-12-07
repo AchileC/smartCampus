@@ -12,21 +12,42 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Form for filtering AcquisitionSystem entities.
- * Includes fields for name, state, and action buttons for filtering or resetting.
+ * Class FilterASType
+ *
+ * Defines the form used to filter AcquisitionSystem entities.
+ * The form includes fields for name, state, and action buttons for filtering or resetting the filters.
+ *
+ * @package App\Form
  */
 class FilterASType extends AbstractType
 {
+    /**
+     * Builds the form for filtering AcquisitionSystem entities.
+     *
+     * @param FormBuilderInterface $builder The form builder used to construct the form.
+     * @param array                $options An array of options passed to the form.
+     *
+     * @return void
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Search field for the AcquisitionSystem name
+            /**
+             * Adds a text field for searching AcquisitionSystem by name.
+             *
+             * @var TextType $name
+             */
             ->add('name', TextType::class, [
                 'label' => null,
                 'required' => false,
                 'attr' => ['placeholder' => 'Search for an as by name'],
             ])
-            // Dropdown for filtering by state using the SensorStateEnum
+            /**
+             * Adds a choice field for filtering AcquisitionSystem by state.
+             * The choices are derived from the SensorStateEnum.
+             *
+             * @var ChoiceType $state
+             */
             ->add('state', ChoiceType::class, [
                 'choices' => [
                     'Linked' => SensorStateEnum::LINKED,
@@ -42,12 +63,20 @@ class FilterASType extends AbstractType
                     return $state?->value;
                 },
             ])
-            // Submit button to apply the filters
+            /**
+             * Adds a submit button to apply the filters.
+             *
+             * @var SubmitType $filter
+             */
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',
                 'attr' => ['class' => 'btn btn-primary']
             ])
-            // Reset button to clear the filters
+            /**
+             * Adds a submit button to reset the filters.
+             *
+             * @var SubmitType $reset
+             */
             ->add('reset', SubmitType::class, [
                 'label' => 'Reset',
                 'attr' => [
@@ -57,6 +86,13 @@ class FilterASType extends AbstractType
             ]);
     }
 
+    /**
+     * Configures the options for this form type.
+     *
+     * @param OptionsResolver $resolver The resolver for the options.
+     *
+     * @return void
+     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         // Specifies the class associated with this form

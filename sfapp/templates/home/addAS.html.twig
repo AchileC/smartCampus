@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+{# home/addAS.html.twig #}
+{% block title %}Add an Acquisition System{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">Add an Acquisition System</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row justify-content-center">
+                                    <!-- AS Name with ESP- prefix -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.number, 'Number', {'label_attr': {'class': 'form-label text-center'}}) }}
+                                        <div class="input-group mb-4" style="max-width: 400px; margin: 0 auto;">
+                                            <!-- Fixed prefix -->
+                                            <span class="input-group-text">ESP-</span>
+                                            <!-- Input field -->
+                                            {{ form_widget(form.number, {
+                                                'attr': {
+                                                    'class': 'form-control' ~ (form.number.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                                }
+                                            }) }}
+                                        </div>
+                                        {% if form.number.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.number) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit and Cancel Buttons -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary me-3">Add Acquisition System</button>
+                            <a href="{{ path('app_acquisition_system') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
