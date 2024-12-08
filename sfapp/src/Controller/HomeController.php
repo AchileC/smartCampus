@@ -33,6 +33,7 @@ class HomeController extends AbstractController
     public function home(
         RoomRepository $roomRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
+        ActionRepository $actionRepository,
         HttpClientInterface $httpClient
     ): Response {
         // Données des repositories
@@ -64,8 +65,8 @@ class HomeController extends AbstractController
                 4 => 'Couvert',
                 5 => 'Pluie légère',
                 6 => 'Pluie',
-                // Ajoutez d'autres codes en fonction de la documentation
             ];
+
             foreach ($dates as $index => $date) {
                 $forecast[] = [
                     'date' => $date,
@@ -80,12 +81,15 @@ class HomeController extends AbstractController
             $this->addFlash('error', 'Erreur lors de la récupération des données météo : ' . $e->getMessage());
         }
 
+        $actions = $actionRepository->findAllExceptDone();
+
         return $this->render('home/index.html.twig', [
             'rooms_count' => $roomsCount,
             'as_count' => $asCount,
             'critical_count' => $criticalCount,
             'at_risk_count' => $atRiskCount,
             'forecast' => $forecast,
+            'actions' => $actions,
         ]);
     }
 

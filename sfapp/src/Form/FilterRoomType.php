@@ -49,12 +49,6 @@ class FilterRoomType extends AbstractType
                 'required' => false,
                 'placeholder' => 'Select a Floor',
                 'label' => null,
-                'choice_label' => function ($choice, $key, $value) {
-                    return $key;
-                },
-                'choice_value' => function (?FloorEnum $floor) {
-                    return $floor?->value;
-                },
             ])
             ->add('state', ChoiceType::class, [
                 'choices' => [
@@ -69,8 +63,9 @@ class FilterRoomType extends AbstractType
                     return $key;
                 },
                 'choice_value' => function (?RoomStateEnum $state) {
-                    return $state?->value;
+                    return $state?->value; // Convertit l'enum en chaîne
                 },
+                'data' => $options['state'] ?? null,
             ])
             ->add('sensorStatus', CheckboxType::class, [
                 'label' => 'Only show linked rooms',
@@ -79,7 +74,7 @@ class FilterRoomType extends AbstractType
             ])
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',
-                'attr' => ['class' => 'btn btn-primary']
+                'attr' => ['class' => 'btn btn-primary'],
             ])
             ->add('reset', SubmitType::class, [
                 'label' => 'Reset',
@@ -105,6 +100,7 @@ class FilterRoomType extends AbstractType
             'data_class' => Room::class,
             'required_fields' => false,
             'validation_groups' => ['Default'],
+            'state' => null,
         ]);
     }
 }

@@ -1,91 +1,135 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard{% endblock %}
-
 {% block body %}
-    <div class="container mt-4 text-center">
-        <h1>Hello user!</h1>
-        <h3 id="current-date" style="color: #FFFFFF;">{{ "now"|date("l d, F Y H:i:s") }}</h3>
+    <div class="container-fluid p-4" style="font-family: Arial, sans-serif; height: 100vh; background-color: #212529; color: white;">
+        <!-- Titre principal -->
+        <div class="text-center mb-4">
+            <h1>Hello user!</h1>
+            <h3>{{ "now"|date("l, d F Y") }}</h3>
+            <h4 id="current-time" style="color: #bbb; font-weight: bold;">--:--:--</h4>
+        </div>
 
-        <div class="card mt-5 mx-auto" style="max-width: 500px; padding: 20px;">
-            <h3>Infos</h3>
-            <div class="row mt-4">
-                <div class="col-6">
-                    <div class="border p-3">
-                        <h4>{{ rooms_count }} rooms</h4>
+        <!-- Contenu principal en grille -->
+        <div class="row gx-3 align-items-stretch" style="height: calc(100% - 150px);">
+            <!-- Colonne gauche -->
+            <div class="col-6 d-flex flex-column gap-3">
+                <!-- Infos -->
+                <div class="card p-3 bg-dark text-light flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="border-radius: 10px;">
+                    <h3 class="text-center">Infos</h3>
+                    <div class="row mt-4 w-100">
+                        <div class="col-6 text-center">
+                            <div class="border p-3 bg-secondary rounded d-flex flex-column justify-content-center align-items-center">
+                                <h4>{{ rooms_count }}</h4>
+                                <p>Rooms</p>
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <div class="border p-3 bg-secondary rounded d-flex flex-column justify-content-center align-items-center">
+                                <h4>{{ as_count }}</h4>
+                                <p>AS</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="border p-3 mt-3">
-                        <h4>{{ as_count }} AS</h4>
+                    <div class="row mt-4 w-100">
+                        <div class="col-6 text-center">
+                            <a href="{{ path('app_rooms', {'state': 'critical'}) }}" class="btn border p-3 bg-danger text-light rounded d-flex flex-column justify-content-center align-items-center" style="text-decoration: none;">
+                                <i class="bi bi-exclamation-triangle-fill mb-2" style="font-size: 1.5rem;"></i>
+                                <h4>{{ critical_count }}</h4>
+                                <p>Critical</p>
+                            </a>
+                        </div>
+                        <div class="col-6 text-center">
+                            <a href="{{ path('app_rooms', {'state': 'at risk'}) }}" class="btn border p-3 bg-warning text-dark rounded d-flex flex-column justify-content-center align-items-center" style="text-decoration: none;">
+                                <i class="bi bi-info-circle-fill mb-2" style="font-size: 1.5rem;"></i>
+                                <h4>{{ at_risk_count }}</h4>
+                                <p>At Risk</p>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="border p-3 d-flex align-items-center justify-content-center" style="background-color: #FF6347; color: #FFFFFF; border-radius: 5px;">
-                        <h4 class="mb-0">{{ critical_count }}</h4>
-                        <span class="ms-2">Critical</span>
+
+                <!-- Météo -->
+                <div class="card p-3 bg-dark text-light flex-grow-1" style="border-radius: 10px;">
+                    <h3 class="text-center">Weather</h3>
+                    <div class="d-flex justify-content-around align-items-center mt-4 h-100">
+                        {% for day in forecast %}
+                            <div class="text-center">
+                                {% if loop.first %}
+                                    <h1 class="fw-bold">Today</h1>
+                                    <div class="mb-2" style="font-size: 2.5rem;">
+                                        {% if day.pictocode == 'Pluie' %}
+                                            🌧️
+                                        {% elseif day.pictocode == 'Couvert' %}
+                                            ☁️
+                                        {% else %}
+                                            ☀️
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <h5>{{ day.date|date('l') }}</h5>
+                                    <div class="mb-2" style="font-size: 1.5rem;">
+                                        {% if day.pictocode == 'Pluie' %}
+                                            🌧️
+                                        {% elseif day.pictocode == 'Couvert' %}
+                                            ☁️
+                                        {% else %}
+                                            ☀️
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                                <p>{{ day.temperature_min|round }}° / {{ day.temperature_max|round }}°</p>
+                            </div>
+                        {% else %}
+                            <p>No weather data available.</p>
+                        {% endfor %}
                     </div>
-                    <div class="border p-3 mt-3 d-flex align-items-center justify-content-center" style="background-color: #FFD700; color: #000000; border-radius: 5px;">
-                        <h4 class="mb-0">{{ at_risk_count }}</h4>
-                        <span class="ms-2">At risk</span>
+                </div>
+            </div>
+
+            <!-- Colonne droite : To do list -->
+            <div class="col-6">
+                <div class="card p-3 bg-dark text-light h-100 d-flex flex-column justify-content-between" style="border-radius: 10px;">
+                    <h3 class="text-center">To do list of technician</h3>
+                    <div class="mt-4 flex-grow-1 overflow-auto">
+                        {% for action in actions %}
+                            <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2 bg-secondary text-light">
+                                <div>
+                                    <p class="mb-1"><strong>{{ action.info.value }}</strong> on {{ action.room.name }}</p>
+                                </div>
+                                <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-light{% endif %}">
+                                    {{ action.state.value | upper }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_todolist') }}" class="btn btn-primary">Access</a>
+                        <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s") }}</p>
                     </div>
                 </div>
             </div>
         </div>
-
-<h3 class="mt-5">Prévisions météo à La Rochelle</h3>
-{% if forecast is not null %}
-    <div class="d-flex justify-content-center mt-4 flex-wrap">
-        {% for day in forecast %}
-            <div class="card text-center m-2" style="width: 10rem;">
-                <div class="card-body">
-                    <h6 class="card-title">{{ day.date|date('l d')|capitalize }}</h6> <!-- Date formatée en français -->
-                    <div class="my-2">
-                        {% if day.pictocode == 'Pluie' %}
-                            🌧️ Pluie
-                        {% elseif day.pictocode == 'Couvert' %}
-                            ☁️ Couvert
-                        {% else %}
-                            ☀️ Ensoleillé
-                        {% endif %}
-                    </div>
-                    <p class="card-text">
-                        <span>Min : <strong>{{ day.temperature_min|round }}</strong>°C</span><br>
-                        <span>Max : <strong>{{ day.temperature_max|round }}</strong>°C</span>
-                    </p>
-                </div>
-            </div>
-        {% endfor %}
     </div>
-{% else %}
-    <div class="alert alert-warning mt-4" role="alert">
-        Impossible de récupérer les données météo pour les 4 prochains jours.
-    </div>
-{% endif %}
-
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            function updateDateTime() {
-                const dateElement = document.getElementById('current-date');
+            function updateCurrentTime() {
+                const timeElement = document.getElementById('current-time');
 
-                if (dateElement) {
+                if (timeElement) {
                     const now = new Date();
-                    const options = {
-                        weekday: 'long',
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                    };
-                    const formattedDate = now.toLocaleDateString('en-US', options);
-                    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-
-                    dateElement.textContent = formattedDate.replace(',', '') + " " + time;
+                    const formattedTime = now.toLocaleTimeString('en-US', { hour12: false });
+                    timeElement.textContent = formattedTime;
                 }
             }
 
-            setInterval(updateDateTime, 1000);
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentTime(); // Initial update
         });
     </script>
+    <!-- Inclure Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 {% endblock %}

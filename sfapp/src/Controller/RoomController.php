@@ -54,31 +54,27 @@ class RoomController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(RoomRepository $roomRepository, Request $request): Response
     {
-        $filterForm = $this->createForm(FilterRoomType::class);
+        $stateParam = $request->query->get('state');
+        $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
+
+        $filterForm = $this->createForm(FilterRoomType::class, null, [
+            'state' => $stateEnum,
+        ]);
         $filterForm->handleRequest($request);
-        $rooms = $roomRepository->findAll();
-
-        // Met à jour les données des salles qui ont un système d'acquisition
-        foreach ($rooms as $room) {
-            $roomRepository->updateAcquisitionSystemFromJson($room);
-            $roomRepository->updateRoomState($room);
-
-        }
-
 
         $criteria = [];
-        $formSubmitted = $filterForm->isSubmitted() && $filterForm->isValid();
 
-        if ($filterForm->get('reset')->isClicked()) {
-            // Redirige vers la même page sans les filtres
-            return $this->redirectToRoute('app_rooms');
+        // Applique le filtre initial basé sur l'URL
+        if ($stateParam) {
+            $criteria['state'] = $stateParam;
         }
 
-        if ($formSubmitted) {
+        // Applique les critères du formulaire s'il est soumis
+        if ($filterForm->isSubmitted() && $filterForm->isValid()) {
             /** @var Room $data */
             $data = $filterForm->getData();
 
-            if (!empty($data->getName()))  {
+            if (!empty($data->getName())) {
                 $criteria['name'] = $data->getName();
             }
 
@@ -95,20 +91,17 @@ class RoomController extends AbstractController
             }
         }
 
+        // Récupère les salles filtrées
         $rooms = $roomRepository->findByCriteria($criteria);
 
-        $deleteForms = [];
+        $optionsEnabled = $request->query->get('optionsEnabled', false);
 
-        foreach ($rooms as $room) {
-            $deleteForms[$room->getName()] = $this->createDeleteForm($room->getName())->createView();
-        }
 
         return $this->render('rooms/index.html.twig', [
+            'optionsEnabled' => $optionsEnabled, // Passez la variable ici
+
             'rooms' => $rooms,
             'filterForm' => $filterForm->createView(),
-            'deleteForms' => $deleteForms,
-            'formSubmitted' => $formSubmitted,
-            'optionsEnabled' => false,
         ]);
     }
 
