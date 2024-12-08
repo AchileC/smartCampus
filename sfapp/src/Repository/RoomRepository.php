@@ -72,10 +72,6 @@ class RoomRepository extends ServiceEntityRepository
         return $data;
     }
 
-
-
-
-
     public function updateAcquisitionSystemFromJson(Room $room): void
     {
         // Vérifie s'il y a un système d'acquisition associé
@@ -177,5 +173,32 @@ class RoomRepository extends ServiceEntityRepository
         // Persiste les changements
         $this->getEntityManager()->persist($room);
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * Récupère les salles sans système d'acquisition lié.
+     *
+     * @return Room[]
+     */
+    public function findRoomsWithoutAS(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.acquisitionSystem', 'acq') // Changement de l'alias de 'as' à 'acq'
+            ->where('acq.id IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère les salles avec un système d'acquisition lié.
+     *
+     * @return Room[]
+     */
+    public function findRoomsWithAS(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->innerJoin('r.acquisitionSystem', 'acq') // Changement de l'alias de 'as' à 'acq'
+            ->getQuery()
+            ->getResult();
     }
 }

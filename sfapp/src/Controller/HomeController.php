@@ -13,9 +13,9 @@ use App\Repository\AcquisitionSystemRepository;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\SensorStateEnum;
-use App\Form\AssignFormType;
-use App\Form\UnassignFormType;
-use App\Form\ChangementFormType;
+use App\Form\AssignTaskType;
+use App\Form\UnassignTaskType;
+use App\Form\ChangementTaskType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,6 +70,87 @@ class HomeController extends AbstractController
         return $this->render('home/todolist.html.twig', [
             'actions' => $actions,
             'awaitingTasksCount' => $awaitingTasksCount,
+        ]);
+    }
+
+    #[Route('/todolist/add', name: 'app_todolist_add', methods: ['GET', 'POST'])]
+    public function add(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        RoomRepository $roomRepository,
+        AcquisitionSystemRepository $acquisitionSystemRepository
+    ): Response
+    {
+        $elementType = $request->query->get('elementType');
+
+        // Si aucune action n'est sélectionnée, afficher le choix entre assign et unassign
+        if (!$elementType) {
+            return $this->render('home/selectAction.html.twig');
+        }
+
+        // Créer une nouvelle Action
+        $action = new Action();
+        $action->setState(ActionStateEnum::TO_DO);
+        $action->setCreatedAt(new \DateTime()); // Définir le champ createdAt
+
+        // Initialiser le formulaire en fonction du type d'action
+        if ($elementType === 'assign') {
+            $action->setInfo(ActionInfoEnum::ASSIGNMENT);
+            $form = $this->createForm(AssignTaskType::class, $action, [
+                'rooms' => $roomRepository->findRoomsWithoutAS(),
+            ]);
+        } elseif ($elementType === 'unassign') {
+            $action->setInfo(ActionInfoEnum::UNASSIGNMENT);
+            $form = $this->createForm(UnassignTaskType::class, $action, [
+                'rooms' => $roomRepository->findRoomsWithAS(),
+            ]);
+        } else {
+            $this->addFlash('error', 'Type d\'action invalide.');
+            return $this->redirectToRoute('app_todolist_add');
+        }
+
+        // Traiter la soumission du formulaire
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Action $action */
+            $action = $form->getData();
+            $entityManager->persist($action);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'L\'action a été ajoutée avec succès.');
+
+            return $this->redirectToRoute('app_todolist');
+        }
+
+        return $this->render('home/addAction.html.twig', [
+            'form' => $form->createView(),
+            'elementType' => $elementType,
+        ]);
+    }
+
+    #[Route('/todolist/get-acquisition-system-details', name: 'app_get_acquisition_system_details', methods: ['GET'])]
+    public function getAcquisitionSystemDetails(Request $request, RoomRepository $roomRepository): Response
+    {
+        $roomId = $request->query->get('roomId');
+
+        if (!$roomId) {
+            return $this->json(['success' => false, 'message' => 'Aucun ID de salle fourni.']);
+        }
+
+        $room = $roomRepository->find($roomId);
+
+        if (!$room || !$room->getAcquisitionSystem()) {
+            return $this->json(['success' => false, 'message' => 'Salle introuvable ou sans système d\'acquisition lié.']);
+        }
+
+        $acquisitionSystem = $room->getAcquisitionSystem();
+
+        return $this->json([
+            'success' => true,
+            'acquisitionSystem' => [
+                'name' => $acquisitionSystem->getName(),
+                'state' => $acquisitionSystem->getState(),
+            ],
         ]);
     }
 
@@ -216,7 +297,7 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('app_todolist');
         }
 
-        if (in_array($action->getInfo()->value, ['assignment', 'replacement', 'switch'])) {
+        if ($action->getInfo()->value == 'assignment') {
             $acquisitionSystemId = $request->request->get('acquisitionSystem');
             $acquisitionSystem = $acquisitionSystemRepository->find($acquisitionSystemId);
 
@@ -253,8 +334,6 @@ class HomeController extends AbstractController
         $actionTypes = [
             ActionInfoEnum::ASSIGNMENT->value => 'info',
             ActionInfoEnum::UNASSIGNMENT->value => 'danger',
-            ActionInfoEnum::SWITCH->value => 'warning',
-            ActionInfoEnum::REPLACEMENT->value => 'primary',
         ];
 
         return $this->render('home/done.html.twig', [

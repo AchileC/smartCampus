@@ -88,14 +88,14 @@ class AppFixtures extends Fixture
         $action2->setRoom($room2);
 
         $action3 = new Action();
-        $action3->setInfo(ActionInfoEnum::SWITCH);
+        $action3->setInfo(ActionInfoEnum::ASSIGNMENT);
         $action3->setState(ActionStateEnum::DOING);
         $action3->setCreatedAt(new \DateTime('2024-12-03 09:30:00'));
         $action3->setStartedAt(new \DateTime('2024-12-5 14:00:00'));
         $action3->setRoom($room3);
 
         $action4 = new Action();
-        $action4->setInfo(ActionInfoEnum::REPLACEMENT);
+        $action4->setInfo(ActionInfoEnum::UNASSIGNMENT);
         $action4->setState(ActionStateEnum::TO_DO);
         $action4->setCreatedAt(new \DateTime('2024-12-04 11:15:00'));
         $action4->setRoom($room2);

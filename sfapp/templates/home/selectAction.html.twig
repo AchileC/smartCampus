@@ -1,0 +1,38 @@
+{# templates/todolist/selectAction.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir une Action{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-sm p-4">
+            <h1 class="text-center mb-4">Ajouter une Tâche</h1>
+
+            <div class="list-group mb-4">
+                <p>Choisissez ce que vous souhaitez ajouter :</p>
+                <a href="{{ path('app_todolist_add', { elementType: 'assign' }) }}"
+                   class="list-group-item list-group-item-action">
+                    Assign Task
+                </a>
+                <a href="{{ path('app_todolist_add', { elementType: 'unassign' }) }}"
+                   class="list-group-item list-group-item-action">
+                    Unassign Task
+                </a>
+            </div>
+
+            {# Afficher les messages de succès en utilisant Bootstrap Alert #}
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {# Afficher les messages d'erreur en utilisant Bootstrap Alert #}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

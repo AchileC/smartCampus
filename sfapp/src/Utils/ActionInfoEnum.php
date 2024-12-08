@@ -21,14 +21,4 @@ enum ActionInfoEnum: string
      * Represents the unassignment of an acquisition system from a room.
      */
     case UNASSIGNMENT = 'unassignment';
-
-    /**
-     * Represents the switching of an acquisition system's state or configuration.
-     */
-    case SWITCH = 'switch';
-
-    /**
-     * Represents the replacement of an acquisition system in a room.
-     */
-    case REPLACEMENT = 'replacement';
 }

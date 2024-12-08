@@ -46,4 +46,15 @@ class ActionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Récupère les actions en fonction des critères.
+     *
+     * @param array $criteria
+     * @return Action[]
+     */
+    public function findByCriteria(array $criteria): array
+    {
+        return $this->findBy($criteria);
+    }
 }
