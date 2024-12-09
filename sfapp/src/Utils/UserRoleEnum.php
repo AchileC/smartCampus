@@ -15,15 +15,15 @@ enum UserRoleEnum: string
     /**
      * Represents a manager with administrative privileges.
      */
-    case MANAGER = 'manager';
+    case ROLE_MANAGER = 'ROLE_MANAGER';
 
     /**
      * Represents a technician responsible for maintenance and operations.
      */
-    case TECHNICIAN = 'technician';
+    case ROLE_TECHNICIAN = 'ROLE_TECHNICIAN';
 
     /**
      * Represents a regular user with limited access.
      */
-    case USER = 'user';
+    case ROLE_USER = 'ROLE_USER';
 }

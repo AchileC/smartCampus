@@ -83,7 +83,7 @@ class HomeController extends AbstractController
         $actions = $actionRepository->findLatestFive();
 
         // Render the dashboard view with the retrieved data
-        return $this->render('home/index.html.twig', [
+        return $this->render('home/login.html.twig', [
             'rooms_count' => $roomsCount,        // Total number of rooms
             'as_count' => $asCount,              // Total number of acquisition systems
             'critical_count' => $criticalCount,  // Number of critical rooms

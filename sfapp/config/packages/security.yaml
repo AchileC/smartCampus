@@ -1,55 +1,54 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    hide_user_not_found: false
+
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: username
-        users_in_memory: { memory: null }
+                property: email
+
+    access_denied_url: /unauthorized
 
     firewalls:
-        secured_area:
-            # Ajout explicite du provider pour ce firewall
-            provider: app_user_provider
-            form_login:
-                # ...
-                enable_csrf: true
-
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
         main:
             lazy: true
-            provider: users_in_memory
-            form_login:
-                # "app_login" is the name of the route created previously
-                login_path: app_login
-                check_path: app_login
+            provider: app_user_provider
+            custom_authenticator: App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+                target: app_rooms
+                csrf_token_generator: security.csrf.token_manager
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
+            remember_me:
+                secret: '%kernel.secret%'
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
-        #- { path: ^/rooms, roles: MANAGER }
-        #- { path: ^/profile, roles: USER }
+        # Permet l'accès à /login à tout le monde, même sans authentification
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+
+        # Permet l'accès à /rooms à tout le monde, même sans authentification
+        - { path: ^/rooms, roles: PUBLIC_ACCESS }
+
+        # Permet l'accès à /unauthorized et /error à tout le monde
+        - { path: ^/error, roles: PUBLIC_ACCESS }
+
+        # Permet l'accès à /as uniquement aux managers
+        - { path: ^/as, roles: ROLE_MANAGER }
+
+        - { path: ^/, roles: PUBLIC_ACCESS }
 
 when@test:
     security:
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
             Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
                 algorithm: auto
                 cost: 4 # Lowest possible value for bcrypt

@@ -103,7 +103,6 @@ class RoomController extends AbstractController
 
         return $this->render('rooms/index.html.twig', [
             'optionsEnabled' => $optionsEnabled, // Passez la variable ici
-
             'rooms' => $rooms,
             'filterForm' => $filterForm->createView(),
         ]);
@@ -125,6 +124,9 @@ class RoomController extends AbstractController
     #[Route('/rooms/add', name: 'app_rooms_add')]
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
+
+        $this->denyAccessUnlessGranted('ROLE_MANAGER');
+
         $room = new Room();
         $room->setSensorState(SensorStateEnum::NOT_LINKED);
         $room->setState(RoomStateEnum::NONE);

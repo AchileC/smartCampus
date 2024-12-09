@@ -5,17 +5,26 @@ namespace App\DataFixtures;
 use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
 use App\Entity\Action;
+use App\Entity\User;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\CardinalEnum;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
+use App\Utils\UserRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
+    private UserPasswordHasherInterface $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
     public function load(ObjectManager $manager): void
     {
         $room1 = new Room();
@@ -73,7 +82,11 @@ class AppFixtures extends Fixture
         $as3->setState(SensorStateEnum::NOT_LINKED);
         $as3->setRoom($room3);
 
-
+        $user1 = new User();
+        $user1->setUsername('test@test.com');
+        $hashedPassword = $this->passwordHasher->hashPassword($user1, '1234');
+        $user1->setPassword($hashedPassword);
+        $user1->setRoles([UserRoleEnum::ROLE_MANAGER]);
 
         $manager->persist($room1);
         $manager->persist($room2);
@@ -81,6 +94,7 @@ class AppFixtures extends Fixture
         $manager->persist($room4);
         $manager->persist($as1);
         $manager->persist($as2);
+        $manager->persist($user1);
 
         $manager->flush();
     }

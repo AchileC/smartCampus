@@ -267,11 +267,13 @@
     {% endblock %}
 </head>
 <body>
-    <div id="sidebar">
-        <div class="brand">
-            Smart Campus
-        </div>
-        <hr>
+<div id="sidebar">
+    <div class="brand d-flex justify-content-center align-items-center">
+        <a href="{{ path('app_home') }}" class="d-flex align-items-center text-decoration-none text-white">
+            <img src="{{ asset('media/logo.png') }}" alt="Logo" style="height: 75px; width: auto; border-radius: 0;">
+        </a>
+    </div>
+    <hr>
         <nav class="nav flex-column">
             {# Récupérer la route actuelle #}
             {% set current_route = app.request.attributes.get('_route') %}
@@ -308,18 +310,32 @@
             </div>
         </div>
 
-        <div class="user-section">
-            <i class="bi bi-person-circle"></i>
-            <div class="dropdown">
-                <a href="{{ path('app_home') }}" class="dropdown-toggle" data-bs-toggle="dropdown">User</a>
-                <ul class="dropdown-menu">
-                    <li class="text-center">
-                        <button id="toggleOptionsButton" class="btn btn-outline-info">Activate Options</button>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="{{ path('app_home') }}">Logout</a></li>
-                </ul>
-            </div>
+        <div class="user-section d-flex align-items-center">
+            {% if app.user %}
+                <!-- Utilisateur connecté -->
+                <div class="dropdown">
+                    <button class="btn d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                        <span>{{ app.user.username }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li class="dropdown-item text-center">
+                            <button id="toggleOptionsButton" class="btn btn-outline-info w-100">Activate Options</button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <!-- Bouton Logout -->
+                            <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                                <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                <!-- Utilisateur non connecté -->
+                <a href="{{ path('app_login') }}" class="btn btn-primary ms-auto">Login</a>
+            {% endif %}
         </div>
     </div>
 
@@ -463,5 +479,6 @@
             }
         });
     </script>
+
     {% endblock %}
-</html
+</html>
