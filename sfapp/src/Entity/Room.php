@@ -46,6 +46,8 @@ class Room
     private ?AcquisitionSystem $acquisitionSystem = null;
 
     #[ORM\OneToMany(mappedBy: 'room', targetEntity: Action::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $previousActions;
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Action::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $actions;
 
     public function __construct()
@@ -182,12 +184,15 @@ class Room
     {
         // unset the owning side of the relation if necessary
         if ($acquisitionSystem === null && $this->acquisitionSystem !== null) {
+            $this->setSensorState(SensorStateEnum::NOT_LINKED);
+
             $this->acquisitionSystem->setRoom(null);
         }
 
         // set the owning side of the relation if necessary
         if ($acquisitionSystem !== null && $acquisitionSystem->getRoom() !== $this) {
             $acquisitionSystem->setRoom($this);
+            $this->setSensorState(SensorStateEnum::LINKED);
         }
 
         $this->acquisitionSystem = $acquisitionSystem;
@@ -221,4 +226,31 @@ class Room
         return $this;
     }
 
+
+    public function getPreviousActions(): Collection
+    {
+        return $this->previousActions;
+    }
+
+    public function addPreviousAction(Action $action): static
+    {
+        if (!$this->previousActions->contains($action)) {
+            $this->previousActions[] = $action;
+            $action->setRoom($this); // Set the relation from the other side
+        }
+
+        return $this;
+    }
+
+    public function removePreviousAction(Action $action): static
+    {
+        if ($this->previousActions->removeElement($action)) {
+            // Set the owning side to null (unless already changed)
+            if ($action->getRoom() === $this) {
+                $action->setRoom(null);
+            }
+        }
+
+        return $this;
+    }
 }

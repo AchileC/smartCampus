@@ -60,45 +60,20 @@ class AppFixtures extends Fixture
 
         $as1 = new AcquisitionSystem();
         $as1->setName("ESP-001");
-        $as1->setState(SensorStateEnum::LINKED);
+        $as1->setState(SensorStateEnum::NOT_LINKED);
         $as1->setRoom($room1);
 
         $as2 = new AcquisitionSystem();
         $as2->setName("ESP-002");
-        $as2->setState(SensorStateEnum::LINKED);
+        $as2->setState(SensorStateEnum::NOT_LINKED);
         $as2->setRoom($room2);
 
         $as3 = new AcquisitionSystem();
         $as3->setName("ESP-003");
-        $as3->setState(SensorStateEnum::LINKED);
+        $as3->setState(SensorStateEnum::NOT_LINKED);
         $as3->setRoom($room3);
 
 
-        $action1 = new Action();
-        $action1->setInfo(ActionInfoEnum::ASSIGNMENT);
-        $action1->setState(ActionStateEnum::TO_DO);
-        $action1->setCreatedAt(new \DateTime('2024-12-01 10:00:00'));
-        $action1->setRoom($room1);
-
-        $action2 = new Action();
-        $action2->setInfo(ActionInfoEnum::UNASSIGNMENT);
-        $action2->setState(ActionStateEnum::DOING);
-        $action2->setCreatedAt(new \DateTime('2024-12-02 14:00:00'));
-        $action2->setStartedAt(new \DateTime('2024-12-02 16:00:00'));
-        $action2->setRoom($room2);
-
-        $action3 = new Action();
-        $action3->setInfo(ActionInfoEnum::ASSIGNMENT);
-        $action3->setState(ActionStateEnum::DOING);
-        $action3->setCreatedAt(new \DateTime('2024-12-03 09:30:00'));
-        $action3->setStartedAt(new \DateTime('2024-12-5 14:00:00'));
-        $action3->setRoom($room3);
-
-        $action4 = new Action();
-        $action4->setInfo(ActionInfoEnum::UNASSIGNMENT);
-        $action4->setState(ActionStateEnum::TO_DO);
-        $action4->setCreatedAt(new \DateTime('2024-12-04 11:15:00'));
-        $action4->setRoom($room2);
 
         $manager->persist($room1);
         $manager->persist($room2);
@@ -106,10 +81,6 @@ class AppFixtures extends Fixture
         $manager->persist($room4);
         $manager->persist($as1);
         $manager->persist($as2);
-        $manager->persist($action1);
-        $manager->persist($action2);
-        $manager->persist($action3);
-        $manager->persist($action4);
 
         $manager->flush();
     }

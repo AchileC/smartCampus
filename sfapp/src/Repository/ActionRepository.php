@@ -48,6 +48,26 @@ class ActionRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find actions by room and state.
+     *
+     * @param int $roomId The ID of the room.
+     * @param array $states The list of states to filter by.
+     * @return Action[] The actions to delete.
+     */
+    public function findTasksForRoomToDelete(int $roomId, array $states = ['to do', 'doing']): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.room = :room')
+            ->andWhere('a.info = :info') // Only tasks of type 'assignment'
+            ->andWhere('a.state IN (:states)')
+            ->setParameter('room', $roomId)
+            ->setParameter('info', 'assignment')
+            ->setParameter('states', $states)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Récupère les actions en fonction des critères.
      *
      * @param array $criteria

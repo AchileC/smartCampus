@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\AcquisitionSystem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Utils\SensorStateEnum;
 
 /**
  * @extends ServiceEntityRepository<AcquisitionSystem>
@@ -40,6 +41,17 @@ class AcquisitionSystemRepository extends ServiceEntityRepository
         }
         return $queryBuilder->orderBy('r.name', 'ASC')
             ->getQuery()
+            ->getResult();
+    }
+
+    public function findSystemsNotLinked(): array
+    {
+        return $this->createQueryBuilder('acq') // Alias pour AcquisitionSystem
+        ->where('acq.state = :state')       // Vérifie que l'état correspond
+        ->andWhere('acq.room IS NULL')      // Vérifie que le système n'est pas lié à une salle
+        ->setParameter('state', SensorStateEnum::NOT_LINKED->value) // Utilisation de l'énumération
+        ->orderBy('acq.name', 'ASC')        // Trie les résultats par nom
+        ->getQuery()
             ->getResult();
     }
 }
