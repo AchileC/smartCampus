@@ -48,6 +48,26 @@ class ActionRepository extends ServiceEntityRepository
     }
 
     /**
+     * Find actions by room and state.
+     *
+     * @param int $roomId The ID of the room.
+     * @param array $states The list of states to filter by.
+     * @return Action[] The actions to delete.
+     */
+    public function findTasksForRoomToDelete(int $roomId, array $states = ['to do', 'doing']): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.room = :room')
+            ->andWhere('a.info = :info') // Only tasks of type 'assignment'
+            ->andWhere('a.state IN (:states)')
+            ->setParameter('room', $roomId)
+            ->setParameter('info', 'assignment')
+            ->setParameter('states', $states)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Retrieves the five most recent Action entities excluding those with a state of DONE.
      *
      * This method fetches the five latest actions that are not marked as done, ordered by their creation date in descending order.

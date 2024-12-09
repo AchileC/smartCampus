@@ -85,7 +85,12 @@
                 <div class="card mt-4 shadow-sm">
                     <div class="card-body text-center">
                         <h5>Acquisition system</h5>
-                        {% if room.state.value == 'stable' or room.state.value == 'at risk' or room.state.value == 'critical' %}
+                        {% if room.sensorState.value == 'assignment' or room.sensorState.value == 'unassignment' %}
+                            <p class="mb-3">Assignment/Unassignment of an acquisition system is pending. You can cancel the request.</p>
+                            <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
+                                <button type="submit" class="btn btn-warning">Cancel Installation</button>
+                            </form>
+                        {% elseif room.state.value == 'stable' or room.state.value == 'at risk' or room.state.value == 'critical' %}
                             <p class="mb-3">An acquisition system is assigned to this room. You can request to unassign the linked acquisition system.</p>
                             <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
                                 <button type="submit" class="btn btn-warning">Request unassignment</button>
@@ -94,11 +99,6 @@
                             <p class="mb-3">You can request the installation of an acquisition system in this room.</p>
                             <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
                                 <button type="submit" class="btn btn-warning">Request assignment</button>
-                            </form>
-                        {% elseif room.sensorState.value == 'assignment' or room.sensorState.value == 'unassignment' %}
-                            <p class="mb-3">Assignment/Unassignment of an acquisition system is pending. You can cancel the request.</p>
-                            <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
-                                <button type="submit" class="btn btn-warning">Cancel Installation</button>
                             </form>
                         {% endif %}
                     </div>

@@ -12,16 +12,6 @@
             <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link hidden-options">Add AS</a>
         </div>
 
-        <!-- Dark mode toggle switch -->
-        <div class="d-flex justify-content-end mb-3 theme-switch-wrapper">
-            <span id="theme-label">Dark Mode</span>
-            <i class="bi bi-moon-fill theme-icon moon"></i>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="theme-toggle-switch">
-                <label class="form-check-label" for="theme-toggle-switch"></label>
-            </div>
-        </div>
-
         <!-- Flash messages block -->
         <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
             {% for type, messages in app.flashes %}

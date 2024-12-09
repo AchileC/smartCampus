@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AcquisitionSystemRepository;
+use App\Utils\ActionStateEnum;
 use App\Utils\SensorStateEnum;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -34,6 +35,7 @@ class AcquisitionSystem
 
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $state = null;
+
 
     public function getId(): ?int
     {
@@ -96,8 +98,14 @@ class AcquisitionSystem
     {
         $this->room = $room;
 
-        if ($room->getAcquisitionSystem() !== $this) {
+        // Si une salle est associée, établir le lien bidirectionnel
+        if ($room !== null && $room->getAcquisitionSystem() !== $this) {
             $room->setAcquisitionSystem($this);
+        }
+
+        // Si aucune salle n'est associée, mettre à jour l'état du système
+        if ($room === null) {
+            $this->setState(SensorStateEnum::NOT_LINKED);
         }
 
         return $this;
@@ -114,4 +122,6 @@ class AcquisitionSystem
 
         return $this;
     }
+
+
 }
