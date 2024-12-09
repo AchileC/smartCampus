@@ -30,59 +30,59 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HomeController extends AbstractController
 {
+    /**
+     * Displays the home dashboard with statistical data and weather forecasts.
+     *
+     * @Route("/home", name="app_home")
+     *
+     * This method retrieves and prepares the data required for the home dashboard, including:
+     * - Counts of rooms, acquisition systems, critical and at-risk rooms.
+     * - Weather forecasts for the next 4 days fetched from a weather API via the WeatherApiService.
+     * - Pending actions retrieved from the database.
+     *
+     * @param RoomRepository             $roomRepository             Repository for managing room entities.
+     * @param AcquisitionSystemRepository $acquisitionSystemRepository Repository for managing acquisition system entities.
+     * @param ActionRepository           $actionRepository           Repository for managing action entities.
+     * @param WeatherApiService          $weatherApiService          Service for fetching and processing weather data.
+     *
+     * @return Response Rendered home page with all the necessary data.
+     */
     #[Route('/home', name: 'app_home')]
     public function home(
         RoomRepository $roomRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
         ActionRepository $actionRepository,
-        HttpClientInterface $httpClient
+        WeatherApiService $weatherApiService
     ): Response {
-        // Données des repositories
+        // Retrieve the number of rooms, acquisition systems, and critical or at-risk rooms from the repositories
         $roomsCount = $roomRepository->count([]);
         $asCount = $acquisitionSystemRepository->count([]);
         $criticalCount = $roomRepository->countByState('critical');
         $atRiskCount = $roomRepository->countByState('at risk');
 
-        // URL API météo
-        $weatherUrl = 'https://my.meteoblue.com/packages/basic-day?apikey=Xu9ot3p6Bx4iIcfE&lat=46.16&lon=-1.15&asl=46&format=json&forecast_days=4';
-
         try {
-            // Récupérer les données de l'API
-            $response = $httpClient->request('GET', $weatherUrl);
-            $weatherData = $response->toArray();
+            // Fetch weather data from the WeatherApiService for the specified location
+            $weatherApiService->fetchWeatherData('46.16', '-1.15', 'Xu9ot3p6Bx4iIcfE');
 
-            // Traiter les données pour Twig
-            $forecast = [];
-            $dates = $weatherData['data_day']['time'];
-            $tempsMax = $weatherData['data_day']['temperature_max'];
-            $tempsMin = $weatherData['data_day']['temperature_min'];
-            $precipitations = $weatherData['data_day']['precipitation'];
-            $pictocodes = $weatherData['data_day']['pictocode'];
-
-            // Pas de mapping dans le contrôleur (géré directement dans Twig)
-            foreach ($dates as $index => $date) {
-                $forecast[] = [
-                    'date' => $date,
-                    'temperature_max' => $tempsMax[$index] ?? null,
-                    'temperature_min' => $tempsMin[$index] ?? null,
-                    'precipitation' => $precipitations[$index] ?? null,
-                    'pictocode' => $pictocodes[$index] ?? null, // Stocker le pictocode brut
-                ];
-            }
-        } catch (\Exception $e) {
+            // Get the 4-day weather forecast from the service
+            $forecast = $weatherApiService->getForecast();
+        } catch (\RuntimeException $e) {
+            // Handle exceptions during weather data retrieval by displaying an error message
             $forecast = null;
-            $this->addFlash('error', 'Erreur lors de la récupération des données météo : ' . $e->getMessage());
+            $this->addFlash('error', 'Failed to fetch weather data: ' . $e->getMessage());
         }
 
+        // Retrieve all actions that are not marked as 'done' from the repository
         $actions = $actionRepository->findAllExceptDone();
 
+        // Render the dashboard view with the retrieved data
         return $this->render('home/index.html.twig', [
-            'rooms_count' => $roomsCount,
-            'as_count' => $asCount,
-            'critical_count' => $criticalCount,
-            'at_risk_count' => $atRiskCount,
-            'forecast' => $forecast,
-            'actions' => $actions,
+            'rooms_count' => $roomsCount,        // Total number of rooms
+            'as_count' => $asCount,              // Total number of acquisition systems
+            'critical_count' => $criticalCount,  // Number of critical rooms
+            'at_risk_count' => $atRiskCount,     // Number of at-risk rooms
+            'forecast' => $forecast,             // Weather forecast data for 4 days
+            'actions' => $actions,               // List of pending actions
         ]);
     }
 
