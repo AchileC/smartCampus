@@ -35,33 +35,38 @@
                         <!-- Temperature -->
                         {% set temp = room.acquisitionSystem.temperature %}
                         {% set isHeatingPeriod = "now"|date("m") in ["11", "12", "01", "02", "03", "04"] %}
-                        {% set tempWarning = (isHeatingPeriod and (temp < 17 or temp > 21)) or (not isHeatingPeriod and (temp < 24 or temp > 28)) %}
-                        {% set tempClass = tempWarning ? 'list-group-item-warning' : 'list-group-item-success' %}
+                        {% set tempCritical = isHeatingPeriod and (temp < 15 or temp > 23) or (not isHeatingPeriod and (temp < 22 or temp > 30)) %}
+                        {% set tempWarning = not tempCritical and ((isHeatingPeriod and (temp < 10 or temp > 30)) or (not isHeatingPeriod and (temp < 15 or temp > 40))) %}
+                        {% set tempClass = tempCritical ? 'list-group-item-danger' : (tempWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
                         <li class="list-group-item {{ tempClass }}">
-                            {{ tempWarning ? '⚠️' : '✅' }} <strong>Temperature:</strong>
+                            {{ tempCritical ? '🚨' : (tempWarning ? '⚠️' : '✅') }} <strong>Temperature:</strong>
                             {{ temp is not null ? temp ~ '°C' : 'No value measured' }}
                             {% if temp is not null %}
-                                <div class="mt-2 small {% if tempWarning %}text-danger{% else %}text-success{% endif %}">
-                                    {% if isHeatingPeriod %}
-                                        {% if temp < 17 %}
-                                            Check if the heating system is working properly, ensure it's turned on and adjust temperature to reach recommended threshold (19°C)
-                                        {% elseif temp > 21 %}
-                                            Reduce or turn off heating to avoid energy overconsumption
+                                <div class="mt-2 small {% if tempCritical %}text-danger{% elseif tempWarning %}text-warning{% else %}text-success{% endif %}">
+                                    {% if tempCritical %}
+                                        Critical error: Verify the sensor functionality, as the temperature is outside acceptable bounds.
+                                    {% elseif tempWarning %}
+                                        {% if isHeatingPeriod %}
+                                            {% if temp < 17 %}
+                                                Check if the heating system is working properly, ensure it's turned on and adjust temperature to reach recommended threshold (19°C).
+                                            {% elseif temp > 21 %}
+                                                Reduce or turn off heating to avoid energy overconsumption.
+                                            {% endif %}
                                         {% else %}
-                                            Maintain this temperature range without modification
+                                            {% if temp < 24 %}
+                                                If air conditioning is present, it can be adjusted to reach the recommended threshold of 26°C.
+                                            {% elseif temp > 28 %}
+                                                Activate air conditioning or fans, but set temperature to a maximum of 26°C to avoid energy overconsumption. Ventilate the room if possible to improve air circulation.
+                                            {% endif %}
+                                        
                                         {% endif %}
                                     {% else %}
-                                        {% if temp < 24 %}
-                                            If air conditioning is present, it can be adjusted to reach the recommended threshold of 26°C
-                                        {% elseif temp > 28 %}
-                                            Activate air conditioning or fans, but set temperature to maximum 26°C to avoid energy overconsumption, Ventilate the room if possible to improve air circulation
-                                        {% else %}
-                                            No adjustment required
-                                        {% endif %}
+                                        Maintain this temperature range without modification.
                                     {% endif %}
                                 </div>
                             {% endif %}
                         </li>
+
 
                         <!-- Humidity -->
                         {% set hum = room.acquisitionSystem.humidity %}
