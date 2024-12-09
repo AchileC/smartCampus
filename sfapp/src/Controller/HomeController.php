@@ -10,6 +10,7 @@ use App\Form\FilterASType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
 use App\Repository\AcquisitionSystemRepository;
+use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\SensorStateEnum;
@@ -24,6 +25,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 
 /**
  * Class HomeController
@@ -35,17 +38,58 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 class HomeController extends AbstractController
 {
     /**
-     * Displays the home page.
+     * Displays the home dashboard with statistical data and weather forecasts.
      *
      * @Route("/home", name="app_home")
      *
-     * @return Response The rendered home page.
+     * This method retrieves and prepares the data required for the home dashboard, including:
+     * - Counts of rooms, acquisition systems, critical and at-risk rooms.
+     * - Weather forecasts for the next 4 days fetched from a weather API via the WeatherApiService.
+     * - Pending actions retrieved from the database.
+     *
+     * @param RoomRepository             $roomRepository             Repository for managing room entities.
+     * @param AcquisitionSystemRepository $acquisitionSystemRepository Repository for managing acquisition system entities.
+     * @param ActionRepository           $actionRepository           Repository for managing action entities.
+     * @param WeatherApiService          $weatherApiService          Service for fetching and processing weather data.
+     *
+     * @return Response Rendered home page with all the necessary data.
      */
     #[Route('/home', name: 'app_home')]
-    public function home(): Response
-    {
+    public function home(
+        RoomRepository $roomRepository,
+        AcquisitionSystemRepository $acquisitionSystemRepository,
+        ActionRepository $actionRepository,
+        WeatherApiService $weatherApiService
+    ): Response {
+        // Retrieve the number of rooms, acquisition systems, and critical or at-risk rooms from the repositories
+        $roomsCount = $roomRepository->count([]);
+        $asCount = $acquisitionSystemRepository->count([]);
+        $criticalCount = $roomRepository->countByState('critical');
+        $atRiskCount = $roomRepository->countByState('at risk');
+
+        try {
+            // Fetch weather data from the WeatherApiService for the specified location
+            $weatherApiService->fetchWeatherData('46.16', '-1.15', 'Xu9ot3p6Bx4iIcfE');
+
+            // Get the 4-day weather forecast from the service
+            $forecast = $weatherApiService->getForecast();
+        } catch (\RuntimeException $e) {
+            // Handle exceptions during weather data retrieval by displaying an error message
+            $forecast = null;
+            $this->addFlash('error', 'Failed to fetch weather data: ' . $e->getMessage());
+        }
+
+        // Retrieve all actions that are not marked as 'done' from the repository
+        $actions = $actionRepository->findAllExceptDone();
+
+        // Render the dashboard view with the retrieved data
         return $this->render('home/index.html.twig', [
-            'controller_name' => 'HomeController',
+            'rooms_count' => $roomsCount,        // Total number of rooms
+            'as_count' => $asCount,              // Total number of acquisition systems
+            'critical_count' => $criticalCount,  // Number of critical rooms
+            'at_risk_count' => $atRiskCount,     // Number of at-risk rooms
+            'forecast' => $forecast,             // Weather forecast data for 4 days
+            'actions' => $actions,               // List of pending actions
         ]);
     }
 
@@ -252,9 +296,7 @@ class HomeController extends AbstractController
 
         $actionTypes = [
             ActionInfoEnum::ASSIGNMENT->value => 'info',
-            ActionInfoEnum::UNASSIGNMENT->value => 'danger',
-            ActionInfoEnum::SWITCH->value => 'warning',
-            ActionInfoEnum::REPLACEMENT->value => 'primary',
+            ActionInfoEnum::UNASSIGNMENT->value => 'warning',
         ];
 
         return $this->render('home/done.html.twig', [

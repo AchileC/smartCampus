@@ -1,3 +1,146 @@
 {% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="container-fluid p-4" style="font-family: Arial, sans-serif; height: 100vh;">
+    <!-- Titre principal -->
+    <div class="text-center mb-4">
+        <h1>Hello user!</h1>
+        <h3>{{ "now"|date("l, d F Y") }}</h3>
+        <h4 id="current-time" style="font-weight: bold;">--:--:--</h4>
+    </div>
+
+    <!-- Contenu principal en grille -->
+    <div class="row gx-3 align-items-stretch" style="height: calc(100% - 150px);">
+        <!-- Colonne gauche -->
+        <div class="col-6 d-flex flex-column gap-3">
+            <!-- Infos -->
+            <div class="card p-3 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="border-radius: 10px;">
+                <h3 class="text-center">Infos</h3>
+                <div class="row mt-4 w-100">
+                    <div class="col-6 text-center">
+                        <div class="border p-3 rounded d-flex flex-column justify-content-center align-items-center">
+                            <h4>{{ rooms_count }}</h4>
+                            <p>Rooms</p>
+                        </div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div class="border p-3 rounded d-flex flex-column justify-content-center align-items-center">
+                            <h4>{{ as_count }}</h4>
+                            <p>AS</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4 w-100">
+                    <div class="col-6 text-center">
+                        <a href="{{ path('app_rooms', {'state': 'critical'}) }}"
+                           class="btn border p-3 bg-danger text-light rounded d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill mb-2" style="font-size: 1.5rem;"></i>
+                            <h4>{{ critical_count }}</h4>
+                            <p>Critical</p>
+                        </a>
+                    </div>
+                    <div class="col-6 text-center">
+                        <a href="{{ path('app_rooms', {'state': 'at risk'}) }}"
+                           class="btn border p-3 bg-warning text-dark rounded d-flex flex-column justify-content-center align-items-center">
+                            <i class="bi bi-info-circle-fill mb-2" style="font-size: 1.5rem;"></i>
+                            <h4>{{ at_risk_count }}</h4>
+                            <p>At Risk</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Météo -->
+            <div class="card p-3 flex-grow-1" style="border-radius: 10px;">
+                <h3 class="text-center">Weather</h3>
+                <div class="d-flex justify-content-around align-items-center mt-4 h-100">
+                    {% set pictocodeMapping = {
+                        1: '☀️',
+                        2: '🌤️',
+                        3: '⛅',
+                        4: '☁️',
+                        5: '🌫️',
+                        6: '🌧️',
+                        7: '🌦️',
+                        8: '⛈️',
+                        9: '🌨️',
+                        10: '🌥️❄️',
+                        11: '🌨️🌧️',
+                        12: '🌦️',
+                        13: '🌨️',
+                        14: '🌦️',
+                        15: '🌨️',
+                        16: '🌦️',
+                        17: '🌨️'
+                        } %}
+
+                        {% for day in forecast %}
+                        <div class="text-center">
+                        {% if loop.first %}
+                        <h1 class="fw-bold">Today</h1>
+                        {% else %}
+                        <h5>{{ day.date|date('l') }}</h5>
+                        {% endif %}
+                        <div class="mb-2" style="font-size: 2.5rem;">
+                        {{ pictocodeMapping[day.pictocode] ?? '❓' }}
+                        </div>
+                        <p>{{ day.temperature_min|round }}° / {{ day.temperature_max|round }}°</p>
+                        </div>
+                    {% else %}
+                    <p>No weather data available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne droite : To do list -->
+        <div class="col-6">
+            <div class="card p-3 h-100 d-flex flex-column justify-content-between" style="border-radius: 10px;">
+                <h3 class="text-center">To do list of technician</h3>
+                <div class="mt-4 flex-grow-1 overflow-auto">
+                    {% for action in actions %}
+                        <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+                            <div>
+                                <p class="mb-1"><strong>{{ action.info.value }}</strong> on {{ action.room.name }}</p>
+                            </div>
+                            <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-light{% endif %}">
+                                    {{ action.state.value | upper }}
+                                </span>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{{ path('app_todolist') }}" class="btn btn-primary">Access</a>
+                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s") }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function updateCurrentTime() {
+                const timeElement = document.getElementById('current-time');
+
+                if (timeElement) {
+                    const now = new Date();
+                    const formattedTime = now.toLocaleTimeString('en-US', { hour12: false });
+                    timeElement.textContent = formattedTime;
+                }
+            }
+
+            setInterval(updateCurrentTime, 1000);
+            updateCurrentTime(); // Initial update
+        });
+    </script>
+    <!-- Inclure Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}
+
+{% extends 'base.html.twig' %}
 {# home/index.html.twig #}
 {% block title %}Dashboard{% endblock %}
