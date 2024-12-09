@@ -33,23 +33,93 @@
                 {% if room.acquisitionSystem %}
                     <ul class="list-group">
                         <!-- Temperature -->
-                        <li class="list-group-item list-group-item-success">
-                            ✅ <strong>Temperature:</strong>
-                            {{ room.acquisitionSystem.temperature is not null ? room.acquisitionSystem.temperature ~ '°C' : 'No value measured' }}
+                        {% set temp = room.acquisitionSystem.temperature %}
+                        {% set isHeatingPeriod = "now"|date("m") in ["11", "12", "01", "02", "03", "04"] %}
+                        {% set tempWarning = (isHeatingPeriod and (temp < 17 or temp > 21)) or (not isHeatingPeriod and (temp < 24 or temp > 28)) %}
+                        {% set tempClass = tempWarning ? 'list-group-item-warning' : 'list-group-item-success' %}
+                        <li class="list-group-item {{ tempClass }}">
+                            {{ tempWarning ? '⚠️' : '✅' }} <strong>Temperature:</strong>
+                            {{ temp is not null ? temp ~ '°C' : 'No value measured' }}
+                            {% if temp is not null %}
+                                <div class="mt-2 small {% if tempWarning %}text-danger{% else %}text-success{% endif %}">
+                                    {% if isHeatingPeriod %}
+                                        {% if temp < 17 %}
+                                            Check if the heating system is working properly, ensure it's turned on and adjust temperature to reach recommended threshold (19°C)
+                                        {% elseif temp > 21 %}
+                                            Reduce or turn off heating to avoid energy overconsumption
+                                        {% else %}
+                                            Maintain this temperature range without modification
+                                        {% endif %}
+                                    {% else %}
+                                        {% if temp < 24 %}
+                                            If air conditioning is present, it can be adjusted to reach the recommended threshold of 26°C
+                                        {% elseif temp > 28 %}
+                                            Activate air conditioning or fans, but set temperature to maximum 26°C to avoid energy overconsumption, Ventilate the room if possible to improve air circulation
+                                        {% else %}
+                                            No adjustment required
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </li>
 
                         <!-- Humidity -->
-                        <li class="list-group-item list-group-item-success">
-                            ✅ <strong>Humidity:</strong>
-                            {{ room.acquisitionSystem.humidity is not null ? room.acquisitionSystem.humidity ~ '%' : 'No value measured' }}
+                        {% set hum = room.acquisitionSystem.humidity %}
+                        {% set humWarning = hum > 60 and hum <= 70 %}
+                        {% set humCritical = hum > 70 and temp > 20 %}
+                        {% set humClass = humCritical ? 'list-group-item-danger' : (humWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
+                        <li class="list-group-item {{ humClass }}">
+                            {% if humCritical %}
+                                🚨
+                            {% elseif humWarning %}
+                                ⚠️
+                            {% else %}
+                                ✅
+                            {% endif %}
+                            <strong>Humidity:</strong>
+                            {{ hum is not null ? hum ~ '%' : 'No value measured' }}
+                            {% if hum is not null %}
+                                <div class="mt-2 small {% if humCritical %}text-danger{% elseif humWarning %}text-warning{% else %}text-success{% endif %}">
+                                    {% if humCritical %}
+                                        Urgently ventilate the room to reduce humidity; if this persists, consider installing a dehumidifier
+                                    {% elseif humWarning %}
+                                        Monitor humidity; ventilate the room if possible to avoid excessive humidity buildup
+                                    {% else %}
+                                        No adjustment required
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </li>
 
                         <!-- CO₂ -->
-                        <li class="list-group-item list-group-item-success">
-                            ✅️ <strong>CO₂:</strong>
-                            {{ room.acquisitionSystem.co2 is not null ? room.acquisitionSystem.co2 ~ ' ppm' : 'No value measured' }}
-                            {% if room.acquisitionSystem.co2 is not null and room.acquisitionSystem.co2 > 1000 %}
-                                <a href="">See anomaly</a>
+                        {% set co2 = room.acquisitionSystem.co2 %}
+                        {% set co2Warning = co2 > 1000 and co2 <= 1500 %}
+                        {% set co2Critical = co2 > 1500 %}
+                        {% set co2Error = co2 < 440 or co2 > 2000 %}
+                        {% set co2Class = co2Error ? 'list-group-item-danger' : (co2Critical ? 'list-group-item-danger' : (co2Warning ? 'list-group-item-warning' : 'list-group-item-success')) %}
+                        <li class="list-group-item {{ co2Class }}">
+                            {% if co2Error %}
+                                🚨
+                            {% elseif co2Critical or co2Warning %}
+                                ⚠️
+                            {% else %}
+                                ✅
+                            {% endif %}
+                            <strong>CO₂:</strong>
+                            {{ co2 is not null ? co2 ~ ' ppm' : 'No value measured' }}
+                            {% if co2 is not null %}
+                                <div class="mt-2 small {% if co2Error or co2Critical %}text-danger{% elseif co2Warning %}text-warning{% else %}text-success{% endif %}">
+                                    {% if co2Error %}
+                                        Probable error, check sensor status
+                                    {% elseif co2 > 1500 and co2 <= 2000 %}
+                                        CO2 concentration is high. Please ventilate immediately to avoid discomfort.
+                                    {% elseif co2 > 1000 %}
+                                        Air quality is starting to decrease. If possible, prepare to slightly ventilate the room.
+                                        Open a window or door slightly if levels continue to rise.
+                                    {% else %}
+                                        Air quality is good, no action needed
+                                    {% endif %}
+                                </div>
                             {% endif %}
                         </li>
                     </ul>

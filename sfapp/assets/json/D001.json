@@ -2,7 +2,7 @@
   {
     "id": 1,
     "nom": "temp",
-    "valeur": "21",
+    "valeur": "50",
     "dateCapture": "2024-12-01 15:30:00",
     "location": "D302",
     "description": "Température mesurée.",
@@ -20,7 +20,7 @@
   {
     "id": 3,
     "nom": "co2",
-    "valeur": "750",
+    "valeur": "1250",
     "dateCapture": "2024-12-01 15:30:00",
     "location": "D302",
     "description": "Taux de CO2 mesuré.",
