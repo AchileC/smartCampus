@@ -46,4 +46,22 @@ class ActionRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Retrieves the five most recent Action entities excluding those with a state of DONE.
+     *
+     * This method fetches the five latest actions that are not marked as done, ordered by their creation date in descending order.
+     *
+     * @return Action[] An array of the five most recent Action entities excluding those with state DONE.
+     */
+    public function findLatestFive(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.state != :done')
+            ->setParameter('done', ActionStateEnum::DONE)
+            ->orderBy('a.createdAt', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
 }

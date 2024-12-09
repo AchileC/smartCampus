@@ -80,7 +80,7 @@ class HomeController extends AbstractController
         }
 
         // Retrieve all actions that are not marked as 'done' from the repository
-        $actions = $actionRepository->findAllExceptDone();
+        $actions = $actionRepository->findLatestFive();
 
         // Render the dashboard view with the retrieved data
         return $this->render('home/index.html.twig', [

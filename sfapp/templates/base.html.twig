@@ -15,22 +15,23 @@
         <style>
 
             #toggleSidebarButton {
-                position: fixed; /* Position fixe pour qu'il reste toujours visible */
-                top: 20px; /* Ajustez cette valeur selon vos besoins */
-                left: 20px; /* Ajustez cette valeur selon vos besoins */
-                z-index: 1051; /* Assurez-vous qu'il est au-dessus des autres éléments */
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1051;
                 background-color: #343a40;
                 color: white;
                 border: none;
                 padding: 10px 15px;
                 border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optionnel : pour un effet visuel */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
                 cursor: pointer;
-                transition: all 0.3s ease-in-out;
+                transition: left 0.4s ease-in-out;
             }
+
             #toggleSidebarButton.with-sidebar {
-                left: 270px; /* Décale le bouton de la largeur de la sidebar */
-                transition: left 0.3s ease; /* Animation fluide */
+                left: 270px; /* 250px de sidebar + 20px de marge */
+                transition: left 0.4s ease-in-out;
             }
 
 
@@ -44,11 +45,30 @@
                 50% { transform: translateX(5px); }
                 75% { transform: translateX(-5px); }
             }
+
+            /* Responsive: Écrans de largeur maximale 768px */
             @media (max-width: 768px) {
-                #toggleSidebarButton {
-                    top: 10px;
-                    left: 10px;
-                    padding: 8px 12px;
+                /* Réduire la largeur de la sidebar */
+                #sidebar {
+                    width: 200px;
+                    left: -200px; /* Ajuster la position fermée */
+                }
+
+                /* Décalage du contenu principal */
+                #main-content.with-sidebar {
+                    margin-left: 200px;
+                }
+
+                /* Ajuster la position du bouton de toggle */
+                #toggleSidebarButton.with-sidebar {
+                    left: 220px; /* 200px de sidebar + 20px de marge */
+                }
+            }
+
+            /* Styles par défaut pour les écrans larges (min-width: 769px) */
+            @media (min-width: 769px) {
+                #sidebar {
+                    width: 250px;
                 }
             }
 
@@ -103,20 +123,22 @@
 
             body {
                 font-family: Arial, sans-serif;
+                display: flex;
+                min-height: 100vh;
+                margin: 0;
             }
 
             /* Sidebar styles */
             #sidebar {
                 height: 100%;
-                width: 250px;
                 position: fixed;
                 z-index: 1050;
                 top: 0;
-                left: 0;
+                left: -250px; /* Par défaut, la sidebar est fermée */
                 background-color: #343a40;
                 color: #fff;
                 padding-top: 20px;
-                transition: 0.5s;
+                transition: left 0.6s;
             }
 
             #sidebar .brand {
@@ -193,14 +215,15 @@
                 color: #fff;
             }
 
-            #sidebar.closed {
-                left: -250px;
+            #sidebar.open {
+                left: 0;
             }
 
             #main-content {
+                flex: 1;
                 transition: margin-left 0.3s;
-                margin-left: 0;
                 padding: 20px;
+                margin-left: 0;
             }
 
             #main-content.with-sidebar {
@@ -244,7 +267,7 @@
     {% endblock %}
 </head>
 <body>
-    <div id="sidebar" class="closed">
+    <div id="sidebar">
         <div class="brand">
             Smart Campus
         </div>
@@ -328,10 +351,8 @@
             const sidebar = document.getElementById('sidebar');
             const toggleButton = document.getElementById('toggleSidebarButton');
             const toggleIcon = document.getElementById('sidebarToggleIcon');
+            const mainContent = document.getElementById('main-content');
 
-            // Initialize the sidebar as closed and set the initial icon
-            sidebar.classList.add('closed');
-            toggleIcon.classList.add('bi-list');
 
             /**
              * @function toggleSidebar
@@ -342,18 +363,13 @@
              */
             // Fonction pour basculer la sidebar et ajuster le bouton
             window.toggleSidebar = function () {
-                const isSidebarClosed = sidebar.classList.toggle('closed');
+                const isOpen = sidebar.classList.toggle('open');
+                mainContent.classList.toggle('with-sidebar', isOpen);
+                toggleButton.classList.toggle('with-sidebar', isOpen);
 
-                // Basculer entre les icônes
-                toggleIcon.classList.toggle('bi-list', isSidebarClosed);
-                toggleIcon.classList.toggle('bi-arrow-bar-left', !isSidebarClosed);
-
-                // Ajouter ou supprimer la classe pour décaler le bouton
-                if (!isSidebarClosed) {
-                    toggleButton.style.left = '270px'; // Décale le bouton à droite (ajustez à la largeur de votre sidebar)
-                } else {
-                    toggleButton.style.left = '20px'; // Remet le bouton à sa position initiale
-                }
+                // Basculer l'icône
+                toggleIcon.classList.toggle('bi-list', !isOpen);
+                toggleIcon.classList.toggle('bi-arrow-bar-left', isOpen);
             };
 
             /**
