@@ -1,16 +1,8 @@
 <?php
-// ActionInfoEnum.php
 
 namespace App\Utils;
 
-/**
- * Enum ActionInfoEnum
- *
- * Defines the types of actions that can be performed within the system.
- *
- * @package App\Utils
- */
-enum ActionInfoEnum: string
+enum ActionInfoEnum : string
 {
     /**
      * Represents the assignment of an acquisition system to a room.
@@ -21,14 +13,4 @@ enum ActionInfoEnum: string
      * Represents the unassignment of an acquisition system from a room.
      */
     case UNASSIGNMENT = 'unassignment';
-
-    /**
-     * Represents the switching of an acquisition system's state or configuration.
-     */
-    case SWITCH = 'switch';
-
-    /**
-     * Represents the replacement of an acquisition system in a room.
-     */
-    case REPLACEMENT = 'replacement';
 }
