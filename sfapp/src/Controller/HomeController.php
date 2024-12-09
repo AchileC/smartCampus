@@ -27,6 +27,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+
 class HomeController extends AbstractController
 {
     #[Route('/home', name: 'app_home')]
@@ -58,22 +59,14 @@ class HomeController extends AbstractController
             $precipitations = $weatherData['data_day']['precipitation'];
             $pictocodes = $weatherData['data_day']['pictocode'];
 
-            $pictocodeMapping = [
-                1 => 'Clair',
-                2 => 'Partiellement nuageux',
-                3 => 'Nuageux',
-                4 => 'Couvert',
-                5 => 'Pluie légère',
-                6 => 'Pluie',
-            ];
-
+            // Pas de mapping dans le contrôleur (géré directement dans Twig)
             foreach ($dates as $index => $date) {
                 $forecast[] = [
                     'date' => $date,
                     'temperature_max' => $tempsMax[$index] ?? null,
                     'temperature_min' => $tempsMin[$index] ?? null,
                     'precipitation' => $precipitations[$index] ?? null,
-                    'pictocode' => $pictocodeMapping[$pictocodes[$index]] ?? 'Inconnu',
+                    'pictocode' => $pictocodes[$index] ?? null, // Stocker le pictocode brut
                 ];
             }
         } catch (\Exception $e) {
@@ -92,7 +85,6 @@ class HomeController extends AbstractController
             'actions' => $actions,
         ]);
     }
-
 
     #[Route('/todolist', name: 'app_todolist')]
     public function index(ActionRepository $actionRepository): Response
