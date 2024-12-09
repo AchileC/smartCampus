@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 {# home/edit.html.twig #}
-{% block title %}Edit Action{% endblock %}
+{% block title %}Edit Task{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center">{{ action.state.value == 'to do' ? 'Begin Action' : 'Validate Action' }}</h1>
+        <h1 class="text-center">{{ action.state.value == 'to do' ? 'Begin Task' : 'Validate Task' }}</h1>
 
         <div class="card mt-4">
             <div class="card-body">
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                     {% else %}
-                        <p class="text-warning text-center">This action does not require an acquisition system.</p>
+                        <p class="text-warning text-center">This task does not require an acquisition system.</p>
                     {% endif %}
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-success">Confirm</button>

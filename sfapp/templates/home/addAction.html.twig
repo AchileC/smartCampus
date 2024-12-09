@@ -1,0 +1,110 @@
+{# templates/todolist/addAction.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une Tâche{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-sm p-4">
+            <h1 class="text-center mb-4">Ajouter une Tâche</h1>
+
+            <div class="mb-4">
+                <a href="{{ path('app_todolist_add') }}" class="btn btn-secondary">Retour</a>
+            </div>
+
+            {% if elementType == 'assign' %}
+                <h2>Assign Task</h2>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+                <div class="mb-3">
+                    {{ form_label(form.room) }}
+                    {{ form_widget(form.room, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.room) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.acquisitionSystem) }}
+                    {{ form_widget(form.acquisitionSystem, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.acquisitionSystem) }}
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted">Si vous ne voyez pas la salle que vous recherchez, essayez de la créer.</small>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Proceed</button>
+                    <a href="{{ path('app_todolist_add') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+                {{ form_end(form) }}
+            {% elseif elementType == 'unassign' %}
+                <h2>Unassign Task</h2>
+                {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+                <div class="mb-3">
+                    {{ form_label(form.room) }}
+                    {{ form_widget(form.room, {'attr': {'class': 'form-control', 'id': 'room-select'}}) }}
+                    {{ form_errors(form.room) }}
+                </div>
+                <div id="acquisition-system-details" class="mb-3" style="display: none;">
+                    <h4 id="acquisition-system-name"></h4>
+                    <p id="acquisition-system-state"></p>
+                    <p>Le système d'acquisition sera désassigné de la salle sélectionnée.</p>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn btn-primary">Proceed</button>
+                    <a href="{{ path('app_todolist_add') }}" class="btn btn-secondary">Cancel</a>
+                </div>
+                {{ form_end(form) }}
+            {% endif %}
+
+            {# Afficher les messages de succès en utilisant Bootstrap Alert #}
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {# Afficher les messages d'erreur en utilisant Bootstrap Alert #}
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger mt-3" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if elementType == 'unassign' %}
+            const roomSelect = document.getElementById('room-select');
+            const acquisitionSystemDetails = document.getElementById('acquisition-system-details');
+            const acquisitionSystemName = document.getElementById('acquisition-system-name');
+            const acquisitionSystemState = document.getElementById('acquisition-system-state');
+
+            roomSelect.addEventListener('change', function () {
+                const roomId = this.value;
+                if (roomId) {
+                    // Effectuer une requête AJAX pour obtenir les détails du système d'acquisition
+                    fetch('{{ path('app_get_acquisition_system_details') }}?roomId=' + roomId) // Assurez-vous que le nom de la route est correct
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                acquisitionSystemName.textContent = 'Nom du Système d\'Acquisition : ' + data.acquisitionSystem.name;
+                                acquisitionSystemState.textContent = 'État du Système d\'Acquisition : ' + data.acquisitionSystem.state;
+                                acquisitionSystemDetails.style.display = 'block';
+                            } else {
+                                acquisitionSystemDetails.style.display = 'none';
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la récupération des détails du système d\'acquisition :', error);
+                            acquisitionSystemDetails.style.display = 'none';
+                        });
+                } else {
+                    acquisitionSystemDetails.style.display = 'none';
+                }
+            });
+            {% endif %}
+        });
+    </script>
+{% endblock %}

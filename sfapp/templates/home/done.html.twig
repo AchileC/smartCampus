@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 {# home/done.html.twig #}
-{% block title %}Completed Actions History{% endblock %}
+{% block title %}Completed Tasks History{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center">Completed Actions History</h1>
+        <h1 class="text-center">Completed Tasks History</h1>
 
         <a href="{{ path('app_todolist') }}" class="btn btn-outline-secondary btn-sm mb-3">Back to To-Do List</a>
 
         {% if doneActions is empty %}
             <div class="alert alert-info text-center mt-6">
-                No completed actions to display.
+                No completed tasks to display.
             </div>
         {% else %}
             <div class="row mt-4">

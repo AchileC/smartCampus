@@ -186,4 +186,31 @@ class RoomRepository extends ServiceEntityRepository
     }
 
 
+
+    /**
+     * Récupère les salles sans système d'acquisition lié.
+     *
+     * @return Room[]
+     */
+    public function findRoomsWithoutAS(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->leftJoin('r.acquisitionSystem', 'acq') // Changement de l'alias de 'as' à 'acq'
+            ->where('acq.id IS NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère les salles avec un système d'acquisition lié.
+     *
+     * @return Room[]
+     */
+    public function findRoomsWithAS(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->innerJoin('r.acquisitionSystem', 'acq') // Changement de l'alias de 'as' à 'acq'
+            ->getQuery()
+            ->getResult();
+    }
 }
