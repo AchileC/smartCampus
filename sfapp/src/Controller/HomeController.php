@@ -13,6 +13,7 @@ use App\Repository\AcquisitionSystemRepository;
 use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
+use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -264,6 +265,7 @@ class HomeController extends AbstractController
     ): Response {
         $action = $actionRepository->find($id);
 
+
         if (!$action) {
             throw $this->createNotFoundException('Action not found.');
         }
@@ -283,7 +285,10 @@ class HomeController extends AbstractController
             }
 
             $room = $action->getRoom();
+
             $room->setSensorState(SensorStateEnum::LINKED);
+            $room->setAcquisitionSystem($acquisitionSystem);
+            $room->setState(RoomStateEnum::WAITING);
             $acquisitionSystem->setState(SensorStateEnum::LINKED);
             $action->setAcquisitionSystem($acquisitionSystem);
         }
