@@ -7,6 +7,12 @@
 
         <h1 class="mb-4 text-center">Rooms List</h1>
 
+        <!-- Ajout de l'indicateur de dernière mise à jour -->
+        <div class="text-end mb-3">
+            <small class="text-muted">
+                Last update: <span id="lastUpdateTime">Just now</span>
+            </small>
+        </div>
 
         <!-- Bouton Add Room -->
         {% if is_granted('ROLE_MANAGER') %}
@@ -212,6 +218,37 @@
                     document.getElementById('filterForm').submit();
                 });
             }
+
+            /**
+             * @brief Updates the "last update" time display
+             * 
+             * Calculates and displays the time elapsed since the last page update
+             * in a human-readable format (e.g., "2 minutes ago", "just now", etc.)
+             */
+            const lastUpdateSpan = document.getElementById('lastUpdateTime');
+            const updateTime = new Date();
+
+            function updateLastUpdateTime() {
+                const now = new Date();
+                const diff = Math.floor((now - updateTime) / 1000); // Différence en secondes
+
+                let timeText;
+                if (diff < 60) {
+                    timeText = 'Just now';
+                } else if (diff < 3600) {
+                    const minutes = Math.floor(diff / 60);
+                    timeText = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+                } else {
+                    const hours = Math.floor(diff / 3600);
+                    timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                }
+
+                lastUpdateSpan.textContent = timeText;
+            }
+
+            // Update the time every minute
+            setInterval(updateLastUpdateTime, 60000);
+            updateLastUpdateTime(); // Initial update
         });
 
         /**
