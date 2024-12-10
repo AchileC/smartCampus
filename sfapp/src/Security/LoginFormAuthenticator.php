@@ -13,7 +13,6 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
@@ -57,7 +56,6 @@ class LoginFormAuthenticator extends AbstractAuthenticator
                     'authenticate',
                     $request->request->get('_csrf_token')
                 ),
-                new RememberMeBadge(),
             ]
         );
     }
@@ -65,7 +63,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return new RedirectResponse(
-            $this->router->generate('app_rooms')
+            $this->router->generate('app_home')
         );
     }
 

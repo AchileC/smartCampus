@@ -93,7 +93,7 @@ class AppFixtures extends Fixture
 
         $as4 = new AcquisitionSystem();
         $as4->setName("ESP-004");
-        $as4->setState(SensorStateEnum::ASSIGNMENT);
+        $as4->setState(SensorStateEnum::NOT_LINKED);
         $manager->persist($as4);
 
 //        $action1 = new Action();

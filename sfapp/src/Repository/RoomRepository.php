@@ -131,7 +131,7 @@ class RoomRepository extends ServiceEntityRepository
         if ($temperature == null && $humidity == null && $co2 == null) {
             $state = RoomStateEnum::WAITING;
         }
-        
+
         // Évaluation de la température
         if ($temperature !== null) {
             if ($isHeatingPeriod) {

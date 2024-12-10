@@ -30,6 +30,7 @@
         <!-- Conteneur des Actions -->
         <div class="card">
             <div class="card-body">
+                {% if actions is not empty %}
                 {% for action in actions %}
                     <div class="d-flex align-items-center justify-content-between border rounded p-3 mb-2">
                         <div>
@@ -64,6 +65,12 @@
                         </div>
                     </div>
                 {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <strong>No pending tasks.</strong>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
