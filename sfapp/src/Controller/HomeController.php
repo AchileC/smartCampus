@@ -54,20 +54,21 @@ class HomeController extends AbstractController
      * - Weather forecasts for the next 4 days fetched from a weather API via the WeatherApiService.
      * - Pending actions retrieved from the database.
      *
-     * @param RoomRepository             $roomRepository             Repository for managing room entities.
+     * @param RoomRepository $roomRepository Repository for managing room entities.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository Repository for managing acquisition system entities.
-     * @param ActionRepository           $actionRepository           Repository for managing action entities.
-     * @param WeatherApiService          $weatherApiService          Service for fetching and processing weather data.
+     * @param ActionRepository $actionRepository Repository for managing action entities.
+     * @param WeatherApiService $weatherApiService Service for fetching and processing weather data.
      *
      * @return Response Rendered home page with all the necessary data.
      */
     #[Route('/home', name: 'app_home')]
     public function home(
-        RoomRepository $roomRepository,
+        RoomRepository              $roomRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
-        ActionRepository $actionRepository,
-        WeatherApiService $weatherApiService
-    ): Response {
+        ActionRepository            $actionRepository,
+        WeatherApiService           $weatherApiService
+    ): Response
+    {
         // Retrieve the number of rooms, acquisition systems, and critical or at-risk rooms from the repositories
         $roomsCount = $roomRepository->count([]);
         $asCount = $acquisitionSystemRepository->count([]);
@@ -125,19 +126,20 @@ class HomeController extends AbstractController
     /**
      * Edits an existing action.
      *
-     * @param int                        $id                         The ID of the action to edit.
-     * @param Request                    $request                    The current HTTP request.
-     * @param ActionRepository           $actionRepository          The repository for actions.
-     * @param RoomRepository             $roomRepository            The repository for rooms.
+     * @param int $id The ID of the action to edit.
+     * @param Request $request The current HTTP request.
+     * @param ActionRepository $actionRepository The repository for actions.
+     * @param RoomRepository $roomRepository The repository for rooms.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
-     * @param EntityManagerInterface     $entityManager              The entity manager.
+     * @param EntityManagerInterface $entityManager The entity manager.
      *
      * @return Response The rendered edit action page or a redirect response.
      *
      * @throws NotFoundException If the action or room is not found.
      */
     #[Route('/todolist/edit/{id}', name: 'app_todolist_edit')]
-    public function editAction(int $id, Request $request, ActionRepository $actionRepository, RoomRepository $roomRepository, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response {
+    public function editAction(int $id, Request $request, ActionRepository $actionRepository, RoomRepository $roomRepository, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response
+    {
         $action = $actionRepository->find($id);
 
         if (!$action) {
@@ -173,8 +175,8 @@ class HomeController extends AbstractController
     /**
      * Deletes an action.
      *
-     * @param Action                $action        The action to delete.
-     * @param Request               $request       The current HTTP request.
+     * @param Action $action The action to delete.
+     * @param Request $request The current HTTP request.
      * @param EntityManagerInterface $entityManager The entity manager.
      *
      * @return Response A redirect response to the to-do list.
@@ -212,15 +214,15 @@ class HomeController extends AbstractController
     /**
      * Begins an action by changing its state to DOING.
      *
-     * @param int                        $id                The ID of the action to begin.
-     * @param ActionRepository           $actionRepository  The repository for actions.
-     * @param EntityManagerInterface     $entityManager     The entity manager.
+     * @param int $id The ID of the action to begin.
+     * @param ActionRepository $actionRepository The repository for actions.
+     * @param EntityManagerInterface $entityManager The entity manager.
      *
      * @return Response A redirect response to the to-do list.
      *
      * @throws NotFoundException If the action is not found.
      */
-    #[Route('/todolist/{id}/begin', name:'app_begin_action', methods:['POST'])]
+    #[Route('/todolist/{id}/begin', name: 'app_begin_action', methods: ['POST'])]
     public function beginAction(int $id, ActionRepository $actionRepository, EntityManagerInterface $entityManager): Response
     {
         $action = $actionRepository->find($id);
@@ -245,24 +247,25 @@ class HomeController extends AbstractController
     /**
      * Validates an action by changing its state to DONE.
      *
-     * @param int                        $id                          The ID of the action to validate.
-     * @param Request                    $request                     The current HTTP request.
-     * @param ActionRepository           $actionRepository           The repository for actions.
+     * @param int $id The ID of the action to validate.
+     * @param Request $request The current HTTP request.
+     * @param ActionRepository $actionRepository The repository for actions.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
-     * @param EntityManagerInterface     $entityManager               The entity manager.
+     * @param EntityManagerInterface $entityManager The entity manager.
      *
      * @return Response A redirect response to the to-do list.
      *
      * @throws NotFoundException If the action or acquisition system is not found.
      */
-    #[Route('/todolist/{id}/validate', name:'app_validate_action', methods:['POST'])]
+    #[Route('/todolist/{id}/validate', name: 'app_validate_action', methods: ['POST'])]
     public function validateAction(
-        int $id,
-        Request $request,
-        ActionRepository $actionRepository,
+        int                         $id,
+        Request                     $request,
+        ActionRepository            $actionRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
-        EntityManagerInterface $entityManager
-    ): Response {
+        EntityManagerInterface      $entityManager
+    ): Response
+    {
         $action = $actionRepository->find($id);
 
 
@@ -340,14 +343,18 @@ class HomeController extends AbstractController
     /**
      * Displays the list of acquisition systems with filtering options.
      *
-     * @param Request                    $request                    The current HTTP request.
+     * This method handles the filtering and listing of acquisition systems.
+     * Users can filter by name and state using the filter form.
+     *
+     * @param Request $request The current HTTP request.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
      *
-     * @return Response The rendered acquisition systems list page.
+     * @return Response The rendered page displaying acquisition systems with optional filters applied.
      */
     #[Route('/as', name: 'app_acquisition_system')]
     public function asList(Request $request, AcquisitionSystemRepository $acquisitionSystemRepository): Response
     {
+        // Create and process the filter form
         $filterForm = $this->createForm(FilterASType::class);
         $filterForm->handleRequest($request);
 
@@ -355,27 +362,27 @@ class HomeController extends AbstractController
         $formSubmitted = $filterForm->isSubmitted() && $filterForm->isValid();
 
         if ($filterForm->get('reset')->isClicked()) {
-            // Redirige vers la même page sans les filtres
+            // Redirect to the same page without filters
             return $this->redirectToRoute('app_acquisition_system');
         }
 
         if ($formSubmitted) {
-            /** @var Room $data */
+            /** @var AcquisitionSystem $data */
             $data = $filterForm->getData();
 
+            // Filter by name if provided
             if (!empty($data->getName())) {
                 $criteria['name'] = $data->getName();
             }
 
-
+            // Filter by state if provided
             if ($data->getState()) {
                 $criteria['state'] = $data->getState();
             }
-
         }
-        $as = $acquisitionSystemRepository->findByCriteria($criteria);
 
-        $deleteForms = [];
+        // Fetch acquisition systems based on criteria
+        $as = $acquisitionSystemRepository->findByCriteria($criteria);
 
         return $this->render('home/aslist.html.twig', [
             'as' => $as,
@@ -388,43 +395,49 @@ class HomeController extends AbstractController
     /**
      * Adds a new acquisition system.
      *
-     * @param Request                    $request                    The current HTTP request.
-     * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
-     * @param EntityManagerInterface     $entityManager              The entity manager.
+     * This method provides a form to add a new acquisition system. It validates
+     * the input, ensures uniqueness of the system name, and saves the system to the database.
      *
-     * @return Response The rendered add acquisition system page or a redirect response.
+     * @param Request $request The current HTTP request.
+     * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
+     * @param EntityManagerInterface $entityManager The entity manager to persist the data.
+     *
+     * @return Response The rendered page for adding an acquisition system or a redirect to the list page.
      */
     #[Route('/as/add', name: 'app_acquisition_system_add')]
     public function addAS(Request $request, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response
     {
+        // Initialize a new acquisition system with a default state
         $as = new AcquisitionSystem();
         $as->setState(SensorStateEnum::NOT_LINKED);
+
+        // Create and process the form
         $form = $this->createForm(AddASType::class, $as, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer la valeur du champ 'number'
+            // Retrieve and format the number field
             $number = $form->get('number')->getData();
-
-            // Formater le numéro avec des zéros en tête
             $formattedNumber = str_pad($number, 3, '0', STR_PAD_LEFT);
 
-            // Définir le nom complet avec le préfixe
+            // Set the complete system name
             $as->setName('ESP-' . $formattedNumber);
 
-            // Vérifier l'unicité du nom
+            // Ensure the name is unique
             $existingAS = $acquisitionSystemRepository->findOneBy(['name' => $as->getName()]);
             if ($existingAS) {
                 $form->get('number')->addError(new FormError('The acquisition system name must be unique. This name is already in use.'));
+                return $this->render('home/addAS.html.twig', ['form' => $form->createView()]);
             }
 
+            // Save the new acquisition system to the database
             $entityManager->persist($as);
             $entityManager->flush();
 
             $this->addFlash('success', 'Acquisition system added successfully.');
 
+            // Redirect to the acquisition system list page
             return $this->redirectToRoute('app_acquisition_system');
-
         }
 
         return $this->render('home/addAS.html.twig', [
