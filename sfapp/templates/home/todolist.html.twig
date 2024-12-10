@@ -53,15 +53,6 @@
                             <a href="{{ path('app_todolist_edit', {id: action.id}) }}" class="btn btn-outline-warning btn-sm me-2">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <button
-                                    class="btn btn-outline-danger btn-sm"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteActionModal"
-                                    data-action-id="{{ action.id }}"
-                                    data-delete-url="{{ path('app_todolist_delete', { id: action.id }) }}"
-                                    data-csrf-token="{{ csrf_token('delete_action_' ~ action.id) }}">
-                                <i class="bi bi-trash"></i>
-                            </button>
                         </div>
                     </div>
                 {% endfor %}
@@ -76,31 +67,6 @@
 
         <!-- Dernière Mise à Jour -->
         <p class="text-end text-muted mt-3">Last updated : {{ "now"|date("d/m/Y - H:i") }}</p>
-    </div>
-
-    <!-- Modale de Suppression -->
-    <div class="modal fade" id="deleteActionModal" tabindex="-1" aria-labelledby="deleteActionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="w-100 text-center">
-                        <h5 class="modal-title" id="deleteActionModalLabel">Cancel Action</h5>
-                    </div>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-
-                <div class="modal-body text-center">
-                    Are you sure you want to delete the action associated with the technician?<br>This is definitive.
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <form id="deleteActionForm" method="post" action="">
-                        <input type="hidden" name="_token" value="">
-                        <button type="button" class="btn btn-success mx-2" data-bs-dismiss="modal">I changed my mind</button>
-                        <button type="submit" class="btn btn-danger mx-2">Confirm Cancelling</button>
-                    </form>
-                </div>
-            </div>
-        </div>
     </div>
 {% endblock %}
 {% block javascripts %}
