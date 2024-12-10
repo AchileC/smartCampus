@@ -126,7 +126,7 @@ class RoomRepository extends ServiceEntityRepository
         $currentMonth = (int)(new \DateTime())->format('m');
         $isHeatingPeriod = $currentMonth >= 11 || $currentMonth <= 4;
 
-        $state = RoomStateEnum::STABLE; // Par défaut
+        $state = RoomStateEnum::WAITING; // Par défaut
 
         // Évaluation de la température
         if ($temperature !== null) {

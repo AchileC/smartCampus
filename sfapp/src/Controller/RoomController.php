@@ -266,6 +266,7 @@ class RoomController extends AbstractController
         $acquisitionSystem = $room->getAcquisitionSystem();
         if ($acquisitionSystem !== null) {
             $acquisitionSystem->setRoom(null);
+            $acquisitionSystem->setState(SensorStateEnum::NOT_LINKED);
             $entityManager->persist($acquisitionSystem);
         }
         $entityManager->remove($room);
