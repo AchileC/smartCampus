@@ -31,6 +31,20 @@
                 </p>
 
                 {% if room.acquisitionSystem %}
+                    <!-- Information about periods and thresholds -->
+                    <div class="alert alert-info mb-3">
+                        <h6 class="alert-heading"><i class="fas fa-info-circle"></i> Room Monitoring Information</h6>
+                        <p class="mb-1"><strong>Heating Period:</strong> November to April</p>
+                        <p class="mb-1"><strong>Non-Heating Period:</strong> May to October</p>
+                        <hr>
+                        <p class="mb-1"><strong>Optimal temperature :</strong></p>
+                        <ul class="mb-1">
+                            <li>Heating Period: 19-21°C</li>
+                            <li>Non-Heating Period: 24-28°C</li>
+                        </ul>
+
+                    </div>
+
                     <ul class="list-group">
                         <!-- Temperature -->
                         {% set temp = room.acquisitionSystem.temperature %}
@@ -71,7 +85,7 @@
                         <div class="mt-2">
                             {% set minTemp = 10 %}
                             {% set maxTemp = 35 %}
-                            {% set currentTempPercentage = ((temp - minTemp) / (maxTemp - minTemp) * 100)|round %}
+                            {% set currentTempPercentage = max(0, min(100, ((temp - minTemp) / (maxTemp - minTemp) * 100)|round)) %}
                             <div class="position-relative">
                                 <div class="progress" style="height: 20px;">
                                     {% if isHeatingPeriod %}
@@ -102,8 +116,8 @@
 
                         <!-- Humidity -->
                         {% set hum = room.acquisitionSystem.humidity %}
-                        {% set humWarning = hum > 60 and hum <= 70 %}
-                        {% set humCritical = hum > 70%}
+                        {% set humWarning = (hum > 60 and hum <= 70) or (hum < 30 and hum >= 20) %}
+                        {% set humCritical = hum > 70 or hum < 20 %}
                         {% set humClass = humCritical ? 'list-group-item-danger' : (humWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
                         <li class="list-group-item {{ humClass }}">
                             {% if humCritical %}
@@ -133,7 +147,9 @@
                             {% set currentHumPercentage = hum|default(0) %}
                             <div class="position-relative">
                                 <div class="progress" style="height: 20px;">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="0-60%"></div>
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="0-20%"></div>
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 10%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="20-30%"></div>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 30%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="30-60%"></div>
                                     <div class="progress-bar bg-warning" role="progressbar" style="width: 10%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="60-70%"></div>
                                     <div class="progress-bar bg-danger" role="progressbar" style="width: 30%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="> 70%"></div>
                                 </div>
