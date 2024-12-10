@@ -269,25 +269,31 @@
 <body>
 <div id="sidebar">
     <div class="brand d-flex justify-content-center align-items-center">
+        {% if is_granted('ROLE_TECHNICIAN') or is_granted('ROLE_MANAGER') %}
         <a href="{{ path('app_home') }}" class="d-flex align-items-center text-decoration-none text-white">
             <img src="{{ asset('media/logo.png') }}" alt="Logo" style="height: 75px; width: auto; border-radius: 0;">
         </a>
+        {% else %}
+        <img src="{{ asset('media/logo.png') }}" alt="Logo" style="height: 75px; width: auto; border-radius: 0;">
+        {% endif %}
     </div>
     <hr>
         <nav class="nav flex-column">
             {# Récupérer la route actuelle #}
             {% set current_route = app.request.attributes.get('_route') %}
-
-            <a href="{{ path('app_home') }}"
-               class="nav-link {{ current_route starts with 'app_home' ? 'active' : '' }}">
-                <i class="bi bi-house-door"></i>
-                Home
-            </a>
             <a href="{{ path('app_rooms') }}"
                class="nav-link {{ current_route starts with 'app_rooms' ? 'active' : '' }}">
                 <i class="bi bi-box"></i>
                 Rooms
             </a>
+            {% if is_granted('ROLE_TECHNICIAN') or is_granted('ROLE_MANAGER') %}
+            <a href="{{ path('app_home') }}"
+               class="nav-link {{ current_route starts with 'app_home' ? 'active' : '' }}">
+                <i class="bi bi-house-door"></i>
+                Dashboard
+            </a>
+            {% endif %}
+            {% if is_granted('ROLE_TECHNICIAN') %}
             <a href="{{ path('app_todolist') }}"
                class="nav-link {{ current_route starts with 'app_todolist' ? 'active' : '' }}">
                 <i class="bi bi-speedometer2"></i>
@@ -298,6 +304,8 @@
                 <i class="bi bi-grid"></i>
                 AS List
             </a>
+            {% endif %}
+
         </nav>
 
 
@@ -327,7 +335,7 @@
                             <!-- Bouton Logout -->
                             <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                <button type="submit" class="btn btn-danger btn-sm w-100">Logout</button>
+                                <button type="submit" class="btn btn-outline-danger ">Logout</button>
                             </form>
                         </li>
                     </ul>

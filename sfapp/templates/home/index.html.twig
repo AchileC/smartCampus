@@ -1,10 +1,12 @@
- {% extends 'base.html.twig' %}
+{% block title %}Dashboard{% endblock %}
+{# home/index.html.twig #}
+{% extends 'base.html.twig' %}
 
 {% block body %}
 <div class="container-fluid p-4" style="font-family: Arial, sans-serif;">
     <!-- Titre principal -->
     <div class="text-center mb-4">
-        <h1>Hello user!</h1>
+        <h1>Hello {{ app.user.username }}!</h1>
         <h3>{{ "now"|date("l, d F Y") }}</h3>
         <h4 id="current-time" style="font-weight: bold;">--:--:--</h4>
     </div>
@@ -95,8 +97,12 @@
 
         <!-- Colonne droite : To do list -->
         <div class="col-6">
-            <div class="card p-3 h-100 d-flex flex-column justify-content-between" style="border-radius: 10px;">
-                <h3 class="text-center">To do list of technician</h3>
+            <div class="card p-5 h-80 d-flex flex-column justify-content-between" style="border-radius: 10px;">
+                {% if is_granted('ROLE_TECHNICIAN') %}
+                    <h3 class="text-center">To-Do-List</h3>
+                {% else %}
+                    <h3 class="text-center">Technician's To-Do-List</h3>
+                {% endif %}
                 <div class="mt-4 flex-grow-1 overflow-auto">
                     {% for action in actions %}
                         <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
@@ -109,10 +115,12 @@
                         </div>
                     {% endfor %}
                 </div>
+                {% if is_granted('ROLE_TECHNICIAN') %}
                 <div class="text-center mt-3">
                     <a href="{{ path('app_todolist') }}" class="btn btn-primary">Access</a>
                     <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s") }}</p>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

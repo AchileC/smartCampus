@@ -1,5 +1,5 @@
 <?php
-
+//SecurityController.php
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,5 +24,13 @@ class SecurityController extends AbstractController
     public function logout()
     {
         throw new \Exception('logout() should never be reached');
+    }
+
+    #[Route('/unauthorized', name: 'app_unauthorized')]
+    public function unauthorized(): Response
+    {
+        return $this->render('security/unauthorized.html.twig', [
+            'message' => 'You do not have permission to access this page.',
+        ]);
     }
 }

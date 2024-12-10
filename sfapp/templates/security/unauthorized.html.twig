@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+{# security/unauthorized.html.twig #}
+{% block title %}Access Denied{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+                <h1 class="display-4 text-danger">403 - Access Denied</h1>
+                <p class="lead">You do not have the necessary permissions to access this page.</p>
+                <hr>
+                <p>Please contact your administrator if you believe this is an error.</p>
+                <a href="{{ path('app_rooms') }}" class="btn btn-primary mt-3">Return to Rooms List</a>
+                <a href="{{ path('app_login') }}" class="btn btn-secondary mt-3">Login</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

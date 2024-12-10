@@ -1,73 +1,73 @@
-        {% extends 'base.html.twig' %}
-        {# home/edit.html.twig #}
-        {% block title %}Edit Task{% endblock %}
+{% extends 'base.html.twig' %}
+{# home/edit.html.twig #}
+{% block title %}Edit Task{% endblock %}
 
-        {% block body %}
-            <div class="container mt-5">
-                <h1 class="text-center">{{ action.state.value == 'to do' ? 'Begin Task' : 'Validate Task' }}</h1>
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">{{ action.state.value == 'to do' ? 'Begin Task' : 'Validate Task' }}</h1>
 
-                <div class="card mt-4">
-                    <div class="card-body">
-                        {% if action.state.value == 'to do' %}
-                            {# Begin Action Template #}
-                            <div class="alert alert-warning text-center">
-                                <h2 class="fw-bold">Installation of an acquisition system on {{ action.room.name }}</h2>
-                                <ul class="list-unstyled mt-3">
-                                    <li><strong>created:</strong> {{ action.createdAt|date('l d F, H:i') }}</li>
-                                </ul>
-                            </div>
-                            <p class="text-info text-center">
-                                <i class="bi bi-info-circle"></i>
-                                By confirming, the manager will see that you have started the task.
-                            </p>
-                            <div class="text-center">
-                                <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
-                                    <button type="submit" class="btn btn-success">Begin</button>
-                                    <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Not now</a>
-                                </form>
-                            </div>
-                        {% elseif action.state.value == 'doing' %}
-                            {# Validate Action Template #}
-                            <div class="alert alert-info text-center">
-                                <h2 class="fw-bold">
-                                    {{ action.info.value | capitalize }} of an acquisition system on {{ action.room.name }}
-                                </h2>
-                                <ul class="list-unstyled mt-3">
-                                    <li><strong>created:</strong> {{ action.createdAt|date('l d F, H:i') }}</li>
-                                    <li><strong>begun:</strong> {{ action.startedAt|date('l d F, H:i') }}</li>
-                                </ul>
-                            </div>
-                            <p class="text-info text-center">
-                                <i class="bi bi-info-circle"></i>
-                                By confirming, you certify that the installation is complete. The manager will be informed.
-                            </p>
-
-                        <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
-                            {% if action.info.value != 'unassignment' %}
-                                    <div class="form-group mt-3 text-center">
-                                        <label for="acquisitionSystem">Choose the acquisition system now assigned for this room :</label>
-                                        <div class="d-flex justify-content-center mt-4">
-                                            <div class="dropdown custom-dropdown" style="width: 200px;">
-                                                <select id="acquisitionSystem" name="acquisitionSystem" class="form-select text-center">
-                                                    <option value="">Choose...</option>
-                                                    {% for system in acquisitionSystems %}
-                                                        <option value="{{ system.id }}">{{ system.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                            {% else %}
-                                <p class="text-warning text-center">This task does not require an acquisition system.</p>
-                            {% endif %}
-                            <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-success">Confirm</button>
-                                <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Cancel</a>
-                            </div>
-
-                        </form>
-                        {% endif %}
+        <div class="card mt-4">
+            <div class="card-body">
+                {% if action.state.value == 'to do' %}
+                    {# Begin Action Template #}
+                    <div class="alert alert-warning text-center">
+                        <h2 class="fw-bold">Installation of an acquisition system on {{ action.room.name }}</h2>
+                        <ul class="list-unstyled mt-3">
+                            <li><strong>created:</strong> {{ action.createdAt|date('l d F, H:i') }}</li>
+                        </ul>
                     </div>
-                </div>
+                    <p class="text-info text-center">
+                        <i class="bi bi-info-circle"></i>
+                        By confirming, the manager will see that you have started the task.
+                    </p>
+                    <div class="text-center">
+                        <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
+                            <button type="submit" class="btn btn-success">Begin</button>
+                            <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Not now</a>
+                        </form>
+                    </div>
+                {% elseif action.state.value == 'doing' %}
+                    {# Validate Action Template #}
+                    <div class="alert alert-info text-center">
+                        <h2 class="fw-bold">
+                            {{ action.info.value | capitalize }} of an acquisition system on {{ action.room.name }}
+                        </h2>
+                        <ul class="list-unstyled mt-3">
+                            <li><strong>created:</strong> {{ action.createdAt|date('l d F, H:i') }}</li>
+                            <li><strong>begun:</strong> {{ action.startedAt|date('l d F, H:i') }}</li>
+                        </ul>
+                    </div>
+                    <p class="text-info text-center">
+                        <i class="bi bi-info-circle"></i>
+                        By confirming, you certify that the installation is complete. The manager will be informed.
+                    </p>
+
+                <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
+                    {% if action.info.value != 'unassignment' %}
+                            <div class="form-group mt-3 text-center">
+                                <label for="acquisitionSystem">Choose the acquisition system now assigned for this room :</label>
+                                <div class="d-flex justify-content-center mt-4">
+                                    <div class="dropdown custom-dropdown" style="width: 200px;">
+                                        <select id="acquisitionSystem" name="acquisitionSystem" class="form-select text-center">
+                                            <option value="">Choose...</option>
+                                            {% for system in acquisitionSystems %}
+                                                <option value="{{ system.id }}">{{ system.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                    {% else %}
+                        <p class="text-warning text-center">This task does not require an acquisition system.</p>
+                    {% endif %}
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success">Confirm</button>
+                        <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+
+                </form>
+                {% endif %}
             </div>
-        {% endblock %}
+        </div>
+    </div>
+{% endblock %}

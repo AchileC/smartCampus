@@ -14,9 +14,6 @@ use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\SensorStateEnum;
-use App\Form\AssignFormType;
-use App\Form\UnassignFormType;
-use App\Form\ChangementFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 /**
@@ -38,9 +36,17 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class HomeController extends AbstractController
 {
     /**
+     * @return Response
+     */
+    #[Route('/', name: 'index')]
+    public function index(): Response
+    {
+        // Redirige vers la route 'app_rooms'
+        return $this->redirectToRoute('app_rooms');
+    }
+
+    /**
      * Displays the home dashboard with statistical data and weather forecasts.
-     *
-     * @Route("/home", name="app_home")
      *
      * This method retrieves and prepares the data required for the home dashboard, including:
      * - Counts of rooms, acquisition systems, critical and at-risk rooms.
@@ -96,14 +102,12 @@ class HomeController extends AbstractController
     /**
      * Displays the to-do list.
      *
-     * @Route("/todolist", name="app_todolist")
-     *
      * @param ActionRepository $actionRepository The repository for actions.
      *
      * @return Response The rendered to-do list page.
      */
     #[Route('/todolist', name: 'app_todolist')]
-    public function index(ActionRepository $actionRepository): Response
+    public function todolist(ActionRepository $actionRepository): Response
     {
         $actions = $actionRepository->findAllExceptDone();
 
@@ -119,8 +123,6 @@ class HomeController extends AbstractController
 
     /**
      * Edits an existing action.
-     *
-     * @Route("/todolist/edit/{id}", name="app_todolist_edit")
      *
      * @param int                        $id                         The ID of the action to edit.
      * @param Request                    $request                    The current HTTP request.
@@ -156,7 +158,7 @@ class HomeController extends AbstractController
             $action->setState(ActionStateEnum::from($state));
             $entityManager->flush();
 
-            return $this->redirectToRoute('todolist');
+            return $this->redirectToRoute('app_todolist');
         }
         $acquisitionSystems = $acquisitionSystemRepository->findSystemsNotLinked();
 
@@ -169,8 +171,6 @@ class HomeController extends AbstractController
 
     /**
      * Deletes an action.
-     *
-     * @Route("/todolist/delete/{id}", name="app_todolist_delete", methods={"POST"})
      *
      * @param Action                $action        The action to delete.
      * @param Request               $request       The current HTTP request.
@@ -211,8 +211,6 @@ class HomeController extends AbstractController
     /**
      * Begins an action by changing its state to DOING.
      *
-     * @Route("/todolist/{id}/begin", name="app_begin_action", methods={"POST"})
-     *
      * @param int                        $id                The ID of the action to begin.
      * @param ActionRepository           $actionRepository  The repository for actions.
      * @param EntityManagerInterface     $entityManager     The entity manager.
@@ -230,7 +228,7 @@ class HomeController extends AbstractController
             throw $this->createNotFoundException('Action not found.');
         }
 
-        if ($action->getState()->value !== 'to do') {
+        if ($action->getState() !== ActionStateEnum::TO_DO) {
             $this->addFlash('error', 'This action is not in a state that allows it to be started.');
             return $this->redirectToRoute('app_todolist');
         }
@@ -245,8 +243,6 @@ class HomeController extends AbstractController
 
     /**
      * Validates an action by changing its state to DONE.
-     *
-     * @Route("/todolist/{id}/validate", name="app_validate_action", methods={"POST"})
      *
      * @param int                        $id                          The ID of the action to validate.
      * @param Request                    $request                     The current HTTP request.
@@ -272,12 +268,12 @@ class HomeController extends AbstractController
             throw $this->createNotFoundException('Action not found.');
         }
 
-        if ($action->getState()->value !== 'doing') {
+        if ($action->getState() !== ActionStateEnum::DOING) {
             $this->addFlash('error', 'This action is not in a state that allows it to be validated.');
             return $this->redirectToRoute('app_todolist');
         }
 
-        if ($action->getInfo()->value == 'assignment') {
+        if ($action->getInfo() == ActionInfoEnum::ASSIGNMENT) {
             $acquisitionSystemId = $request->request->get('acquisitionSystem');
             $acquisitionSystem = $acquisitionSystemRepository->find($acquisitionSystemId);
 
@@ -292,7 +288,7 @@ class HomeController extends AbstractController
             $action->setAcquisitionSystem($acquisitionSystem);
         }
 
-        if ($action->getInfo()->value == 'unassignment') {
+        if ($action->getInfo() == ActionInfoEnum::UNASSIGNMENT) {
             $room = $action->getRoom();
 
             if ($room) {
@@ -316,8 +312,6 @@ class HomeController extends AbstractController
     /**
      * Displays all completed actions.
      *
-     * @Route("/todolist/done", name="app_todolist_done")
-     *
      * @param ActionRepository $actionRepository The repository for actions.
      *
      * @return Response The rendered done actions page.
@@ -340,8 +334,6 @@ class HomeController extends AbstractController
 
     /**
      * Displays the list of acquisition systems with filtering options.
-     *
-     * @Route("/as", name="app_acquisition_system")
      *
      * @param Request                    $request                    The current HTTP request.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
@@ -391,8 +383,6 @@ class HomeController extends AbstractController
     /**
      * Adds a new acquisition system.
      *
-     * @Route("/as/add", name="app_add_acquisition_system")
-     *
      * @param Request                    $request                    The current HTTP request.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
      * @param EntityManagerInterface     $entityManager              The entity manager.
@@ -407,7 +397,7 @@ class HomeController extends AbstractController
         $form = $this->createForm(AddASType::class, $as, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // Récupérer la valeur du champ 'number'
             $number = $form->get('number')->getData();
 
@@ -423,15 +413,13 @@ class HomeController extends AbstractController
                 $form->get('number')->addError(new FormError('The acquisition system name must be unique. This name is already in use.'));
             }
 
-            // Si le formulaire est valide après les vérifications
-            if ($form->isValid()) {
-                $entityManager->persist($as);
-                $entityManager->flush();
+            $entityManager->persist($as);
+            $entityManager->flush();
 
-                $this->addFlash('success', 'Acquisition system added successfully.');
+            $this->addFlash('success', 'Acquisition system added successfully.');
 
-                return $this->redirectToRoute('app_acquisition_system');
-            }
+            return $this->redirectToRoute('app_acquisition_system');
+
         }
 
         return $this->render('home/addAS.html.twig', [

@@ -46,10 +46,17 @@ class WeatherApiService
      */
     private function getSignedUrl(string $lat, string $lon, string $apiKey, int $expire): string
     {
-        $query = "/packages/basic-day?lat=$lat&lon=$lon&apikey=$apiKey&expire=$expire"; // API endpoint with query parameters
-        $sig = hash_hmac("sha256", $query, $this->sharedSecret); // Generate signature using HMAC SHA256
-        return $this->baseUrl . $query . "&sig=" . $sig; // Append the signature to the full URL
+        $params = [
+            'lat' => $lat,
+            'lon' => $lon,
+            'apikey' => $apiKey,
+            'expire' => $expire,
+        ];
+        $query = '/packages/basic-day?' . http_build_query($params);
+        $sig = hash_hmac('sha256', $query, $this->sharedSecret);
+        return rtrim($this->baseUrl, '/') . $query . '&sig=' . $sig;
     }
+
 
     /**
      * Fetches weather data from the API and stores it in the service.

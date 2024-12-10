@@ -6,6 +6,7 @@
 parameters:
     weather_api_shared_secret: '%env(WEATHER_API_SHARED_SECRET)%'
     weather_api_base_url: '%env(WEATHER_API_BASE_URL)%'
+    sensor_data_path: '%kernel.project_dir%/assets/json'
 services:
     # default configuration for services in *this* file
     _defaults:
