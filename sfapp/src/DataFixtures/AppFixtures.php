@@ -83,7 +83,7 @@ class AppFixtures extends Fixture
         $as3->setRoom($room3);
 
         $user1 = new User();
-        $user1->setUsername('test@test.com');
+        $user1->setUsername('test');
         $hashedPassword = $this->passwordHasher->hashPassword($user1, '1234');
         $user1->setPassword($hashedPassword);
         $user1->setRoles([UserRoleEnum::ROLE_MANAGER]);
