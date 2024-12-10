@@ -27,6 +27,8 @@ class AppFixtures extends Fixture
     }
     public function load(ObjectManager $manager): void
     {
+
+        // linked room, stable
         $room1 = new Room();
         $room1->setName("D001");
         $room1->setFloor(FloorEnum::GROUND);
@@ -38,7 +40,7 @@ class AppFixtures extends Fixture
         $room1->setState(RoomStateEnum::STABLE);
         $manager->persist($room1);
 
-
+        // linked room, critical problem
         $room2 = new Room();
         $room2->setName("D100");
         $room2->setFloor(FloorEnum::FIRST);
@@ -50,74 +52,77 @@ class AppFixtures extends Fixture
         $room2->setState(RoomStateEnum::CRITICAL);
         $manager->persist($room2);
 
+        // linked room, at risk
         $room3 = new Room();
-        $room3->setName("D301");
-        $room3->setFloor(FloorEnum::THIRD);
+        $room3->setName("D204");
+        $room3->setFloor(FloorEnum::SECOND);
         $room3->setNbHeaters(4);
-        $room3->setNbWindows(3);
-        $room3->setSurface(40);
+        $room3->setNbWindows(4);
+        $room3->setSurface(30);
         $room3->setSensorState(SensorStateEnum::LINKED);
         $room3->setCardinalDirection(CardinalEnum::WEST);
-        $room3->setState(RoomStateEnum::WAITING);
+        $room3->setState(RoomStateEnum::AT_RISK);
         $manager->persist($room3);
 
+        // linked room, waiting for data
         $room4 = new Room();
-        $room4->setName("D302");
+        $room4->setName("D301");
         $room4->setFloor(FloorEnum::THIRD);
-        $room4->setNbHeaters(5);
-        $room4->setNbWindows(4);
-        $room4->setSurface(60);
-        $room4->setSensorState(SensorStateEnum::NOT_LINKED);
+        $room4->setNbHeaters(4);
+        $room4->setNbWindows(3);
+        $room4->setSurface(40);
+        $room4->setSensorState(SensorStateEnum::LINKED);
         $room4->setCardinalDirection(CardinalEnum::WEST);
-        $room4->setState(RoomStateEnum::NONE);
+        $room4->setState(RoomStateEnum::WAITING);
         $manager->persist($room4);
 
+        // not linked room
+        $room5 = new Room();
+        $room5->setName("D302");
+        $room5->setFloor(FloorEnum::THIRD);
+        $room5->setNbHeaters(5);
+        $room5->setNbWindows(4);
+        $room5->setSurface(60);
+        $room5->setSensorState(SensorStateEnum::NOT_LINKED);
+        $room5->setCardinalDirection(CardinalEnum::SOUTH);
+        $room5->setState(RoomStateEnum::NONE);
+        $manager->persist($room5);
 
+        // linked Acquisition System with room 1, stable
         $as1 = new AcquisitionSystem();
         $as1->setName("ESP-001");
         $as1->setState(SensorStateEnum::LINKED);
         $as1->setRoom($room1);
         $manager->persist($as1);
 
+        // linked Acquisition System with room 2, critical problem
         $as2 = new AcquisitionSystem();
         $as2->setName("ESP-002");
         $as2->setState(SensorStateEnum::LINKED);
         $as2->setRoom($room2);
         $manager->persist($as2);
 
+        // linked Acquisition System with room 3, at risk
         $as3 = new AcquisitionSystem();
         $as3->setName("ESP-003");
         $as3->setState(SensorStateEnum::LINKED);
         $as3->setRoom($room3);
         $manager->persist($as3);
 
+        // linked Acquisition System with room 4, no data
         $as4 = new AcquisitionSystem();
         $as4->setName("ESP-004");
-        $as4->setState(SensorStateEnum::NOT_LINKED);
+        $as4->setState(SensorStateEnum::LINKED);
+        $as4->setRoom($room4);
         $manager->persist($as4);
 
-//        $action1 = new Action();
-//        $action1->setInfo(ActionInfoEnum::ASSIGNMENT);
-//        $action1->setState(ActionStateEnum::TO_DO);
-//        $action1->setCreatedAt(new \DateTime('2024-12-01 10:00:00'));
-//        $action1->setRoom($room4);
-//        $manager->persist($action1);
+        // not linked
+        $as5 = new AcquisitionSystem();
+        $as5->setName("ESP-005");
+        $as5->setState(SensorStateEnum::NOT_LINKED);
+        $manager->persist($as5);
 
-//        $action2 = new Action();
-//        $action2->setInfo(ActionInfoEnum::UNASSIGNMENT);
-//        $action2->setState(ActionStateEnum::DOING);
-//        $action2->setCreatedAt(new \DateTime('2024-12-02 14:00:00'));
-//        $action2->setStartedAt(new \DateTime('2024-12-02 16:00:00'));
-//        $action2->setRoom($room2);
-//        $manager->persist($action2);
-
-//        $action3 = new Action();
-//        $action3->setInfo(ActionInfoEnum::ASSIGNMENT);
-//        $action3->setState(ActionStateEnum::DOING);
-//        $action3->setCreatedAt(new \DateTime('2024-12-03 09:30:00'));
-//        $action3->setStartedAt(new \DateTime('2024-12-5 14:00:00'));
-//        $action3->setRoom($room3);
-
+        // manager user
         $user1 = new User();
         $user1->setUsername('manager');
         $hashedPassword = $this->passwordHasher->hashPassword($user1, 'manager');
@@ -125,21 +130,12 @@ class AppFixtures extends Fixture
         $user1->setRoles([UserRoleEnum::ROLE_MANAGER]);
         $manager->persist($user1);
 
+        // technician user
         $user2 = new User();
         $user2->setUsername('technician');
         $hashedPassword = $this->passwordHasher->hashPassword($user2, 'technician');
         $user2->setPassword($hashedPassword);
         $user2->setRoles([UserRoleEnum::ROLE_TECHNICIAN]);
-        $manager->persist($user2);
-
-        $manager->persist($room1);
-        $manager->persist($room2);
-        $manager->persist($room3);
-        $manager->persist($room4);
-        $manager->persist($as1);
-        $manager->persist($as2);
-        $manager->persist($user1);
-
         $manager->persist($user2);
 
         $manager->flush();

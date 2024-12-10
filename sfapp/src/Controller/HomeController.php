@@ -301,7 +301,7 @@ class HomeController extends AbstractController
 
             if ($room) {
                 $room->setSensorState(SensorStateEnum::NOT_LINKED);
-
+                $room->setState(RoomStateEnum::NONE);
                 $acquisitionSystem = $room->getAcquisitionSystem();
                 if ($acquisitionSystem) {
                     $acquisitionSystem->setState(SensorStateEnum::NOT_LINKED);
