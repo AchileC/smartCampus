@@ -125,7 +125,7 @@
                         </div>
                     {% endfor %}
                     {% if actions is empty %}
-                        <p>Aucune action trouvée.</p>
+                        <p class="text-center">No waiting tasks.</p>
                     {% endif %}
                 </div>
                 {% if is_granted('ROLE_TECHNICIAN') %}
