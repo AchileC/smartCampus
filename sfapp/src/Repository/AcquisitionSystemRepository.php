@@ -46,12 +46,12 @@ class AcquisitionSystemRepository extends ServiceEntityRepository
 
     public function findSystemsNotLinked(): array
     {
-        return $this->createQueryBuilder('acq') // Alias pour AcquisitionSystem
-        ->where('acq.state = :state')       // Vérifie que l'état correspond
-        ->andWhere('acq.room IS NULL')      // Vérifie que le système n'est pas lié à une salle
-        ->setParameter('state', SensorStateEnum::NOT_LINKED->value) // Utilisation de l'énumération
-        ->orderBy('acq.name', 'ASC')        // Trie les résultats par nom
-        ->getQuery()
+        return $this->createQueryBuilder('acq')
+            ->where('acq.state = :state')
+            ->andWhere('acq.room IS NULL')
+            ->setParameter('state', SensorStateEnum::NOT_LINKED->value)
+            ->orderBy('acq.name', 'ASC')
+            ->getQuery()
             ->getResult();
     }
 }

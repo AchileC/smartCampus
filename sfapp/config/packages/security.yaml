@@ -42,7 +42,9 @@ security:
         - { path: ^/error, roles: PUBLIC_ACCESS }
 
         # Permet l'accès à /as uniquement aux managers
-        - { path: ^/as, roles: ROLE_MANAGER }
+        - { path: ^/as, roles: ROLE_TECHNICIAN }
+
+        - { path: ^/todolist, roles: ROLE_TECHNICIAN }
 
         - { path: ^/, roles: PUBLIC_ACCESS }
 

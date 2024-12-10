@@ -3,7 +3,7 @@
 {% block title %}Room Details - {{ room.name }}{% endblock %}
 
 {% block body %}
-    <div class="container-fluid">
+    <div class="container-fluid ">
         <div class="row">
             <div class="col-12 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
                 <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>

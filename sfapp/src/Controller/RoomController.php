@@ -48,8 +48,6 @@ class RoomController extends AbstractController
      * The method includes filtering options based on criteria.
      * Users can filter by name, floor, or state. If no room matches the criteria, a message is displayed.
      *
-     * @Route("/rooms", name="app_rooms")
-     *
      * @param RoomRepository $roomRepository The repository to retrieve room data.
      * @param Request $request The HTTP request object.
      *
@@ -114,8 +112,6 @@ class RoomController extends AbstractController
      * This method allows users to add a new room. It includes form validation
      * and persists the new room entity if the form is successfully submitted.
      *
-     * @Route("/add", name="app_rooms_add")
-     *
      * @param Request $request The HTTP request object.
      * @param EntityManagerInterface $entityManager The entity manager to persist room data.
      *
@@ -154,8 +150,6 @@ class RoomController extends AbstractController
      *
      * This method retrieves the room information based on its name
      * and renders the detail view with its properties.
-     *
-     * @Route("/rooms/{name}", name="app_rooms_details")
      *
      * @param RoomRepository $roomRepository The repository to fetch room data.
      * @param string $name The name of the room to display.
@@ -198,8 +192,6 @@ class RoomController extends AbstractController
      *                  or renders the update form view if the form is not submitted or invalid.
      *
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found in the database.
-     *
-     * @Route("/rooms/{name}/update", name="app_rooms_update")
      */
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
     public function update(string $name, RoomRepository $roomRepository, Request $request, EntityManagerInterface $entityManager): Response
@@ -234,8 +226,6 @@ class RoomController extends AbstractController
      *
      * The method checks if the CSRF token is valid before deleting the room.
      * If the room does not exist, it throws a 404 error.
-     *
-     * @Route("/rooms/{name}/delete", name="app_rooms_delete", methods={"POST"})
      *
      * @param string $name The name of the room to delete.
      * @param RoomRepository $roomRepository The repository to fetch room data.
@@ -282,8 +272,6 @@ class RoomController extends AbstractController
      * This method sets the state of the specified room to "PENDING_ASSIGNMENT",
      * indicating that the room is awaiting the assignment of an acquisition system.
      *
-     * @Route("/rooms/{name}/request-assignment", name="app_rooms_request_assignment", methods={"POST"})
-     *
      * @param string $name The name of the room to assign an acquisition system.
      * @param RoomRepository $roomRepository The repository used to fetch room data.
      * @param EntityManagerInterface $entityManager The entity manager used to persist data.
@@ -328,8 +316,6 @@ class RoomController extends AbstractController
      * This method sets the state of the specified room to "PENDING_UNASSIGNMENT",
      * and saves the current state as "previousState" to allow restoration if needed.
      *
-     * @Route("/rooms/{name}/request-unassignment", name="app_rooms_request_unassignment", methods={"POST"})
-     *
      * @param string $name The name of the room from which to unassign the acquisition system.
      * @param RoomRepository $roomRepository The repository used to fetch room data.
      * @param EntityManagerInterface $entityManager The entity manager used to persist data.
@@ -372,8 +358,6 @@ class RoomController extends AbstractController
      *
      * This method restores the room state to the previous state if it was in "PENDING_UNASSIGNMENT".
      * If the room was in "PENDING_ASSIGNMENT", it changes the state to "NOT_LINKED".
-     *
-     * @Route("/rooms/{name}/cancel-installation", name="app_rooms_cancel_installation", methods={"POST"})
      *
      * @param string $name The name of the room for which the installation request is being canceled.
      * @param RoomRepository $roomRepository The repository used to fetch room data.

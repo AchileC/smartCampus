@@ -82,11 +82,49 @@ class AppFixtures extends Fixture
         $as3->setState(SensorStateEnum::NOT_LINKED);
         $as3->setRoom($room3);
 
+        $action1 = new Action();
+        $action1->setInfo(ActionInfoEnum::ASSIGNMENT);
+        $action1->setState(ActionStateEnum::TO_DO);
+        $action1->setCreatedAt(new \DateTime('2024-12-01 10:00:00'));
+        $action1->setRoom($room1);
+
+        $action2 = new Action();
+        $action2->setInfo(ActionInfoEnum::UNASSIGNMENT);
+        $action2->setState(ActionStateEnum::DOING);
+        $action2->setCreatedAt(new \DateTime('2024-12-02 14:00:00'));
+        $action2->setStartedAt(new \DateTime('2024-12-02 16:00:00'));
+        $action2->setRoom($room2);
+
+        $action3 = new Action();
+        $action3->setInfo(ActionInfoEnum::ASSIGNMENT);
+        $action3->setState(ActionStateEnum::DOING);
+        $action3->setCreatedAt(new \DateTime('2024-12-03 09:30:00'));
+        $action3->setStartedAt(new \DateTime('2024-12-5 14:00:00'));
+        $action3->setRoom($room3);
+
+        $action4 = new Action();
+        $action4->setInfo(ActionInfoEnum::UNASSIGNMENT);
+        $action4->setState(ActionStateEnum::TO_DO);
+        $action4->setCreatedAt(new \DateTime('2024-12-04 11:15:00'));
+        $action4->setRoom($room2);
+
+        $action5 = new Action();
+        $action5->setInfo(ActionInfoEnum::ASSIGNMENT);
+        $action5->setState(ActionStateEnum::TO_DO);
+        $action5->setCreatedAt(new \DateTime('2024-12-09 12:00:00'));
+        $action5->setRoom($room1);
+
         $user1 = new User();
-        $user1->setUsername('test@test.com');
+        $user1->setUsername('manager@test.com');
         $hashedPassword = $this->passwordHasher->hashPassword($user1, '1234');
         $user1->setPassword($hashedPassword);
         $user1->setRoles([UserRoleEnum::ROLE_MANAGER]);
+
+        $user2 = new User();
+        $user2->setUsername('technician@test.com');
+        $hashedPassword = $this->passwordHasher->hashPassword($user2, '1234');
+        $user2->setPassword($hashedPassword);
+        $user2->setRoles([UserRoleEnum::ROLE_TECHNICIAN]);
 
         $manager->persist($room1);
         $manager->persist($room2);
@@ -94,7 +132,13 @@ class AppFixtures extends Fixture
         $manager->persist($room4);
         $manager->persist($as1);
         $manager->persist($as2);
+        $manager->persist($action1);
+        $manager->persist($action2);
+        $manager->persist($action3);
+        $manager->persist($action4);
+        $manager->persist($action5);
         $manager->persist($user1);
+        $manager->persist($user2);
 
         $manager->flush();
     }
