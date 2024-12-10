@@ -327,10 +327,6 @@
                         <span>{{ app.user.username }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li class="dropdown-item text-center">
-                            <button id="toggleOptionsButton" class="btn btn-outline-info w-100">Activate Options</button>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <!-- Bouton Logout -->
                             <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
@@ -414,6 +410,27 @@
             themeLabel.innerText = "Dark Mode";
 
             /**
+             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
+             *
+             * Selects all elements that display flash messages to the user.
+             */
+            const flashMessages = document.querySelectorAll('.flash-message');
+
+            /**
+             * @brief Fades out and removes flash messages after 3 seconds.
+             *
+             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
+             * and removes the element from the DOM shortly after the fade-out animation completes.
+             */
+            flashMessages.forEach((message) => {
+                setTimeout(() => {
+                    message.classList.add('fade');
+                    setTimeout(() => message.remove(), 150);
+                }, 3000);
+            });
+
+
+            /**
              * @event change
              * @memberof themeToggleSwitch
              * @brief Event listener for theme toggling.
@@ -427,38 +444,6 @@
                 localStorage.setItem("theme", newTheme);
                 themeLabel.innerText = "Dark Mode";
             });
-
-            /**
-             * @var {HTMLButtonElement} toggleOptionsButton - The button to toggle additional options.
-             * @var {NodeListOf<HTMLElement>} optionsElements - The elements representing additional options.
-             * @var {boolean} optionsState - The current state of options (enabled/disabled).
-             */
-            const toggleOptionsButton = document.getElementById('toggleOptionsButton');
-            const optionsElements = document.querySelectorAll('.hidden-options');
-            let optionsState = localStorage.getItem('optionsEnabled') === 'true';
-
-            /**
-             * @function updateOptionsState
-             * @brief Updates the visibility of additional options and the button label.
-             *
-             * @param {boolean} enabled - Whether to enable or disable the options.
-             */
-            function updateOptionsState(enabled) {
-                optionsElements.forEach(el => el.style.display = enabled ? '' : 'none');
-                toggleOptionsButton.textContent = enabled ? 'Desactivate' : 'Activate Options';
-                localStorage.setItem('optionsEnabled', enabled);
-
-                // Update the "No match" message if it exists
-                const noMatchMessage = document.getElementById('no-match-message');
-                if (noMatchMessage) {
-                    noMatchMessage.innerHTML = enabled
-                        ? 'No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.'
-                : 'No match. Check spelling or change filter.';
-                }
-            }
-
-            // Initialize the options state
-            updateOptionsState(optionsState);
 
             /**
              * @event click

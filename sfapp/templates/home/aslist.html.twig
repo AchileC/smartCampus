@@ -9,7 +9,7 @@
 
         <!-- Button to add an acquisition system -->
         <div class="mb-4">
-            <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link hidden-options">Add AS</a>
+            <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link">Add AS</a>
         </div>
 
         <!-- Flash messages block -->
@@ -55,11 +55,7 @@
                 <!-- Message when no results match the filters -->
                 <div class="col-12 text-center">
                     <p id="no-match-message" data-add-room-link="{{ path('app_acquisition_system') }}">
-                        {% if optionsEnabled %}
                             No match. Check spelling or <a href="{{ path('app_acquisition_system') }}">create a new room</a>.
-                        {% else %}
-                            No match. Check spelling or change filter.
-                        {% endif %}
                     </p>
                 </div>
             {% else %}
@@ -97,31 +93,4 @@
             {% endif %}
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            /**
-             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
-             *
-             * Selects all elements that display flash messages to the user.
-             */
-            const flashMessages = document.querySelectorAll('.flash-message');
-
-            /**
-             * @brief Fades out and removes flash messages after 3 seconds.
-             *
-             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
-             * and removes the element from the DOM shortly after the fade-out animation completes.
-             */
-            flashMessages.forEach((message) => {
-                setTimeout(() => {
-                    message.classList.add('fade');
-                    setTimeout(() => message.remove(), 150);
-                }, 3000);
-            });
-        });
-    </script>
 {% endblock %}

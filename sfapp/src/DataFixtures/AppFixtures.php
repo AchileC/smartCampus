@@ -115,13 +115,13 @@ class AppFixtures extends Fixture
         $action5->setRoom($room1);
 
         $user1 = new User();
-        $user1->setUsername('test');
+        $user1->setUsername('manager');
         $hashedPassword = $this->passwordHasher->hashPassword($user1, '1234');
         $user1->setPassword($hashedPassword);
         $user1->setRoles([UserRoleEnum::ROLE_MANAGER]);
 
         $user2 = new User();
-        $user2->setUsername('technician@test.com');
+        $user2->setUsername('technician');
         $hashedPassword = $this->passwordHasher->hashPassword($user2, '1234');
         $user2->setPassword($hashedPassword);
         $user2->setRoles([UserRoleEnum::ROLE_TECHNICIAN]);

@@ -71,6 +71,11 @@ class RoomController extends AbstractController
             $criteria['state'] = $stateParam;
         }
 
+        if ($filterForm->get('reset')->isClicked()) {
+            // Redirige vers la même page sans les filtres
+            return $this->redirectToRoute('app_rooms');
+        }
+
         // Applique les critères du formulaire s'il est soumis
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {
             /** @var Room $data */

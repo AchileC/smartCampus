@@ -3,21 +3,56 @@
 {% block title %}Room Details - {{ room.name }}{% endblock %}
 
 {% block body %}
-    <div class="container-fluid ">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-12 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
+            <div class="col-md-10 offset-md-1 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
                 <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
             </div>
         </div>
 
         <!-- Description Card -->
-        <div class="card w-75 mx-auto mt-4">
+        <div class="card w-75 mx-auto mt-4 shadow-lg">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Informations Générales</h5>
+                <i class="bi bi-info-circle fs-3"></i>
+            </div>
             <div class="card-body">
-                <h5 class="card-title">General Information</h5>
-                <p class="card-text"><strong>Number of Windows :</strong> {{ room.nbWindows }}</p>
-                <p class="card-text"><strong>Number of Heaters :</strong> {{ room.nbHeaters }}</p>
-                <p class="card-text"><strong>Surface :</strong> {{ room.surface }} m²</p>
-                <p class="card-text"><strong>Cardinal Direction:</strong> {{ room.cardinalDirection ? room.cardinalDirection.value | capitalize : 'Non spécifiée' }}</p>
+                <div class="row g-3">
+                    <!-- Nombre de Fenêtres -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-microsoft fs-2 text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Number of Windows</h6>
+                            <span class="badge bg-success rounded-pill">{{ room.nbWindows }}</span>
+                        </div>
+                    </div>
+                    <!-- Nombre de Chauffages -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-thermometer-half fs-2 text-danger me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Number of Heaters</h6>
+                            <span class="badge bg-danger rounded-pill">{{ room.nbHeaters }}</span>
+                        </div>
+                    </div>
+                    <!-- Surface -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-aspect-ratio fs-2 text-warning me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Surface</h6>
+                            <span class="badge bg-warning text-dark rounded-pill">{{ room.surface }} m²</span>
+                        </div>
+                    </div>
+                    <!-- Direction Cardinale -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-compass fs-2 text-info me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Direction Cardinale</h6>
+                            <span class="badge bg-info text-dark rounded-pill">
+                        {{ room.cardinalDirection ? room.cardinalDirection.value | capitalize : 'Non spécifiée' }}
+                    </span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -208,40 +243,18 @@
             </div>
         </div>
 
-        <!-- Action Buttons (Update/Delete, initially hidden) -->
-        <div class="card w-75 mx-auto mt-4 text-center">
-            <div class="card-body hidden-options">
-                {% if not room.acquisitionSystem %}
-                    <h6 class="card-title">No assigned acquisition system.</h6>
-                {% else %}
-                    <h6 class="card-title">An acquisition system is assigned to this room.</h6>
-                {% endif %}
-                <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
-                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal">Delete</button>
-            </div>
-        </div>
-
-        <!-- Modal for Deletion -->
-        <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteRoomModalLabel">Delete Confirmation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete this room? This action cannot be undone.
-                    </div>
-                    <div class="modal-footer">
-                        <form id="deleteRoomForm" method="post" action="{{ path('app_rooms_delete', { name: room.name }) }}">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    </div>
+        {% if is_granted('ROLE_MANAGER') %}
+            <div class="card w-75 mx-auto mt-4 text-center">
+                <div class="card-body">
+                    {% if not room.acquisitionSystem %}
+                        <h6 class="card-title">No assigned acquisition system.</h6>
+                    {% else %}
+                        <h6 class="card-title">An acquisition system is assigned to this room.</h6>
+                    {% endif %}
+                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
                 </div>
             </div>
-        </div>
+        {% endif %}
 
         <!-- Back to List Button -->
         <div class="card w-75 mx-auto mt-4 text-center">

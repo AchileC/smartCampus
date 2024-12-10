@@ -40,7 +40,7 @@ class Room
     private ?int $nbHeaters = null;
     #[ORM\Column(nullable: true)]
     private ?int $nbWindows = null;
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?float $surface = null;
     #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;

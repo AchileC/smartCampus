@@ -97,28 +97,41 @@
 
         <!-- Colonne droite : To do list -->
         <div class="col-6">
-            <div class="card p-5 h-80 d-flex flex-column justify-content-between" style="border-radius: 10px;">
+            <div class="card p-5 h-60 d-flex flex-column justify-content-between" style="border-radius: 10px; max-height: 500px;">
                 {% if is_granted('ROLE_TECHNICIAN') %}
                     <h3 class="text-center">To-Do-List</h3>
                 {% else %}
                     <h3 class="text-center">Technician's To-Do-List</h3>
                 {% endif %}
-                <div class="mt-4 flex-grow-1 overflow-auto">
+                <div class="mt-4 flex-grow-1 overflow-auto" style="max-height: 300px;">
                     {% for action in actions %}
                         <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
                             <div>
-                                <p class="mb-1"><strong>{{ action.info.value }}</strong> on {{ action.room.name }}</p>
+                                <p class="mb-1">
+                                    <strong>{{ action.info.value }}</strong> on {{ action.room.name }}.
+                                </p>
+                                <p class="mb-1 small text-muted">
+                                    Created at: {{ action.createdAt|date("d/m/Y - H:i:s", "Europe/Paris") }}
+                                    {% if action.startedAt %}
+                                        . Started on: {{ action.startedAt|date("d/m/Y - H:i:s", "Europe/Paris") }}
+                                    {% else %}
+                                        . <em>Not started yet</em>
+                                    {% endif %}
+                                </p>
                             </div>
                             <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-light{% endif %}">
                                     {{ action.state.value | upper }}
-                                </span>
+                            </span>
                         </div>
                     {% endfor %}
+                    {% if actions is empty %}
+                        <p>Aucune action trouvée.</p>
+                    {% endif %}
                 </div>
                 {% if is_granted('ROLE_TECHNICIAN') %}
                 <div class="text-center mt-3">
                     <a href="{{ path('app_todolist') }}" class="btn btn-primary">Access</a>
-                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s") }}</p>
+                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
                 </div>
                 {% endif %}
             </div>

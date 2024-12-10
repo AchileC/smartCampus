@@ -74,8 +74,13 @@ class FilterRoomType extends AbstractType
             ])
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',
-                'attr' => ['class' => 'btn btn-primary'],
+                'attr' => ['class' => 'btn btn-primary']
             ])
+            /**
+             * Adds a submit button to reset the filters.
+             *
+             * @var SubmitType $reset
+             */
             ->add('reset', SubmitType::class, [
                 'label' => 'Reset',
                 'attr' => [
