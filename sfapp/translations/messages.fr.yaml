@@ -1,0 +1,12 @@
+# translations/messages.fr.yaml
+room:
+  add_success: "Salle ajoutée avec succès."
+  delete_success: "Salle supprimée avec succès."
+  name_label: "Nom de la Salle"
+  floor_label: "Étage"
+  description_label: "Description"
+  submit_button: "Ajouter la Salle"
+  cancel_button: "Annuler"
+  validation:
+    name_not_blank: "Le nom de la salle ne peut pas être vide."
+    name_regex: "Le nom doit commencer par une lettre suivie d'au moins trois chiffres."

@@ -1,0 +1,98 @@
+<?php
+
+namespace App\Repository;
+
+use App\Entity\Action;
+use App\Utils\ActionStateEnum;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * Class ActionRepository
+ *
+ * Repository class for managing Action entities.
+ *
+ * @extends ServiceEntityRepository<Action>
+ *
+ * @package App\Repository
+ */
+class ActionRepository extends ServiceEntityRepository
+{
+    /**
+     * ActionRepository constructor.
+     *
+     * Initializes the repository with the Action entity class.
+     *
+     * @param ManagerRegistry $registry The manager registry.
+     */
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Action::class);
+    }
+
+    /**
+     * Retrieves all Action entities except those with a state of DONE.
+     *
+     * This method fetches all actions that are not marked as done, ordered by their creation date in ascending order.
+     *
+     * @return Action[] An array of Action entities excluding those with state DONE.
+     */
+    public function findAllExceptDone(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.state != :done')
+            ->setParameter('done', ActionStateEnum::DONE)
+            ->orderBy('a.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find actions by room and state.
+     *
+     * @param int $roomId The ID of the room.
+     * @param array $states The list of states to filter by.
+     * @return Action[] The actions to delete.
+     */
+    public function findTasksForRoomToDelete(int $roomId, array $states = ['to do', 'doing']): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.room = :room')
+            ->andWhere('a.info = :info') // Only tasks of type 'assignment'
+            ->andWhere('a.state IN (:states)')
+            ->setParameter('room', $roomId)
+            ->setParameter('info', 'assignment')
+            ->setParameter('states', $states)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retrieves the five most recent Action entities excluding those with a state of DONE.
+     *
+     * This method fetches the five latest actions that are not marked as done, ordered by their creation date in descending order.
+     *
+     * @return Action[] An array of the five most recent Action entities excluding those with state DONE.
+     */
+    public function findLatestFive(): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.state != :done')
+            ->setParameter('done', ActionStateEnum::DONE)
+            ->orderBy('a.createdAt', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Récupère les actions en fonction des critères.
+     *
+     * @param array $criteria
+     * @return Action[]
+     */
+    public function findByCriteria(array $criteria): array
+    {
+        return $this->findBy($criteria);
+    }
+}

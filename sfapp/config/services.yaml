@@ -4,7 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-
+    weather_api_shared_secret: '%env(WEATHER_API_SHARED_SECRET)%'
+    weather_api_base_url: '%env(WEATHER_API_BASE_URL)%'
+    sensor_data_path: '%kernel.project_dir%/assets/json'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -20,5 +22,11 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Service\WeatherApiService:
+        arguments:
+            $sharedSecret: '%weather_api_shared_secret%'
+            $baseUrl: '%weather_api_base_url%'
+
+    App\EventListener\AuthenticationExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }

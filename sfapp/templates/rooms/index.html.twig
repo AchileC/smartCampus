@@ -1,0 +1,262 @@
+{% extends 'base.html.twig' %}
+{# rooms/index.html.twig #}
+{% block title %}Rooms List{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1 class="mb-4 text-center">Rooms List</h1>
+
+        <!-- Ajout de l'indicateur de dernière mise à jour -->
+        <div class="text-end mb-3">
+            <small class="text-muted">
+                Last update: <span id="lastUpdateTime">Just now</span>
+            </small>
+        </div>
+
+        <!-- Bouton Add Room -->
+        {% if is_granted('ROLE_MANAGER') %}
+            <div class="mb-4">
+                <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg add-room-link">Add Room</a>
+            </div>
+        {% endif %}
+
+        <!-- Flash messages block -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+
+        {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
+        <div class="row align-items-center">
+            <!-- Checkbox Sensor Status -->
+            <div class="mb-3">
+                <div class="form-check">
+                    {{ form_widget(filterForm.sensorStatus, {
+                        'attr': {
+                            'class': 'form-check-input sensor-status-checkbox',
+                            'id': 'filter_room_sensorStatus'
+                        }
+                    }) }}
+                    {{ form_label(filterForm.sensorStatus, null, {
+                        'label_attr': {
+                            'class': 'form-check-label',
+                            'for': 'filter_room_sensorStatus'
+                        }
+                    }) }}
+                </div>
+            </div>
+
+            <!-- Champ de Recherche par Nom -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- Champ de Filtrage par Étage -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <!-- Champ de Filtrage par État -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <div class="col-md-1">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
+            </div>
+
+            <!-- Boutons Reset et Search alignés à droite -->
+            <div class="col-md-2 d-flex justify-content-end">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+        </div>
+        {{ form_end(filterForm) }}
+
+        <div class="row">
+            {% if rooms|length == 0 %}
+                <div class="col-12 text-center">
+                    <p id="no-match-message" data-add-room-link="{{ path('app_rooms_add') }}">
+                        {% if is_granted('ROLE_MANAGER') %}
+                            No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.
+                        {% else %}
+                            No match. Check spelling or change filter.
+                        {% endif %}
+                    </p>
+                </div>
+            {% else %}
+                {% for room in rooms %}
+                    <div class="col-12 mb-3">
+                        <div class="card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title">{{ room.name }}</h5>
+                                    <p class="card-text"><strong>Floor:</strong> {{ room.floor.value | capitalize }}</p>
+                                    <p class="card-text"><strong>State:</strong>
+                                        <span class="badge-custom-size
+                                        {% if room.state.value == 'none' %}bg-secondary
+                                        {% elseif room.state.value == 'waiting' %}bg-primary
+                                        {% elseif room.state.value == 'stable' %}bg-success
+                                        {% elseif room.state.value == 'at risk' %}bg-warning
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ room.state.value | upper }}
+                                        </span>
+                                        <strong>Sensor:</strong>
+                                        <span class="badge-custom-size
+                                        {% if room.sensorState.value == 'linked' %}bg-success
+                                        {% elseif room.sensorState.value == 'probably broken' %}bg-warning
+                                        {% elseif room.sensorState.value == 'not linked' %}bg-secondary
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ room.sensorState.value | upper }}
+                                        </span>
+                                </div>
+
+                                <div>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
+                                        {% if is_granted('ROLE_MANAGER') %}
+                                        <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
+                                            Delete
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteRoomModalLabel">Deletion confirmation</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete the room {{ room.name }}<span id="roomNameToDelete"></span> ?
+                                                    <br>
+                                                    <p class="body_alert"> ⚠️<strong>If there is an assigned acquisition system, it will be unassigned automatically.</strong></p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <form id="deleteRoomForm" method="post">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        /**
+         * @file base.html.twig
+         * @brief Handles frontend interactivity for flash messages, modals, checkboxes, and auto-reloading.
+         *
+         * This script manages the following functionalities:
+         * - Fading out flash messages after a specified duration.
+         * - Setting up the Delete Room modal by dynamically updating the form action.
+         * - Managing the "Only show linked rooms" checkbox to filter room listings.
+         * - Automatically reloading the page every 30 minutes to ensure data freshness.
+         */
+
+        document.addEventListener('DOMContentLoaded', function () {
+            /**
+             * @var {HTMLElement|null} deleteRoomModal - The modal element for deleting a room.
+             * @var {HTMLFormElement|null} deleteRoomForm - The form inside the delete room modal.
+             *
+             * Selects the Delete Room modal and its corresponding form.
+             */
+            const deleteRoomModal = document.getElementById('deleteRoomModal');
+            const deleteRoomForm = document.getElementById('deleteRoomForm');
+
+            /**
+             * @brief Sets up the Delete Room modal by updating the form action with the selected room's name.
+             *
+             * Listens for the 'show.bs.modal' event to dynamically set the form's action URL based on the room
+             * that the user intends to delete. This ensures that the correct room is targeted when the form is submitted.
+             */
+            if (deleteRoomModal) {
+                deleteRoomModal.addEventListener('show.bs.modal', function (event) {
+                    const button = event.relatedTarget; // Button that triggered the modal
+                    const roomName = button.getAttribute('data-room-name'); // Extract room name from data attribute
+                    deleteRoomForm.action = '{{ path('app_rooms_delete', { name: 'ROOM_NAME_PLACEHOLDER' }) }}'.replace('ROOM_NAME_PLACEHOLDER', encodeURIComponent(roomName));
+                });
+            }
+
+            /**
+             * @var {HTMLInputElement|null} sensorStatusCheckbox - The checkbox to filter rooms based on sensor status.
+             *
+             * Selects the checkbox that, when toggled, filters the room listings to show only linked rooms.
+             */
+            const sensorStatusCheckbox = document.querySelector('.sensor-status-checkbox');
+
+            /**
+             * @brief Submits the filter form automatically when the "Only show linked rooms" checkbox is toggled.
+             *
+             * Adds an event listener to the checkbox to detect changes. When the checkbox state changes,
+             * the associated filter form is submitted to update the room listings accordingly.
+             */
+            if (sensorStatusCheckbox) {
+                sensorStatusCheckbox.addEventListener('change', function () {
+                    document.getElementById('filterForm').submit();
+                });
+            }
+
+            /**
+             * @brief Updates the "last update" time display
+             * 
+             * Calculates and displays the time elapsed since the last page update
+             * in a human-readable format (e.g., "2 minutes ago", "just now", etc.)
+             */
+            const lastUpdateSpan = document.getElementById('lastUpdateTime');
+            const updateTime = new Date();
+
+            function updateLastUpdateTime() {
+                const now = new Date();
+                const diff = Math.floor((now - updateTime) / 1000); // Différence en secondes
+
+                let timeText;
+                if (diff < 60) {
+                    timeText = 'Just now';
+                } else if (diff < 3600) {
+                    const minutes = Math.floor(diff / 60);
+                    timeText = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+                } else {
+                    const hours = Math.floor(diff / 3600);
+                    timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                }
+
+                lastUpdateSpan.textContent = timeText;
+            }
+
+            // Update the time every minute
+            setInterval(updateLastUpdateTime, 60000);
+            updateLastUpdateTime(); // Initial update
+        });
+
+        /**
+         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 1,800,000 milliseconds (30 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 1800000);
+    </script>
+{% endblock %}

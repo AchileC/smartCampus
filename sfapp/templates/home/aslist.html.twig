@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+{# home/aslist.html.twig #}
+{% block title %}Acquisition System List{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">Acquisition System List</h1>
+
+        <!-- Button to add an acquisition system -->
+        <div class="mb-4">
+            <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link">Add AS</a>
+        </div>
+
+        <!-- Flash messages block -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Filter form -->
+        {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
+        <div class="row align-items-center">
+
+            <!-- Name search field -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- State filter field -->
+            <div class="col-md-3 mb-4">
+                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
+            </div>
+
+            <!-- Reset button -->
+            <div class="col-md-1">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
+            </div>
+
+            <!-- Filter button -->
+            <div class="col-md-2 d-flex justify-content-end">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
+            </div>
+        </div>
+        {{ form_end(filterForm) }}
+
+        <div class="row">
+            {% if as|length == 0 %}
+                <!-- Message when no results match the filters -->
+                <div class="col-12 text-center">
+                    <p id="no-match-message" data-add-room-link="{{ path('app_acquisition_system') }}">
+                            No match. Check spelling or <a href="{{ path('app_acquisition_system') }}">create a new room</a>.
+                    </p>
+                </div>
+            {% else %}
+                {% for system in as %}
+                    <div class="col-12 mb-3">
+                        <div class="card">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <!-- Display system name and state -->
+                                    <h5 class="card-title">{{ system.name }}</h5>
+                                    <p class="card-text"><strong>State:</strong>
+                                        <span class="badge-custom-size
+                                        {% if system.state.value == 'linked' %}bg-success
+                                        {% elseif system.state.value == 'not linked' %}bg-secondary
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ system.state.value | upper }}
+                                    </span>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <!-- Actions for accessing or displaying the linked room -->
+                                    <div class="d-flex gap-2">
+                                        {% if system.room is not null %}
+                                            <a href="{{ path('app_rooms_details', { name: system.room.name }) }}" class="btn btn-outline-secondary">Access to linked room</a>
+                                        {% else %}
+                                            <button type="button" class="btn btn-outline-secondary disabled">No linked room</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

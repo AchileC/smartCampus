@@ -1,0 +1,296 @@
+{% extends 'base.html.twig' %}
+{# rooms/detail.html.twig #}
+{% block title %}Room Details - {{ room.name }}{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10 offset-md-1 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
+                <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
+            </div>
+        </div>
+
+        <!-- Description Card -->
+        <div class="card w-75 mx-auto mt-4 shadow-lg">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">General Information</h5>
+                <i class="bi bi-info-circle fs-3"></i>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Nombre de Fenêtres -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-microsoft fs-2 text-secondary me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Number of Windows</h6>
+                            <span class="badge bg-secondary rounded-pill">{{ room.nbWindows }}</span>
+                        </div>
+                    </div>
+                    <!-- Nombre de Chauffages -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-thermometer-half fs-2 text-secondary me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Number of Heaters</h6>
+                            <span class="badge bg-secondary rounded-pill">{{ room.nbHeaters }}</span>
+                        </div>
+                    </div>
+                    <!-- Surface -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-aspect-ratio fs-2 text-secondary me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Surface</h6>
+                            <span class="badge bg-secondary rounded-pill">{{ room.surface }} m²</span>
+                        </div>
+                    </div>
+                    <!-- Direction Cardinale -->
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-compass fs-2 text-secondary me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Cardinal Direction</h6>
+                            <span class="badge bg-secondary rounded-pill">
+                        {{ room.cardinalDirection ? room.cardinalDirection.value | capitalize : 'Non spécifiée' }}
+                    </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Information Card -->
+        <div class="card w-75 mx-auto mt-4 shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title">Room Constants</h5>
+                <p class="card-text"><strong>Ambient Room State </strong>
+                    <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %}">
+                    {{ room.state.value | upper }}
+                </span>
+                </p>
+
+                {% if room.acquisitionSystem %}
+                    <!-- Information about periods and thresholds -->
+                    <div class="alert alert-info mb-3">
+                        <h6 class="alert-heading"><i class="fas fa-info-circle"></i> Room Monitoring Information</h6>
+                        <p class="mb-1"><strong>Heating Period:</strong> November to April</p>
+                        <p class="mb-1"><strong>Non-Heating Period:</strong> May to October</p>
+                        <hr>
+                        <p class="mb-1"><strong>Optimal temperature :</strong></p>
+                        <ul class="mb-1">
+                            <li>Heating Period: 19-21°C</li>
+                            <li>Non-Heating Period: 24-28°C</li>
+                        </ul>
+
+                    </div>
+
+                    <ul class="list-group">
+                        <!-- Temperature -->
+                        {% set temp = room.acquisitionSystem.temperature %}
+                        {% set isHeatingPeriod = "now"|date("m") in ["11", "12", "01", "02", "03", "04"] %}
+                        {% set tempCritical = (isHeatingPeriod and (temp < 17 or temp > 23)) or (not isHeatingPeriod and (temp < 22 or temp > 30)) %}
+                        {% set tempWarning = not tempCritical and ((isHeatingPeriod and (temp < 19 or temp > 21)) or (not isHeatingPeriod and (temp < 24 or temp > 28))) %}
+                        {% set tempClass = tempCritical ? 'list-group-item-danger' : (tempWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
+                        <li class="list-group-item {{ tempClass }}">
+                            {{ tempCritical ? '🚨' : (tempWarning ? '⚠️' : '✅') }} <strong>Temperature:</strong>
+                            {{ temp is not null ? temp ~ '°C' : 'No value measured' }}
+                            {% if temp is not null %}
+                                <div class="mt-2 small {% if tempCritical %}text-danger{% elseif tempWarning %}text-warning{% else %}text-success{% endif %}">
+                                    {% if tempCritical %}
+                                        Critical error: Verify the sensor functionality, as the temperature is outside acceptable bounds.
+                                    {% elseif tempWarning %}
+                                        {% if isHeatingPeriod %}
+                                            {% if temp < 17 %}
+                                                Check if the heating system is working properly, ensure it's turned on and adjust temperature to reach recommended threshold (19°C).
+                                            {% elseif temp > 21 %}
+                                                Reduce or turn off heating to avoid energy overconsumption.
+                                            {% endif %}
+                                        {% else %}
+                                            {% if temp < 24 %}
+                                                If air conditioning is present, it can be adjusted to reach the recommended threshold of 26°C.
+                                            {% elseif temp > 28 %}
+                                                Activate air conditioning or fans, but set temperature to a maximum of 26°C to avoid energy overconsumption. Ventilate the room if possible to improve air circulation.
+                                            {% endif %}
+
+                                        {% endif %}
+                                    {% else %}
+                                        Maintain this temperature range without modification.
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </li>
+
+                        <!-- After Temperature section -->
+                        <div class="mt-2">
+                            {% set minTemp = 10 %}
+                            {% set maxTemp = 35 %}
+                            {% set currentTempPercentage = max(0, min(100, ((temp - minTemp) / (maxTemp - minTemp) * 100)|round)) %}
+                            <div class="position-relative">
+                                <div class="progress" style="height: 20px;">
+                                    {% if isHeatingPeriod %}
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 28%" aria-valuenow="17" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="10-17°C"></div>
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 8%" aria-valuenow="19" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="17-19°C"></div>
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 8%" aria-valuenow="21" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="19-21°C"></div>
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 8%" aria-valuenow="23" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="21-23°C"></div>
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 48%" aria-valuenow="35" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="23-35°C"></div>
+                                    {% else %}
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 48%" aria-valuenow="22" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="10-22°C"></div>
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 8%" aria-valuenow="24" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="22-24°C"></div>
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 16%" aria-valuenow="28" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="24-28°C"></div>
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 8%" aria-valuenow="30" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="28-30°C"></div>
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="35" aria-valuemin="10" aria-valuemax="35" data-bs-toggle="tooltip" title="30-35°C"></div>
+                                    {% endif %}
+                                </div>
+                                {% if temp %}
+                                    <div class="position-absolute" style="left: calc({{ currentTempPercentage }}% - 10px); top: 20px;">
+                                        <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 15px solid {% if tempCritical %}var(--bs-danger){% elseif tempWarning %}var(--bs-warning){% else %}var(--bs-success){% endif %};"></div>
+                                        <span class="badge rounded-pill {% if tempCritical %}bg-danger{% elseif tempWarning %}bg-warning{% else %}bg-success{% endif %}" style="transform: translateX(-50%);">{{ temp }}°C</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-5"></div>
+
+
+                        <!-- Humidity -->
+                        {% set hum = room.acquisitionSystem.humidity %}
+                        {% set humWarning = (hum > 60 and hum <= 70) or (hum < 30 and hum >= 20) %}
+                        {% set humCritical = hum > 70 or hum < 20 %}
+                        {% set humClass = humCritical ? 'list-group-item-danger' : (humWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
+                        <li class="list-group-item {{ humClass }}">
+                            {% if humCritical %}
+                                🚨
+                            {% elseif humWarning %}
+                                ⚠️
+                            {% else %}
+                                ✅
+                            {% endif %}
+                            <strong>Humidity:</strong>
+                            {{ hum is not null ? hum ~ '%' : 'No value measured' }}
+                            {% if hum is not null %}
+                                <div class="mt-2 small {% if humCritical %}text-danger{% elseif humWarning %}text-warning{% else %}text-success{% endif %}">
+                                    {% if humCritical %}
+                                        Urgently ventilate the room to reduce humidity; if this persists, consider installing a dehumidifier
+                                    {% elseif humWarning %}
+                                        Monitor humidity; ventilate the room if possible to avoid excessive humidity buildup
+                                    {% else %}
+                                        No adjustment required
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </li>
+
+                        <!-- After Humidity section -->
+                        <div class="mt-2">
+                            {% set currentHumPercentage = hum|default(0) %}
+                            <div class="position-relative">
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="0-20%"></div>
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 10%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="20-30%"></div>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 30%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="30-60%"></div>
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 10%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="60-70%"></div>
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 30%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" data-bs-toggle="tooltip" title="> 70%"></div>
+                                </div>
+                                {% if hum %}
+                                    <div class="position-absolute" style="left: calc({{ currentHumPercentage }}% - 10px); top: 20px;">
+                                        <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 15px solid {% if humCritical %}var(--bs-danger){% elseif humWarning %}var(--bs-warning){% else %}var(--bs-success){% endif %};"></div>
+                                        <span class="badge rounded-pill {% if humCritical %}bg-danger{% elseif humWarning %}bg-warning{% else %}bg-success{% endif %}" style="transform: translateX(-50%);">{{ hum }}%</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-5"></div>
+
+
+                        <!-- CO₂ -->
+                        {% set co2 = room.acquisitionSystem.co2 %}
+                        {% set co2Warning = co2 > 1000 and co2 <= 1500 %}
+                        {% set co2Critical = co2 > 1500 %}
+                        {% set co2Error = co2 < 440 or co2 > 2000 %}
+                        {% set co2Class = co2Error ? 'list-group-item-danger' : (co2Critical ? 'list-group-item-danger' : (co2Warning ? 'list-group-item-warning' : 'list-group-item-success')) %}
+                        <li class="list-group-item {{ co2Class }}">
+                            {% if co2Error %}
+                                🚨
+                            {% elseif co2Critical or co2Warning %}
+                                ⚠️
+                            {% else %}
+                                ✅
+                            {% endif %}
+                            <strong>CO₂:</strong>
+                            {{ co2 is not null ? co2 ~ ' ppm' : 'No value measured' }}
+                            {% if co2 is not null %}
+                                <div class="mt-2 small {% if co2Error or co2Critical %}text-danger{% elseif co2Warning %}text-warning{% else %}text-success{% endif %}">
+                                    {% if co2Error %}
+                                        Probable error, check sensor status
+                                    {% elseif co2 > 1500 and co2 <= 2000 %}
+                                        CO2 concentration is high. Please ventilate immediately to avoid discomfort.
+                                    {% elseif co2 > 1000 %}
+                                        Air quality is starting to decrease. If possible, prepare to slightly ventilate the room.
+                                        Open a window or door slightly if levels continue to rise.
+                                    {% else %}
+                                        Air quality is good, no action needed
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </li>
+
+                        <!-- After CO₂ section -->
+                        <div class="mt-2">
+                            {% set maxCO2 = 2000 %}
+                            {% set currentCO2Percentage = (co2 / maxCO2 * 100)|round %}
+                            <div class="position-relative">
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 22%" aria-valuenow="440" aria-valuemin="0" aria-valuemax="2000" data-bs-toggle="tooltip" title="< 440 ppm"></div>
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 28%" aria-valuenow="1000" aria-valuemin="0" aria-valuemax="2000" data-bs-toggle="tooltip" title="440-1000 ppm"></div>
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 25%" aria-valuenow="1500" aria-valuemin="0" aria-valuemax="2000" data-bs-toggle="tooltip" title="1000-1500 ppm"></div>
+                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="2000" aria-valuemin="0" aria-valuemax="2000" data-bs-toggle="tooltip" title="> 1500 ppm"></div>
+                                </div>
+                                {% if co2 %}
+                                    <div class="position-absolute" style="left: calc({{ currentCO2Percentage }}% - 10px); top: 20px;">
+                                        <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 15px solid {% if co2Error or co2Critical %}var(--bs-danger){% elseif co2Warning %}var(--bs-warning){% else %}var(--bs-success){% endif %};"></div>
+                                        <span class="badge rounded-pill {% if co2Error or co2Critical %}bg-danger{% elseif co2Warning %}bg-warning{% else %}bg-success{% endif %}" style="transform: translateX(-50%);">{{ co2 }} ppm</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No acquisition system</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if is_granted('ROLE_MANAGER') %}
+            <div class="card w-75 mx-auto mt-4 text-center">
+                <div class="card-body">
+                    {% if not room.acquisitionSystem %}
+                        <h6 class="card-title">No assigned acquisition system.</h6>
+                    {% else %}
+                        <h6 class="card-title">An acquisition system is assigned to this room.</h6>
+                    {% endif %}
+                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Back to List Button -->
+        <div class="card w-75 mx-auto mt-4 text-center">
+            <div class="card-body">
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to Room List</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{# bundles/TwigBundle/Exception/error401.html.twig #}
+{% block title %}401 - Unauthorized{% endblock %}
+
+{% block body %}
+    <div class="container text-center mt-5">
+        <h1 class="text-danger">401 - Unauthorized</h1>
+        <p class="lead">You must be logged in to access this page.</p>
+        <p>If you believe this is an error, please log in or contact support for help.</p>
+        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">Go to Login</a>
+    </div>
+{% endblock %}

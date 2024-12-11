@@ -1,0 +1,178 @@
+{% extends 'base.html.twig' %}
+{# rooms/update.html.twig #}
+{% block title %}Update Room{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h1 class="text-center mb-4">Update Room: {{ room.name }}</h1>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row mb-1">
+                                    <!-- Room Name -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.name, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.name.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.name) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Floor -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
+                                        {{ form_errors(form.floor) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Physical Characteristics -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row mb-1">
+                                    <div class="col-md-6">
+                                        {{ form_label(form.nbWindows, 'Number of Windows', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nbWindows, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.nbWindows) }}
+                                    </div>
+
+                                    <div class="col-md-6 mb-2">
+                                        {{ form_label(form.nbHeaters, 'Number of Heaters', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.nbHeaters, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.nbHeaters) }}
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.surface, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(form.surface) }}
+                                    </div>
+
+                                    <!-- Cardinal Direction -->
+                                    <div class="col-md-6">
+                                        {{ form_label(form.cardinalDirection, 'Cardinal Orientation', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_widget(form.cardinalDirection, {'attr': {'class': 'form-select'}}) }}
+                                        {{ form_errors(form.cardinalDirection) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons Submit et Cancel -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary me-3">Update Room</button>
+                            <a href="{{ path('app_rooms') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body text-center">
+                        <h5>Acquisition System</h5>
+
+                        {% set sensorState = room.sensorState.value %}
+                        {% set roomState = room.state.value %}
+
+                        {% if sensorState in ['assignment', 'unassignment'] %}
+                            <!-- Case: Assignment/Unassignment Pending -->
+                            <p class="mb-3">
+                                An assignment/unassignment request for the acquisition system is pending.
+                                You can cancel the request.
+                            </p>
+                            <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" value="{{ csrf_token('cancel_installation') }}">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-x-circle"></i> Cancel Installation
+                                </button>
+                            </form>
+
+                        {% elseif sensorState == 'linked' %}
+                            <!-- Case: Acquisition System Already Assigned -->
+                            <p class="mb-3">
+                                An acquisition system is assigned to this room.
+                                You can request to unassign the linked acquisition system.
+                            </p>
+                            <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" value="{{ csrf_token('request_unassignment') }}">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="bi bi-arrow-left-circle"></i> Request Unassignment
+                                </button>
+                            </form>
+
+                        {% elseif sensorState == 'not linked' %}
+                            <!-- Case: No Acquisition System Assigned -->
+                            <p class="mb-3">
+                                You can request the installation of an acquisition system in this room.
+                            </p>
+                            <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" value="{{ csrf_token('request_assignment') }}">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-plus-circle"></i> Request Assignment
+                                </button>
+                            </form>
+
+                        {% elseif sensorState == 'probably broken' %}
+                            <!-- Case: Sensors Probably Broken -->
+                            <p class="mb-3">
+                                The sensor system appears to be broken and requires maintenance.
+                            </p>
+                            <form method="post" action="{{ path('app_rooms_request_maintenance', { name: room.name }) }}">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" value="{{ csrf_token('request_maintenance') }}">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-tools"></i> Request Maintenance
+                                </button>
+                            </form>
+
+                        {% else %}
+                            <!-- Default Case: Unspecified Acquisition System State -->
+                            <p class="mb-3">Acquisition system state is unspecified.</p>
+                        {% endif %}
+
+                        <!-- Displaying the General State of the Room -->
+                        <div class="mt-4">
+                            <strong>Room State:</strong>
+                            {% if roomState == 'stable' %}
+                                <span class="badge bg-success">
+                    <i class="bi bi-check-circle"></i> Stable
+                </span>
+                            {% elseif roomState == 'at risk' %}
+                                <span class="badge bg-warning text-dark">
+                    <i class="bi bi-exclamation-triangle"></i> At Risk
+                </span>
+                            {% elseif roomState == 'critical' %}
+                                <span class="badge bg-danger">
+                    <i class="bi bi-fire"></i> Critical
+                </span>
+                            {% else %}
+                                <span class="badge bg-primary">
+                    <i class="bi bi-question-circle"></i> {{ roomState | capitalize }}
+                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
