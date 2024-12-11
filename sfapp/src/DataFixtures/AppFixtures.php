@@ -30,8 +30,8 @@ class AppFixtures extends Fixture
 
         // linked room, stable
         $room1 = new Room();
-        $room1->setName("D001");
-        $room1->setFloor(FloorEnum::GROUND);
+        $room1->setName("D201");
+        $room1->setFloor(FloorEnum::SECOND);
         $room1->setNbHeaters(2);
         $room1->setNbWindows(3);
         $room1->setSurface(20);
@@ -42,8 +42,8 @@ class AppFixtures extends Fixture
 
         // linked room, critical problem
         $room2 = new Room();
-        $room2->setName("D100");
-        $room2->setFloor(FloorEnum::FIRST);
+        $room2->setName("D202");
+        $room2->setFloor(FloorEnum::SECOND);
         $room2->setNbHeaters(3);
         $room2->setNbWindows(3);
         $room2->setSurface(30);
