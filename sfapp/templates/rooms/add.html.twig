@@ -33,9 +33,18 @@
                                     <!-- Floor -->
                                     <div class="col-md-6">
                                         {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.floor, {'attr': {'class': 'form-select'}}) }}
-                                        {{ form_errors(form.floor) }}
+                                        {{ form_widget(form.floor, {
+                                            'attr': {
+                                                'class': 'form-select' ~ (form.floor.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.floor.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.floor) }}
+                                            </div>
+                                        {% endif %}
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -45,18 +54,36 @@
                             <div class="card-body">
                                 <div class="row mb-3">
                                     <!-- Number of Windows -->
+                                    <!-- Number of Windows -->
                                     <div class="col-md-6">
                                         {{ form_label(form.nbWindows, 'Number of Windows', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.nbWindows, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.nbWindows) }}
+                                        {{ form_widget(form.nbWindows, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.nbWindows.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.nbWindows.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.nbWindows) }}
+                                            </div>
+                                        {% endif %}
                                     </div>
 
                                     <!-- Number of Heaters -->
                                     <div class="col-md-6">
                                         {{ form_label(form.nbHeaters, 'Number of Heaters', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.nbHeaters, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.nbHeaters) }}
+                                        {{ form_widget(form.nbHeaters, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.nbHeaters.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.nbHeaters.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.nbHeaters) }}
+                                            </div>
+                                        {% endif %}
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -68,16 +95,34 @@
                                     <!-- Surface -->
                                     <div class="col-md-6">
                                         {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.surface, {'attr': {'class': 'form-control'}}) }}
-                                        {{ form_errors(form.surface) }}
+                                        {{ form_widget(form.surface, {
+                                            'attr': {
+                                                'class': 'form-control' ~ (form.surface.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.surface.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.surface) }}
+                                            </div>
+                                        {% endif %}
                                     </div>
+
 
                                     <!-- Cardinal Direction -->
                                     <div class="col-md-6">
                                         {{ form_label(form.cardinalDirection, 'Cardinal Orientation', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.cardinalDirection, {'attr': {'class': 'form-select'}}) }}
-                                        {{ form_errors(form.cardinalDirection) }}
+                                        {{ form_widget(form.cardinalDirection, {
+                                            'attr': {
+                                                'class': 'form-select' ~ (form.cardinalDirection.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                            }
+                                        }) }}
+                                        {% if form.cardinalDirection.vars.errors|length > 0 %}
+                                            <div class="invalid-feedback">
+                                                {{ form_errors(form.cardinalDirection) }}
+                                            </div>
+                                        {% endif %}
                                     </div>
+
                                 </div>
                             </div>
                         </div>

@@ -90,35 +90,35 @@ class AppFixtures extends Fixture
 
         // linked Acquisition System with room 1, stable
         $as1 = new AcquisitionSystem();
-        $as1->setName("ESP-001");
+        $as1->setName("AS-001");
         $as1->setState(SensorStateEnum::LINKED);
         $as1->setRoom($room1);
         $manager->persist($as1);
 
         // linked Acquisition System with room 2, critical problem
         $as2 = new AcquisitionSystem();
-        $as2->setName("ESP-002");
+        $as2->setName("AS-002");
         $as2->setState(SensorStateEnum::LINKED);
         $as2->setRoom($room2);
         $manager->persist($as2);
 
         // linked Acquisition System with room 3, at risk
         $as3 = new AcquisitionSystem();
-        $as3->setName("ESP-003");
+        $as3->setName("AS-003");
         $as3->setState(SensorStateEnum::LINKED);
         $as3->setRoom($room3);
         $manager->persist($as3);
 
         // linked Acquisition System with room 4, no data
         $as4 = new AcquisitionSystem();
-        $as4->setName("ESP-004");
+        $as4->setName("AS-004");
         $as4->setState(SensorStateEnum::LINKED);
         $as4->setRoom($room4);
         $manager->persist($as4);
 
         // not linked
         $as5 = new AcquisitionSystem();
-        $as5->setName("ESP-005");
+        $as5->setName("AS-005");
         $as5->setState(SensorStateEnum::NOT_LINKED);
         $manager->persist($as5);
 

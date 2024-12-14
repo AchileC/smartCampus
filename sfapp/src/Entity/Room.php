@@ -34,14 +34,14 @@ class Room
     private ?SensorStateEnum $sensorState = null;
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $previousSensorState = null;
-    #[ORM\Column(type: 'string', enumType: CardinalEnum::class, nullable: true)]
-    private ?CardinalEnum $cardinalDirection = null;
-    #[ORM\Column(nullable: true)]
-    private ?int $nbHeaters = null;
-    #[ORM\Column(nullable: true)]
-    private ?int $nbWindows = null;
-    #[ORM\Column(nullable: true)]
-    private ?float $surface = null;
+    #[ORM\Column(type: 'string', enumType: CardinalEnum::class)]
+    private ?CardinalEnum $cardinalDirection;
+    #[ORM\Column]
+    private ?int $nbHeaters;
+    #[ORM\Column]
+    private ?int $nbWindows;
+    #[ORM\Column]
+    private ?float $surface;
     #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;
 
@@ -53,6 +53,7 @@ class Room
     public function __construct()
     {
         $this->actions = new ArrayCollection();
+        $this->previousActions = new ArrayCollection();
     }
 
     public function getId(): ?int

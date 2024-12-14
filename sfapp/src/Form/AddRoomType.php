@@ -14,7 +14,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 /**
  * Class AddRoomType
  *
@@ -25,7 +24,7 @@ class AddRoomType extends AbstractType
     /**
      * Builds the form for adding a new Room.
      *
-     * The form includes fields for room name, floor, state, and an optional description.
+     * The form includes fields for room name, floor, number of windows, number of heaters, surface area, and cardinal direction.
      *
      * @param FormBuilderInterface $builder The form builder interface used to create form fields.
      * @param array $options The options for the form.
@@ -35,15 +34,29 @@ class AddRoomType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            // Room Name Field
             ->add('name', TextType::class, [
                 'label' => 'Room Name',
                 'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Room name is required.',
+                        'groups' => ['add'],
+                    ]),
+                    new Assert\Length([
+                        'min' => 4,
+                        'max' => 4,
+                        'exactMessage' => 'Room name must be exactly {{ limit }} characters long.',
+                        'groups' => ['add'],
+                    ]),
                     new Assert\Regex([
                         'pattern' => '/^[A-Za-z]\d{3,}$/',
                         'message' => 'The name must start with a letter followed by three digits.',
+                        'groups' => ['add'],
                     ]),
                 ],
             ])
+
+            // Floor Selection Field
             ->add('floor', ChoiceType::class, [
                 'choices' => FloorEnum::cases(),
                 'choice_label' => fn(FloorEnum $floor) => ucfirst($floor->value),
@@ -58,12 +71,13 @@ class AddRoomType extends AbstractType
                 ],
             ])
 
+            // Number of Windows Field
             ->add('nbWindows', IntegerType::class, [
-                'label' => 'Number of windows',
-                'required' => false,
+                'label' => 'Number of Windows',
                 'constraints' => [
                     new Assert\PositiveOrZero([
-                        'message' => 'Number of windows must be greater than zero.',
+                        'message' => 'Number of windows cannot be negative.',
+                        'groups' => ['add'],
                     ]),
                 ],
                 'attr' => [
@@ -71,41 +85,59 @@ class AddRoomType extends AbstractType
                     'placeholder' => 'Ex: 2',
                 ],
             ])
+
+            // Number of Heaters Field
             ->add('nbHeaters', IntegerType::class, [
-                'label' => 'Number of heaters',
-                'required' => false,
+                'label' => 'Number of Heaters',
                 'constraints' => [
                     new Assert\PositiveOrZero([
-                        'message' => 'Number of heaters must be greater than zero.',
+                        'message' => 'Number of heaters cannot be negative.',
+                        'groups' => ['add'],
                     ]),
                 ],
                 'attr' => [
                     'min' => 0,
-                    'placeholder' => 'Ex: 1',
+                    'placeholder' => 'Ex: 2',
                 ],
             ])
+
+            // Surface Area Field
             ->add('surface', NumberType::class, [
-                'label' => 'Surface (m²)',
-                'required' => false,
-                'scale' => 2,
+                'label' => 'Surface Area (m²)',
+                'scale' => 1,
                 'constraints' => [
                     new Assert\Positive([
-                        'message' => 'Surface must be greater than zero.',
+                        'message' => 'Surface area must be greater than zero.',
+                        'groups' => ['add'],
+                    ]),
+                    new Assert\Range([
+                        'min' => 10.0,
+                        'max' => 30.0,
+                        'notInRangeMessage' => 'Surface area must be between {{ min }} m² and {{ max }} m².',
+                        'groups' => ['add'],
                     ]),
                 ],
                 'attr' => [
                     'min' => 0,
                     'step' => '0.1',
                     'placeholder' => 'Ex: 25.5',
+                    'oninput' => 'this.value = this.value.replace(/[^0-9.]/g, "").match(/^\d+(\.\d+)?/)?.[0] || ""',
                 ],
             ])
+
+            // Cardinal Direction Field
             ->add('cardinalDirection', ChoiceType::class, [
                 'choices' => CardinalEnum::cases(),
                 'choice_label' => fn(CardinalEnum $cardinal) => ucfirst($cardinal->value),
                 'choice_value' => fn(?CardinalEnum $cardinal) => $cardinal?->value,
                 'label' => 'Cardinal Direction',
                 'placeholder' => 'Select Direction',
-                'required' => false,
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'A direction is required.',
+                        'groups' => ['add'],
+                    ]),
+                ],
             ]);
     }
 

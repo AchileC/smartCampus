@@ -34,18 +34,6 @@
                 transition: left 0.4s ease-in-out;
             }
 
-
-            .shake {
-                animation: shake-animation 0.5s ease;
-            }
-
-            @keyframes shake-animation {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                50% { transform: translateX(5px); }
-                75% { transform: translateX(-5px); }
-            }
-
             /* Responsive: Écrans de largeur maximale 768px */
             @media (max-width: 768px) {
                 /* Réduire la largeur de la sidebar */
@@ -94,9 +82,98 @@
             }
 
             /* Classe pour changer la couleur du bouton en rouge */
+            .card {
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+            /* Styles pour les boutons */
+            .btn-primary {
+                background-color: #007bff;
+                border-color: #007bff;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #004085;
+            }
+
+            .btn-secondary {
+                background-color: #6c757d;
+                border-color: #6c757d;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+
             .btn-danger {
-                background-color: #dc3545 !important;
-                border-color: #dc3545 !important;
+                background-color: #dc3545;
+                border-color: #dc3545;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+                border-color: #ffc107;
+                color: #212529;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+                border-color: #d39e00;
+            }
+
+            /* Amélioration des labels et inputs */
+            .form-label {
+                font-weight: 600;
+                color: lightslategray;
+            }
+
+            .form-control,
+            .form-select {
+                border-radius: 5px;
+                box-shadow: none;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+
+            .form-control:focus,
+            .form-select:focus {
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            }
+
+            /* Animation pour les erreurs */
+            .shake {
+                animation: shake 0.3s;
+            }
+
+            @keyframes shake {
+                0% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                50% { transform: translateX(5px); }
+                75% { transform: translateX(-5px); }
+                100% { transform: translateX(0); }
+            }
+
+            /* Style pour les badges de l'état de la salle */
+            .badge {
+                font-size: 1rem;
+                padding: 0.5em 0.75em;
             }
 
             .menu-button {
@@ -455,21 +532,41 @@
                 updateOptionsState(optionsState);
             });
 
-            const nameInput = document.querySelector('.form-control.is-invalid');
+            /**
+             * Fonction pour gérer les animations et styles en cas d'erreurs de validation.
+             */
+            function handleFormValidationErrors() {
+                // Sélectionne tous les champs de formulaire invalides
+                const invalidInputs = document.querySelectorAll('.form-control.is-invalid');
 
-            if (nameInput) {
-                // Ajoute l'effet de tremblement en re-déclenchant l'animation
-                nameInput.classList.remove('shake');
-                void nameInput.offsetWidth; // Hack pour redéclencher l'animation
-                nameInput.classList.add('shake');
-
-                // Change la couleur du bouton "Save Room"
+                // Sélectionne le bouton de soumission
                 const saveButton = document.querySelector('button[type="submit"]');
-                if (saveButton) {
-                    saveButton.classList.remove('btn-success');
-                    saveButton.classList.add('btn-danger');
+
+                if (invalidInputs.length > 0) {
+                    invalidInputs.forEach((input) => {
+                        // Ajoute l'effet de tremblement en re-déclenchant l'animation
+                        input.classList.remove('shake');
+                        void input.offsetWidth; // Hack pour redéclencher l'animation
+                        input.classList.add('shake');
+                    });
+
+                    if (saveButton) {
+                        // Change la couleur du bouton "Save Room" en rouge
+                        saveButton.classList.remove('btn-primary');
+                        saveButton.classList.add('btn-danger');
+                    }
+                } else {
+                    if (saveButton) {
+                        // Réinitialise la couleur du bouton "Save Room" si pas d'erreurs
+                        saveButton.classList.remove('btn-danger');
+                        saveButton.classList.add('btn-primary');
+                    }
                 }
             }
+
+// Appelle la fonction lors du chargement de la page
+            document.addEventListener('DOMContentLoaded', handleFormValidationErrors);
+ b
         });
     </script>
 
