@@ -108,14 +108,16 @@
                                         {% else %}bg-danger{% endif %}">
                                         {{ room.state.value | upper }}
                                         </span>
-                                        <strong>Sensor:</strong>
-                                        <span class="badge-custom-size
-                                        {% if room.sensorState.value == 'linked' %}bg-success
-                                        {% elseif room.sensorState.value == 'probably broken' %}bg-warning
-                                        {% elseif room.sensorState.value == 'not linked' %}bg-secondary
-                                        {% else %}bg-danger{% endif %}">
-                                        {{ room.sensorState.value | upper }}
-                                        </span>
+                                        {% if is_granted('ROLE_MANAGER') %}
+                                            <strong>Sensor:</strong>
+                                            <span class="badge-custom-size
+                                            {% if room.sensorState.value == 'linked' %}bg-success
+                                            {% elseif room.sensorState.value == 'probably broken' %}bg-warning
+                                            {% elseif room.sensorState.value == 'not linked' %}bg-secondary
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ room.sensorState.value | upper }}
+                                            </span>
+                                        {% endif %}
                                 </div>
 
                                 <div>
