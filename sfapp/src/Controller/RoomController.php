@@ -99,9 +99,13 @@ class RoomController extends AbstractController
             if ($data->getState()) {
                 $criteria['state'] = $data->getState();
             }
+
+            if ($filterForm->get('sensorStatus')->getData()) {
+                $criteria['sensorStatus'] = ['linked', 'probably broken'];
+            }
+
         }
 
-        // Récupère les salles filtrées
         $rooms = $roomRepository->findByCriteria($criteria);
 
         $optionsEnabled = $request->query->get('optionsEnabled', false);

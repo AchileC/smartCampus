@@ -37,6 +37,26 @@
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row align-items-center">
 
+            {% if is_granted('ROLE_MANAGER') %}
+            <div class="mb-3">
+                <div class="form-check">
+                    {{ form_widget(filterForm.sensorStatus, {
+                        'attr': {
+                            'class': 'form-check-input sensor-status-checkbox',
+                            'id': 'filter_room_sensorStatus'
+                        }
+                    }) }}
+                    {{ form_label(filterForm.sensorStatus, null, {
+                        'label_attr': {
+                            'class': 'form-check-label',
+                            'for': 'filter_room_sensorStatus'
+                        }
+                    }) }}
+                </div>
+            </div>
+            {% endif %}
+
+
             <!-- Champ de Recherche par Nom -->
             <div class="col-md-3 mb-4">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
@@ -108,7 +128,11 @@
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
                                         {% if is_granted('ROLE_MANAGER') %}
                                             <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
-                                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteRoomModal" data-room-name="{{ room.name }}">
+                                            <button type="button" class="btn btn-outline-danger delete-room-button"
+                                                    data-room-name="{{ room.name }}"
+                                                    data-delete-url="{{ path('app_rooms_delete', {'name': room.name}) }}"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteRoomModal">
                                                 Delete
                                             </button>
                                         {% endif %}
@@ -118,7 +142,154 @@
                         </div>
                     </div>
                 {% endfor %}
+                <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteRoomModalLabel">Deletion confirmation</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
+                                <br>
+                                <p class="body_alert"> ⚠️<strong>If there is an assigned acquisition system, it will be unassigned automatically.</strong></p>
+                            </div>
+                            <div class="modal-footer">
+                                <form id="deleteRoomForm" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             {% endif %}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        /**
+         * @file base.html.twig
+         * @brief Handles frontend interactivity for flash messages, modals, checkboxes, and auto-reloading.
+         *
+         * This script manages the following functionalities:
+         * - Fading out flash messages after a specified duration.
+         * - Setting up the Delete Room modal by dynamically updating the form action.
+         * - Managing the "Only show linked rooms" checkbox to filter room listings.
+         * - Automatically reloading the page every 30 minutes to ensure data freshness.
+         */
+
+        document.addEventListener('DOMContentLoaded', function () {
+            /**
+             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
+             *
+             * Selects all elements that display flash messages to the user.
+             */
+            const flashMessages = document.querySelectorAll('.flash-message');
+
+            /**
+             * @brief Fades out and removes flash messages after 3 seconds.
+             *
+             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
+             * and removes the element from the DOM shortly after the fade-out animation completes.
+             */
+            flashMessages.forEach((message) => {
+                setTimeout(() => {
+                    message.classList.add('fade');
+                    setTimeout(() => message.remove(), 150);
+                }, 3000);
+            });
+
+            /**
+             * @var {NodeList} deleteButtons
+             * @brief Liste de tous les boutons de suppression des salles.
+             *
+             * Sélectionne tous les éléments avec la classe 'delete-room-button' qui
+             * sont utilisés pour déclencher la suppression d'une salle spécifique.
+             */
+            const deleteButtons = document.querySelectorAll('.delete-room-button');
+
+            /**
+             * @var {HTMLElement} roomNameSpan
+             * @brief Élément span affichant le nom de la salle à supprimer dans la modale.
+             *
+             * Cet élément est mis à jour dynamiquement lorsque l'utilisateur clique sur un bouton de suppression.
+             */
+            const roomNameSpan = document.getElementById('roomNameToDelete');
+
+            /**
+             * @var {HTMLFormElement} deleteForm
+             * @brief Formulaire de suppression dans la modale.
+             *
+             * L'attribut 'action' de ce formulaire est mis à jour dynamiquement pour pointer vers l'URL de suppression appropriée.
+             */
+            const deleteForm = document.getElementById('deleteRoomForm');
+
+            /**
+             * @function initializeDeleteRoomModal
+             * @brief Initialise les écouteurs d'événements sur les boutons de suppression.
+             *
+             * Pour chaque bouton de suppression, ajoute un écouteur d'événement 'click' qui
+             * met à jour le contenu de la modale avec le nom de la salle et définit l'action
+             * du formulaire de suppression à l'URL spécifique de la salle.
+             */
+            function initializeDeleteRoomModal() {
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        /**
+                         * @var {string} roomName
+                         * @brief Nom de la salle à supprimer, extrait de l'attribut 'data-room-name' du bouton.
+                         */
+                        const roomName = this.getAttribute('data-room-name');
+
+                        /**
+                         * @var {string} deleteUrl
+                         * @brief URL de suppression spécifique à la salle, extrait de l'attribut 'data-delete-url' du bouton.
+                         */
+                        const deleteUrl = this.getAttribute('data-delete-url');
+
+                        // Mettre à jour le nom de la salle dans la modale
+                        roomNameSpan.textContent = roomName;
+
+                        // Mettre à jour l'action du formulaire de suppression avec l'URL spécifique
+                        deleteForm.action = deleteUrl;
+                    });
+                });
+            }
+
+            // Appeler la fonction d'initialisation lors du chargement du DOM
+            initializeDeleteRoomModal();
+
+            /**
+             * @var {HTMLInputElement|null} sensorStatusCheckbox - The checkbox to filter rooms based on sensor status.
+             *
+             * Selects the checkbox that, when toggled, filters the room listings to show only linked rooms.
+             */
+            const sensorStatusCheckbox = document.querySelector('.sensor-status-checkbox');
+
+            /**
+             * @brief Submits the filter form automatically when the "Only show linked rooms" checkbox is toggled.
+             *
+             * Adds an event listener to the checkbox to detect changes. When the checkbox state changes,
+             * the associated filter form is submitted to update the room listings accordingly.
+             */
+            if (sensorStatusCheckbox) {
+                sensorStatusCheckbox.addEventListener('change', function () {
+                    document.getElementById('filterForm').submit();
+                });
+            }
+        });
+
+        /**
+         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 1,800,000 milliseconds (30 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 1800000);
+    </script>
 {% endblock %}

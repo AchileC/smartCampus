@@ -67,6 +67,12 @@ class FilterRoomType extends AbstractType
                 },
                 'data' => $options['state'] ?? null,
             ])
+            ->add('sensorStatus', CheckboxType::class, [
+                'label' => 'Only show linked rooms',
+                'required' => false,
+                'mapped' => false,
+            ])
+
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',
                 'attr' => ['class' => 'btn btn-primary']
