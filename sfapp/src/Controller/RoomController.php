@@ -99,7 +99,6 @@ class RoomController extends AbstractController
             if ($data->getState()) {
                 $criteria['state'] = $data->getState();
             }
-
         }
 
         // Récupère les salles filtrées

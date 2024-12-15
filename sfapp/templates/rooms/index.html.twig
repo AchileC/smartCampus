@@ -1,8 +1,10 @@
 {% extends 'base.html.twig' %}
+{# rooms/index.html.twig #}
 {% block title %}Rooms List{% endblock %}
 
 {% block body %}
     <div class="container mt-4">
+
         <h1 class="mb-4 text-center">Rooms List</h1>
 
         <!-- Ajout de l'indicateur de dernière mise à jour -->
@@ -30,6 +32,7 @@
                 {% endfor %}
             {% endfor %}
         </div>
+
 
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row align-items-center">
@@ -88,11 +91,8 @@
                                         {% else %}bg-danger{% endif %}">
                                         {{ room.state.value | upper }}
                                         </span>
-                                    </p>
-
-                                    <!-- Sensor State visible uniquement pour les techniciens -->
-                                    {% if is_granted('ROLE_TECHNICIAN') %}
-                                        <p class="card-text"><strong>Sensor:</strong>
+                                        {% if is_granted('ROLE_TECHNICIAN')%}
+                                            <strong>Sensor:</strong>
                                             <span class="badge-custom-size
                                             {% if room.sensorState.value == 'linked' %}bg-success
                                             {% elseif room.sensorState.value == 'probably broken' %}bg-warning
@@ -101,8 +101,6 @@
                                             {{ room.sensorState.value | upper }}
                                             </span>
                                         {% endif %}
-                                        </p>
-                                    {% endif %}
                                 </div>
 
                                 <div>
