@@ -108,7 +108,7 @@
                                         {% else %}bg-danger{% endif %}">
                                         {{ room.state.value | upper }}
                                         </span>
-                                        {% if is_granted('ROLE_MANAGER') %}
+                                        {% if is_granted('ROLE_MANAGER') or is_granted('ROLE_TECHNICIAN')%}
                                             <strong>Sensor:</strong>
                                             <span class="badge-custom-size
                                             {% if room.sensorState.value == 'linked' %}bg-success
