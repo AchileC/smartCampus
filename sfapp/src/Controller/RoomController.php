@@ -12,11 +12,13 @@ use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\ActionStateEnum;
+use App\Utils\UserRoleEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -66,6 +68,11 @@ class RoomController extends AbstractController
 
         $criteria = [];
 
+        // Filtrage pour les utilisateurs non connectés
+        if (!$this->getUser()) {
+            $criteria['sensorStatus'] = ['linked'];
+        }
+
         // Applique le filtre initial basé sur l'URL
         if ($stateParam) {
             $criteria['state'] = $stateParam;
@@ -93,16 +100,12 @@ class RoomController extends AbstractController
                 $criteria['state'] = $data->getState();
             }
 
-            if ($filterForm->get('sensorStatus')->getData()) {
-                $criteria['sensorStatus'] = ['linked', 'probably broken'];
-            }
         }
 
         // Récupère les salles filtrées
         $rooms = $roomRepository->findByCriteria($criteria);
 
         $optionsEnabled = $request->query->get('optionsEnabled', false);
-
 
         return $this->render('rooms/index.html.twig', [
             'optionsEnabled' => $optionsEnabled, // Passez la variable ici
@@ -170,6 +173,10 @@ class RoomController extends AbstractController
 
         if (!$room) {
             throw $this->createNotFoundException('The room does not exist');
+        }
+
+        if (!$this->getUser() && $room->getSensorState() === SensorStateEnum::NOT_LINKED) {
+            throw new AccessDeniedHttpException('This room is not yet equipped.');
         }
 
         $roomRepository->updateAcquisitionSystemFromJson($room);

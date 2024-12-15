@@ -32,22 +32,30 @@ security:
 
 
     access_control:
-        # Permet l'accès à /login à tout le monde, même sans authentification
-        - { path: ^/login, roles: PUBLIC_ACCESS }
+    # Permet l'accès à /login à tout le monde
+    - { path: ^/login, roles: PUBLIC_ACCESS }
 
-        # Permet l'accès à /rooms à tout le monde, même sans authentification
-        - { path: ^/rooms, roles: PUBLIC_ACCESS }
+    # Permet l'accès à /unauthorized et /error à tout le monde
+    - { path: ^/unauthorized, roles: PUBLIC_ACCESS }
+    - { path: ^/error, roles: PUBLIC_ACCESS }
 
-        # Permet l'accès à /unauthorized et /error à tout le monde
-        - { path: ^/error, roles: PUBLIC_ACCESS }
+    # Permet l'accès à la liste générale des salles pour tout le monde
+    - { path: ^/rooms$, roles: PUBLIC_ACCESS }
 
-        # Permet l'accès à /as uniquement aux managers
-        - { path: ^/as, roles: ROLE_TECHNICIAN }
+    # Permet à tout le monde d'accéder aux détails d'une salle
+    - { path: ^/rooms/[a-zA-Z0-9]+$, roles: PUBLIC_ACCESS }
 
-        - { path: ^/todolist, roles: ROLE_TECHNICIAN }
+    # Restreint l'accès aux routes update ou delete des salles aux managers uniquement
+    - { path: ^/rooms/[a-zA-Z0-9]+/(update|delete)$, roles: ROLE_MANAGER }
 
-        - { path: ^/, roles: PUBLIC_ACCESS }
+    # Permet l'accès à /as uniquement aux techniciens
+    - { path: ^/as, roles: ROLE_TECHNICIAN }
 
+    # Permet l'accès à /todolist uniquement aux techniciens
+    - { path: ^/todolist, roles: ROLE_TECHNICIAN }
+
+    # Par défaut, toutes les autres routes sont publiques
+    - { path: ^/, roles: PUBLIC_ACCESS }
 when@test:
     security:
         password_hashers:
