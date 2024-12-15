@@ -61,8 +61,11 @@ class RoomController extends AbstractController
         $stateParam = $request->query->get('state');
         $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
 
+        $isManager = $this->isGranted('ROLE_MANAGER');
+
         $filterForm = $this->createForm(FilterRoomType::class, null, [
             'state' => $stateEnum,
+            'is_manager' => $isManager,
         ]);
         $filterForm->handleRequest($request);
 
@@ -100,7 +103,7 @@ class RoomController extends AbstractController
                 $criteria['state'] = $data->getState();
             }
 
-            if ($filterForm->get('sensorStatus')->getData()) {
+            if ($isManager && $filterForm->has('sensorStatus') && $filterForm->get('sensorStatus')->getData()) {
                 $criteria['sensorStatus'] = ['linked', 'probably broken'];
             }
 

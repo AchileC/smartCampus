@@ -2,26 +2,63 @@
 {# rooms/index.html.twig #}
 {% block title %}Rooms List{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .container.mt-4 {
+            max-width: 1200px;
+        }
+
+        #lastUpdateTime {
+            font-weight: 600;
+        }
+
+        #filterForm {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--bs-shadow-sm);
+            border: 1px solid var(--bs-border-color); /* Ensure border visibility */
+        }
+
+        /* Utilize Bootstrap's border colors */
+        #filterForm .form-control,
+        #filterForm .form-select {
+            border: 1px solid var(--bs-border-color);
+        }
+
+        #filterForm .form-control:focus,
+        #filterForm .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Bootstrap's primary color with opacity */
+        }
+
+        /* Ensure modal adapts to themes */
+        .modal-content {
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container mt-4">
 
-        <h1 class="mb-4 text-center">Rooms List</h1>
-
-        <!-- Ajout de l'indicateur de dernière mise à jour -->
-        <div class="text-end mb-3">
-            <small class="text-muted">
-                Last update: <span id="lastUpdateTime">Just now</span>
-            </small>
+        <!-- Title and Update Indicator -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <h1 class="h2">Rooms List</h1>
+            <div class="d-flex align-items-center">
+                <small class="text-muted me-3">
+                    Last updated: <span id="lastUpdateTime">Just now</span>
+                </small>
+                {% if is_granted('ROLE_MANAGER') %}
+                    <a href="{{ path('app_rooms_add') }}" class="btn btn-success">
+                        <i class="bi bi-plus-lg"></i> Add a Room
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- Bouton Add Room -->
-        {% if is_granted('ROLE_MANAGER') %}
-            <div class="mb-4">
-                <a href="{{ path('app_rooms_add') }}" class="btn btn-success btn-lg add-room-link">Add Room</a>
-            </div>
-        {% endif %}
-
-        <!-- Flash messages block -->
+        <!-- Flash Messages -->
         <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
             {% for type, messages in app.flashes %}
                 {% for message in messages %}
@@ -33,76 +70,77 @@
             {% endfor %}
         </div>
 
-
+        <!-- Filter Form -->
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
-        <div class="row align-items-center">
+        <div class="row g-3 align-items-end">
 
-            {% if is_granted('ROLE_MANAGER') %}
-            <div class="mb-3">
-                <div class="form-check">
-                    {{ form_widget(filterForm.sensorStatus, {
-                        'attr': {
-                            'class': 'form-check-input sensor-status-checkbox',
-                            'id': 'filter_room_sensorStatus'
-                        }
-                    }) }}
-                    {{ form_label(filterForm.sensorStatus, null, {
-                        'label_attr': {
-                            'class': 'form-check-label',
-                            'for': 'filter_room_sensorStatus'
-                        }
-                    }) }}
+            {% if filterForm.sensorStatus is defined %}
+                <div class="col-md-2">
+                    <div class="form-check">
+                        {{ form_widget(filterForm.sensorStatus, {
+                            'attr': {
+                                'class': 'form-check-input sensor-status-checkbox',
+                                'id': 'filter_room_sensorStatus'
+                            }
+                        }) }}
+                        {{ form_label(filterForm.sensorStatus, null, {
+                            'label_attr': {
+                                'class': 'form-check-label',
+                                'for': 'filter_room_sensorStatus'
+                            }
+                        }) }}
+                    </div>
                 </div>
-            </div>
             {% endif %}
 
-
-            <!-- Champ de Recherche par Nom -->
-            <div class="col-md-3 mb-4">
+            <!-- Name Search Field -->
+            <div class="col-md-3">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
             </div>
 
-            <!-- Champ de Filtrage par Étage -->
-            <div class="col-md-3 mb-4">
+            <!-- Floor Filter Field -->
+            <div class="col-md-2">
                 {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
             </div>
 
-            <!-- Champ de Filtrage par État -->
-            <div class="col-md-3 mb-4">
+            <!-- State Filter Field -->
+            <div class="col-md-2">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
             </div>
 
+            <!-- Reset Button -->
             <div class="col-md-1">
-                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-outline-secondary w-100'}}) }}
             </div>
 
-            <!-- Boutons Reset et Search alignés à droite -->
-            <div class="col-md-2 d-flex justify-content-end">
-                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
+            <!-- Filter Button -->
+            <div class="col-md-2">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
             </div>
         </div>
         {{ form_end(filterForm) }}
 
-        <div class="row">
+        <!-- Rooms List -->
+        <div class="row row-cols-1 row-cols-md-2 g-4">
             {% if rooms|length == 0 %}
                 <div class="col-12 text-center">
                     <p id="no-match-message" data-add-room-link="{{ path('app_rooms_add') }}">
                         {% if is_granted('ROLE_MANAGER') %}
-                            No match. Check spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.
+                            No matches found. Please check the spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.
                         {% else %}
-                            No match. Check spelling or change filter.
+                            No matches found. Please check the spelling or adjust the filters.
                         {% endif %}
                     </p>
                 </div>
             {% else %}
                 {% for room in rooms %}
-                    <div class="col-12 mb-3">
-                        <div class="card">
-                            <div class="card-body d-flex justify-content-between align-items-center">
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
                                     <h5 class="card-title">{{ room.name }}</h5>
-                                    <p class="card-text"><strong>Floor:</strong> {{ room.floor.value | capitalize }}</p>
-                                    <p class="card-text"><strong>State:</strong>
+                                    <p class="card-text mb-1"><strong>Floor:</strong> {{ room.floor.value | capitalize }}</p>
+                                    <p class="card-text mb-1"><strong>State:</strong>
                                         <span class="badge-custom-size
                                         {% if room.state.value == 'none' %}bg-secondary
                                         {% elseif room.state.value == 'waiting' %}bg-primary
@@ -111,8 +149,9 @@
                                         {% else %}bg-danger{% endif %}">
                                         {{ room.state.value | upper }}
                                         </span>
-                                        {% if is_granted('ROLE_TECHNICIAN')%}
-                                            <strong>Sensor:</strong>
+                                    </p>
+                                    {% if is_granted('ROLE_TECHNICIAN') %}
+                                        <p class="card-text"><strong>Sensor:</strong>
                                             <span class="badge-custom-size
                                             {% if room.sensorState.value == 'linked' %}bg-success
                                             {% elseif room.sensorState.value == 'probably broken' %}bg-warning
@@ -120,20 +159,26 @@
                                             {% else %}bg-danger{% endif %}">
                                             {{ room.sensorState.value | upper }}
                                             </span>
-                                        {% endif %}
+                                        </p>
+                                    {% endif %}
                                 </div>
 
-                                <div>
-                                    <div class="d-flex gap-2">
-                                        <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">Details</a>
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">
+                                            <i class="bi bi-info-circle"></i> Details
+                                        </a>
                                         {% if is_granted('ROLE_MANAGER') %}
-                                            <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">Update</a>
+                                            <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">
+                                                <i class="bi bi-pencil-square"></i> Edit
+                                            </a>
                                             <button type="button" class="btn btn-outline-danger delete-room-button"
                                                     data-room-name="{{ room.name }}"
                                                     data-delete-url="{{ path('app_rooms_delete', {'name': room.name}) }}"
                                                     data-bs-toggle="modal"
-                                                    data-bs-target="#deleteRoomModal">
-                                                Delete
+                                                    data-bs-target="#deleteRoomModal"
+                                                    aria-label="Delete room {{ room.name }}">
+                                                <i class="bi bi-trash"></i> Delete
                                             </button>
                                         {% endif %}
                                     </div>
@@ -142,29 +187,30 @@
                         </div>
                     </div>
                 {% endfor %}
-                <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="deleteRoomModalLabel">Deletion confirmation</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                Are you sure you want to delete the room <span id="roomNameToDelete"></span> ?
-                                <br>
-                                <p class="body_alert"> ⚠️<strong>If there is an assigned acquisition system, it will be unassigned automatically.</strong></p>
-                            </div>
-                            <div class="modal-footer">
-                                <form id="deleteRoomForm" method="post">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
-                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            </div>
-                        </div>
+            {% endif %}
+        </div>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteRoomModalLabel">Delete Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete the room <strong><span id="roomNameToDelete"></span></strong>?
+                        <p class="text-danger mt-2">⚠️ <strong>If an acquisition system is assigned, it will be automatically unassigned.</strong></p>
+                    </div>
+                    <div class="modal-footer d-flex flex-column align-items-stretch">
+                        <form id="deleteRoomForm" method="post" class="mb-2">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                            <button type="submit" class="btn btn-danger w-100">Delete</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cancel</button>
                     </div>
                 </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -172,96 +218,65 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        /**
-         * @file base.html.twig
-         * @brief Handles frontend interactivity for flash messages, modals, checkboxes, and auto-reloading.
-         *
-         * This script manages the following functionalities:
-         * - Fading out flash messages after a specified duration.
-         * - Setting up the Delete Room modal by dynamically updating the form action.
-         * - Managing the "Only show linked rooms" checkbox to filter room listings.
-         * - Automatically reloading the page every 30 minutes to ensure data freshness.
-         */
-
         document.addEventListener('DOMContentLoaded', function () {
             /**
-             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
-             *
-             * Selects all elements that display flash messages to the user.
-             */
-            const flashMessages = document.querySelectorAll('.flash-message');
-
-            /**
-             * @brief Fades out and removes flash messages after 3 seconds.
-             *
-             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
-             * and removes the element from the DOM shortly after the fade-out animation completes.
-             */
-            flashMessages.forEach((message) => {
-                setTimeout(() => {
-                    message.classList.add('fade');
-                    setTimeout(() => message.remove(), 150);
-                }, 3000);
-            });
-
-            /**
              * @var {NodeList} deleteButtons
-             * @brief Liste de tous les boutons de suppression des salles.
+             * @brief List of all room delete buttons.
              *
-             * Sélectionne tous les éléments avec la classe 'delete-room-button' qui
-             * sont utilisés pour déclencher la suppression d'une salle spécifique.
+             * Selects all elements with the class 'delete-room-button' which
+             * are used to trigger the deletion of a specific room.
              */
             const deleteButtons = document.querySelectorAll('.delete-room-button');
 
             /**
              * @var {HTMLElement} roomNameSpan
-             * @brief Élément span affichant le nom de la salle à supprimer dans la modale.
+             * @brief Span element displaying the name of the room to delete in the modal.
              *
-             * Cet élément est mis à jour dynamiquement lorsque l'utilisateur clique sur un bouton de suppression.
+             * This element is dynamically updated when the user clicks on a delete button.
              */
             const roomNameSpan = document.getElementById('roomNameToDelete');
 
             /**
              * @var {HTMLFormElement} deleteForm
-             * @brief Formulaire de suppression dans la modale.
+             * @brief Deletion form in the modal.
              *
-             * L'attribut 'action' de ce formulaire est mis à jour dynamiquement pour pointer vers l'URL de suppression appropriée.
+             * The 'action' attribute of this form is dynamically updated to point to the appropriate deletion URL.
              */
             const deleteForm = document.getElementById('deleteRoomForm');
 
             /**
              * @function initializeDeleteRoomModal
-             * @brief Initialise les écouteurs d'événements sur les boutons de suppression.
+             * @brief Initializes event listeners on the delete buttons.
              *
-             * Pour chaque bouton de suppression, ajoute un écouteur d'événement 'click' qui
-             * met à jour le contenu de la modale avec le nom de la salle et définit l'action
-             * du formulaire de suppression à l'URL spécifique de la salle.
+             * For each delete button, adds a 'click' event listener that
+             * updates the modal content with the room name and sets the
+             * form action to the specific room deletion URL.
              */
             function initializeDeleteRoomModal() {
                 deleteButtons.forEach(button => {
                     button.addEventListener('click', function () {
                         /**
                          * @var {string} roomName
-                         * @brief Nom de la salle à supprimer, extrait de l'attribut 'data-room-name' du bouton.
+                         * @brief Name of the room to delete, extracted from the 'data-room-name' attribute of the button.
                          */
                         const roomName = this.getAttribute('data-room-name');
 
                         /**
                          * @var {string} deleteUrl
-                         * @brief URL de suppression spécifique à la salle, extrait de l'attribut 'data-delete-url' du bouton.
+                         * @brief Specific deletion URL for the room, extracted from the 'data-delete-url' attribute of the button.
                          */
                         const deleteUrl = this.getAttribute('data-delete-url');
 
-                        // Mettre à jour le nom de la salle dans la modale
+                        // Update the room name in the modal
                         roomNameSpan.textContent = roomName;
 
-                        // Mettre à jour l'action du formulaire de suppression avec l'URL spécifique
+                        // Update the form action with the specific URL
                         deleteForm.action = deleteUrl;
                     });
                 });
             }
 
-            // Appeler la fonction d'initialisation lors du chargement du DOM
+            // Call the initialization function on DOM load
             initializeDeleteRoomModal();
 
             /**

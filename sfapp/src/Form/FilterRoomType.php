@@ -66,22 +66,21 @@ class FilterRoomType extends AbstractType
                     return $state?->value; // Convertit l'enum en chaîne
                 },
                 'data' => $options['state'] ?? null,
-            ])
-            ->add('sensorStatus', CheckboxType::class, [
+            ]);
+
+        if ($options['is_manager']) {
+            $builder->add('sensorStatus', CheckboxType::class, [
                 'label' => 'Only show linked rooms',
                 'required' => false,
                 'mapped' => false,
-            ])
+            ]);
+        }
 
+        $builder
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',
                 'attr' => ['class' => 'btn btn-primary']
             ])
-            /**
-             * Adds a submit button to reset the filters.
-             *
-             * @var SubmitType $reset
-             */
             ->add('reset', SubmitType::class, [
                 'label' => 'Reset',
                 'attr' => [
@@ -107,6 +106,9 @@ class FilterRoomType extends AbstractType
             'required_fields' => false,
             'validation_groups' => ['Default'],
             'state' => null,
+            'is_manager' => false,
         ]);
+
+        $resolver->setAllowedTypes('is_manager', 'bool');
     }
 }

@@ -519,17 +519,6 @@
                 const newTheme = themeToggleSwitch.checked ? "dark" : "light";
                 document.documentElement.setAttribute("data-bs-theme", newTheme);
                 localStorage.setItem("theme", newTheme);
-                themeLabel.innerText = "Dark Mode";
-            });
-
-            /**
-             * @event click
-             * @memberof toggleOptionsButton
-             * @brief Event listener to toggle additional options.
-             */
-            toggleOptionsButton.addEventListener('click', () => {
-                optionsState = !optionsState;
-                updateOptionsState(optionsState);
             });
 
             /**
@@ -566,7 +555,6 @@
 
 // Appelle la fonction lors du chargement de la page
             document.addEventListener('DOMContentLoaded', handleFormValidationErrors);
- b
         });
     </script>
 
