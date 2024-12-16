@@ -340,6 +340,28 @@
                 transition: color 0.3s ease;
             }
 
+            /* Styles pour le bouton de paramètres */
+            .settings-button {
+                margin-left: 5px; /* Réduit l'espace entre le bouton utilisateur et le bouton paramètres */
+                background-color: transparent;
+                border: none;
+                color: #adb5bd;
+                cursor: pointer;
+                padding: 0; /* Supprime le padding pour un bouton plus compact */
+                transition: color 0.3s;
+            }
+
+            .settings-button:hover {
+                color: #fff;
+            }
+
+            /* Optionnel : Ajuster la position si nécessaire */
+            .user-section {
+                display: flex;
+                align-items: center;
+            }
+
+
         </style>
     {% endblock %}
 </head>
@@ -386,32 +408,31 @@
         </nav>
 
 
-        <div class="d-flex justify-content-start mb-2 theme-switch-wrapper">
-            <span id="theme-label">Mode Sombre</span>
-            <i class="bi bi-moon-fill theme-icon moon"></i>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="theme-toggle-switch">
-                <label class="form-check-label" for="theme-toggle-switch"></label>
-            </div>
-        </div>
+
 
         <div class="user-section d-flex align-items-center">
             {% if app.user %}
                 <!-- Utilisateur connecté -->
-                <div class="dropdown">
-                    <button class="btn d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
-                        <span>{{ app.user.username }}</span>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                            <span>{{ app.user.username }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <!-- Bouton Logout -->
+                                <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                                    <button type="submit" class="btn btn-outline-danger">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
+                        <i class="bi bi-gear-fill" style="font-size: 1rem;"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li>
-                            <!-- Bouton Logout -->
-                            <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                <button type="submit" class="btn btn-outline-danger ">Logout</button>
-                            </form>
-                        </li>
-                    </ul>
+
                 </div>
             {% else %}
                 <!-- Utilisateur non connecté -->
@@ -428,6 +449,30 @@
         {% block body %}
             <!-- Contenu spécifique à chaque page -->
         {% endblock %}
+    </div>
+
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="settingsModalLabel">Parameters</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center">
+                        <span id="theme-label-modal" class="me-3">Mode Sombre</span>
+                        <i class="bi bi-moon-fill theme-icon moon me-3"></i>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="theme-toggle-switch-modal">
+                            <label class="form-check-label" for="theme-toggle-switch-modal"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     {% block javascripts %}
@@ -470,23 +515,6 @@
             };
 
             /**
-             * @var {HTMLInputElement} themeToggleSwitch - The theme toggle switch element.
-             * @var {HTMLElement} themeLabel - The label displaying the current theme.
-             */
-            const themeToggleSwitch = document.getElementById("theme-toggle-switch");
-            const themeLabel = document.getElementById("theme-label");
-
-            // Set the initial theme based on localStorage or system preferences
-            const savedTheme = localStorage.getItem("theme");
-            const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-            const currentTheme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
-
-            // Apply the current theme
-            document.documentElement.setAttribute("data-bs-theme", currentTheme);
-            themeToggleSwitch.checked = currentTheme === "dark";
-            themeLabel.innerText = "Dark Mode";
-
-            /**
              * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
              *
              * Selects all elements that display flash messages to the user.
@@ -506,20 +534,36 @@
                 }, 3000);
             });
 
+            /**
+             * @var {HTMLInputElement} themeToggleSwitch - The theme toggle switch element.
+             * @var {HTMLElement} themeLabel - The label displaying the current theme.
+             */
+            const themeToggleSwitchModal = document.getElementById("theme-toggle-switch-modal");
+            const themeLabelModal = document.getElementById("theme-label-modal");
+
+            // Set the initial theme based on localStorage or system preferences
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+            const currentTheme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
+
+            // Apply the current theme
+            document.documentElement.setAttribute("data-bs-theme", currentTheme);
+            if (themeToggleSwitchModal) {
+                themeToggleSwitchModal.checked = currentTheme === "dark";
+                themeLabelModal.innerText = "Mode Sombre";
+            }
 
             /**
-             * @event change
-             * @memberof themeToggleSwitch
-             * @brief Event listener for theme toggling.
-             *
-             * Updates the theme attribute, saves the preference to localStorage,
-             * and updates the theme label accordingly.
+             * Event listener for theme toggle switch in modal
              */
-            themeToggleSwitch.addEventListener("change", function () {
-                const newTheme = themeToggleSwitch.checked ? "dark" : "light";
-                document.documentElement.setAttribute("data-bs-theme", newTheme);
-                localStorage.setItem("theme", newTheme);
-            });
+            if (themeToggleSwitchModal) {
+                themeToggleSwitchModal.addEventListener("change", function () {
+                    const newTheme = themeToggleSwitchModal.checked ? "dark" : "light";
+                    document.documentElement.setAttribute("data-bs-theme", newTheme);
+                    localStorage.setItem("theme", newTheme);
+                    themeLabelModal.innerText ="Mode Sombre";
+                });
+            }
 
             /**
              * Fonction pour gérer les animations et styles en cas d'erreurs de validation.
