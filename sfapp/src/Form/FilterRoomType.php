@@ -68,14 +68,6 @@ class FilterRoomType extends AbstractType
                 'data' => $options['state'] ?? null,
             ]);
 
-        if ($options['is_manager']) {
-            $builder->add('sensorStatus', CheckboxType::class, [
-                'label' => 'Only show linked rooms',
-                'required' => false,
-                'mapped' => false,
-            ]);
-        }
-
         $builder
             ->add('filter', SubmitType::class, [
                 'label' => 'Search',
@@ -106,9 +98,6 @@ class FilterRoomType extends AbstractType
             'required_fields' => false,
             'validation_groups' => ['Default'],
             'state' => null,
-            'is_manager' => false,
         ]);
-
-        $resolver->setAllowedTypes('is_manager', 'bool');
     }
 }
