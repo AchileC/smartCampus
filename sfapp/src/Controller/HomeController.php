@@ -296,6 +296,24 @@ class HomeController extends AbstractController
             $action->setAcquisitionSystem($acquisitionSystem);
         }
 
+        if ($action->getInfo() == ActionInfoEnum::MAINTENANCE) {
+            $maintenanceStatus = $request->request->get('maintenanceStatus');
+
+            if ($maintenanceStatus === 'yes') {
+                // Si le système est réparé, mettez à jour son état
+                $acquisitionSystem = $action->getAcquisitionSystem();
+                if ($acquisitionSystem) {
+                    $acquisitionSystem->setState(SensorStateEnum::LINKED); // L'état passe à "fonctionnel"
+                    $entityManager->persist($acquisitionSystem);
+                }
+                $this->addFlash('success', 'The acquisition system has been marked as repaired.');
+            } else {
+                $this->addFlash('warning', 'Please select a valid maintenance status.');
+                return $this->redirectToRoute('app_todolist_edit', ['id' => $action->getId()]);
+            }
+        }
+
+
         if ($action->getInfo() == ActionInfoEnum::UNASSIGNMENT) {
             $room = $action->getRoom();
 

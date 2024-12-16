@@ -186,19 +186,11 @@
                                 </button>
                             </form>
 
-                        {% elseif sensorState == 'probably broken' %}
-                            <!-- Case: Sensors Probably Broken -->
+                        {% elseif sensorState == 'not working' %}
+                            <!-- Case: Sensors Not Working -->
                             <p class="mb-3">
                                 The sensor system appears to be broken and requires maintenance.
                             </p>
-                            <form method="post" action="{{ path('app_rooms_request_maintenance', { name: room.name }) }}">
-                                <!-- CSRF Token -->
-                                <input type="hidden" name="_token" value="{{ csrf_token('request_maintenance') }}">
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="bi bi-tools"></i> Request Maintenance
-                                </button>
-                            </form>
-
                         {% else %}
                             <!-- Default Case: Unspecified Acquisition System State -->
                             <p class="mb-3">Acquisition system state is unspecified.</p>

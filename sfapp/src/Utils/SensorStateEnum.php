@@ -33,7 +33,7 @@ enum SensorStateEnum: string
     case UNASSIGNMENT = 'unassignment';
 
     /**
-     * Indicates that the sensors are probably broken and require maintenance.
+     * Indicates that the sensors are probably broken or disconnected and require maintenance.
      */
-    case PROBABLY_BROKEN = 'probably broken';
+    case NOT_WORKING = 'not working';
 }

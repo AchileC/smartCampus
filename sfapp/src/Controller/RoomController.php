@@ -435,11 +435,6 @@ class RoomController extends AbstractController
 
         // Supprimer les tâches associées à cette salle
         $tasks = $actionRepository->findTasksForRoomToDelete($room->getId());
-        foreach ($tasks as $task) {
-            $entityManager->remove($task);
-        }
-
-        $entityManager->flush();
 
         // Message flash basé sur les tâches supprimées
         if (!empty($tasks)) {
@@ -447,6 +442,12 @@ class RoomController extends AbstractController
         } else {
             $this->addFlash('info', 'No pending or ongoing installation task was found for this room.');
         }
+
+        foreach ($tasks as $task) {
+            $entityManager->remove($task);
+        }
+
+        $entityManager->flush();
 
         // Redirection
         return $this->redirectToRoute('app_rooms');
