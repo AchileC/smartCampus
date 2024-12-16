@@ -199,6 +199,101 @@
             </div>
         </div>
 
+        {% if todayForecast is not null %}
+            {# Définir le mapping des pictocodes #}
+            {% set pictocodeMapping = {
+                1: '☀️',
+                2: '🌤️',
+                3: '⛅',
+                4: '☁️',
+                5: '🌫️',
+                6: '🌧️',
+                7: '🌦️',
+                8: '⛈️',
+                9: '🌨️',
+                10: '🌥️❄️',
+                11: '🌨️🌧️',
+                12: '🌦️',
+                13: '🌨️',
+                14: '🌦️',
+                15: '🌨️',
+                16: '🌦️',
+                17: '🌨️'
+            } %}
+
+            <div class="card w-75 mx-auto mt-4 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Weather Forecast</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-thermometer-sun fs-3 me-3 text-danger"></i>
+                                <strong>Max Temperature : </strong>&nbsp;{{ todayForecast.temperature_max|round }}°C
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-thermometer-snow fs-3 me-3 text-info"></i>
+                                <strong>Min Temperature : </strong>&nbsp;{{ todayForecast.temperature_min|round }}°C
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-cloud-rain fs-3 me-3 text-secondary"></i>
+                                <strong>Precipitation : </strong>&nbsp;{{ todayForecast.precipitation }} mm
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            {# Afficher l'icône basée sur le pictocode #}
+                            {% set pictocode = todayForecast.pictocode %}
+                            {% set weatherIcon = pictocodeMapping[pictocode] ?? '❓' %}
+                            <span style="font-size: 5rem;">{{ weatherIcon }}</span>
+                        </div>
+                    </div>
+
+                    {# Générer des conseils d'action basés sur la météo #}
+                    {% set advice = [] %}
+
+                    {# Advice based on max temperature #}
+                    {% if todayForecast.temperature_max > 30 %}
+                        {% set advice = advice|merge(['It\'s very hot today. Consider turning on the air conditioning and staying hydrated.']) %}
+                    {% elseif todayForecast.temperature_min < 10 %}
+                        {% set advice = advice|merge(['It\'s very cold today. Check the heating systems and ensure windows are properly closed.']) %}
+                    {% endif %}
+
+                    {# Advice based on precipitation #}
+                    {% if todayForecast.precipitation > 50 %}
+                        {% set advice = advice|merge(['Heavy rainfall is expected today. Ensure the ventilation system is operational to prevent excessive humidity.']) %}
+                    {% endif %}
+
+                    {# Advice based on pictocode #}
+                    {% if todayForecast.pictocode in [6,7,8,9,10,11,12,13,14,15,16,17] %}
+                        {% set advice = advice|merge(['Prepare for rain and ensure that drains are clear.']) %}
+                    {% elseif todayForecast.pictocode in [1,2,3,4,5] %}
+                        {% set advice = advice|merge(['Sunny or cloudy weather. Take the opportunity to ventilate the rooms.']) %}
+                    {% endif %}
+
+                    {# Affichage des conseils #}
+                    {% if advice is not empty %}
+                        <div class="mt-3">
+                            <strong>Actionable Advice:</strong>
+                            <ul>
+                                {% for tip in advice %}
+                                    <li>{{ tip }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="mt-3 text-success">
+                            No specific advice for today.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card w-75 mx-auto mt-4 shadow-lg">
+                <div class="card-body">
+                    <p class="text-muted">Weather forecasts are currently unavailable.</p>
+                </div>
+            </div>
+        {% endif %}
+
 
         <!-- Description Card -->
         <div class="card w-75 mx-auto mt-4 shadow-lg">

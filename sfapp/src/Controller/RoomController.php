@@ -12,7 +12,7 @@ use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\ActionStateEnum;
-use App\Utils\UserRoleEnum;
+use App\Service\WeatherApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -28,6 +28,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class RoomController extends AbstractController
 {
+
+    private WeatherApiService $weatherApiService;
+
+    public function __construct(WeatherApiService $weatherApiService)
+    {
+        $this->weatherApiService = $weatherApiService;
+    }
+
     /**
      * Creates a delete form for a specific room.
      *
@@ -183,9 +191,21 @@ class RoomController extends AbstractController
         $roomRepository->updateAcquisitionSystemFromJson($room);
         $roomRepository->updateRoomState($room);
 
+        try {
+
+            // Appeler le service pour obtenir les prévisions météo
+            $this->weatherApiService->fetchWeatherData('46.16', '-1.15', 'Xu9ot3p6Bx4iIcfE');
+            $forecast = $this->weatherApiService->getForecast();
+            $todayForecast = $forecast[0] ?? null;
+        } catch (\RuntimeException $e) {
+            // Gérer les erreurs de l'API météo en affichant un message d'avertissement
+            $todayForecast = $forecast[0] ?? null;
+            $this->addFlash('warning', 'Impossible de récupérer les prévisions météo.');
+        }
 
         return $this->render('rooms/detail.html.twig', [
             'room' => $room,
+            'todayForecast' => $todayForecast,
         ]);
     }
 
