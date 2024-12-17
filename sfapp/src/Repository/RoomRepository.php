@@ -247,4 +247,31 @@ class RoomRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Gets historical data for a room from the JSON files
+     * Returns data for temperature, humidity, and CO2 levels
+     */
+    public function getHistoricalData(Room $room): array
+    {
+        $historicalDataPath = __DIR__ . '/../../assets/json/historical/' . $room->getName() . '_history.json';
+        
+        if (!file_exists($historicalDataPath)) {
+            // If no historical data exists, return empty arrays
+            return [
+                'temperature' => [],
+                'humidity' => [],
+                'co2' => []
+            ];
+        }
+
+        $jsonData = file_get_contents($historicalDataPath);
+        $data = json_decode($jsonData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Invalid JSON format in historical data file');
+        }
+
+        return $data;
+    }
 }

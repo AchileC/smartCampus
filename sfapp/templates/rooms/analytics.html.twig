@@ -1,0 +1,367 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Analytics - {{ room.name }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .time-range-selector {
+            margin-bottom: 1rem;
+        }
+        .no-data-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #6c757d;
+        }
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+        .chart-text {
+            color: #6c757d;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10 offset-md-1 bg-info py-5 position-relative">
+                <h1 class="text-center text-white mb-0">Analytics for Room {{ room.name }}</h1>
+            </div>
+        </div>
+
+        <div class="card w-75 mx-auto mt-4 shadow-lg">
+            <div class="card-body">
+                <div class="time-range-selector text-center mb-4">
+                    <div class="btn-group" role="group" aria-label="Time range selector">
+                        <button type="button" class="btn btn-outline-primary" data-range="year">Last Year</button>
+                        <button type="button" class="btn btn-outline-primary active" data-range="month">Last 30 Days</button>
+                        <button type="button" class="btn btn-outline-primary" data-range="week">Last 7 Days</button>
+                    </div>
+                </div>
+
+                <!-- Temperature Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Temperature Evolution</h3>
+                    <canvas id="temperatureChart"></canvas>
+                    <div id="temperatureNoData" class="no-data-message d-none">
+                        <i class="bi bi-exclamation-circle fs-1"></i>
+                        <p>No temperature data available for this period</p>
+                    </div>
+                </div>
+
+                <!-- Humidity Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Humidity Evolution</h3>
+                    <canvas id="humidityChart"></canvas>
+                    <div id="humidityNoData" class="no-data-message d-none">
+                        <i class="bi bi-exclamation-circle fs-1"></i>
+                        <p>No humidity data available for this period</p>
+                    </div>
+                </div>
+
+                <!-- CO2 Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">CO₂ Concentration Evolution</h3>
+                    <canvas id="co2Chart"></canvas>
+                    <div id="co2NoData" class="no-data-message d-none">
+                        <i class="bi bi-exclamation-circle fs-1"></i>
+                        <p>No CO2 data available for this period</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="card w-75 mx-auto mt-4 text-center">
+            <div class="card-body">
+                <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-secondary">Back to Room Details</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const historicalData = {{ historicalData|json_encode|raw }};
+        console.log('Historical Data:', historicalData);
+        
+        // Function to normalize date (remove time component)
+        function normalizeDate(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
+
+        // Function to format dates
+        function formatDate(date) {
+            const d = new Date(date);
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return d.toLocaleDateString(undefined, options);
+        }
+
+        // Function to get min and max values with padding
+        function getMinMaxWithPadding(data, paddingPercent = 100) {
+            if (!data || data.length === 0) return { min: 0, max: 0 };
+            
+            const values = data.map(item => item.value);
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const range = max - min;
+            const padding = (range * paddingPercent) / 100;
+            
+            return {
+                min: Math.max(0, min - padding),
+                max: max + padding
+            };
+        }
+
+        // Function to generate complete date range
+        function generateDateRange(startDate, endDate) {
+            const dates = [];
+            const current = normalizeDate(startDate);
+            const end = normalizeDate(endDate);
+            
+            while (current <= end) {
+                dates.push(new Date(current));
+                current.setDate(current.getDate() + 1);
+            }
+            
+            return dates;
+        }
+
+        // Function to filter data based on time range
+        function filterData(data, range) {
+            if (!Array.isArray(data) || data.length === 0) {
+                return [];
+            }
+
+            // Sort data by date
+            const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // Get the current date and time
+            const now = new Date();
+            const threshold = new Date();
+
+            // Adjust dates based on range
+            if (range === 'week') {
+                threshold.setDate(now.getDate() - 7);
+            } else if (range === 'month') {
+                threshold.setDate(now.getDate() - 30);
+            } else if (range === 'year') {
+                threshold.setFullYear(now.getFullYear() - 1);
+            }
+
+            // Normalize dates
+            const normalizedNow = normalizeDate(now);
+            const normalizedThreshold = normalizeDate(threshold);
+
+            // Create a map of existing data points using normalized dates
+            const dataMap = new Map();
+            sortedData.forEach(item => {
+                const itemDate = new Date(item.date);
+                const timeDiff = normalizedNow - normalizeDate(sortedData[sortedData.length - 1].date);
+                const adjustedDate = new Date(normalizeDate(itemDate).getTime() + timeDiff);
+                const dateKey = adjustedDate.toISOString().split('T')[0];
+                if (!dataMap.has(dateKey) || item.value !== null) {
+                    dataMap.set(dateKey, item.value);
+                }
+            });
+
+            // Generate complete date range
+            const dates = generateDateRange(normalizedThreshold, normalizedNow);
+            
+            // Map dates to values, using null for missing data
+            return dates.map(date => ({
+                date: date.toISOString(),
+                value: dataMap.get(date.toISOString().split('T')[0]) || null
+            }));
+        }
+
+        // Function to create or update a chart
+        function updateChart(chartId, label, data, range, yAxisLabel, color) {
+            const ctx = document.getElementById(chartId);
+            const noDataDiv = document.getElementById(chartId.replace('Chart', 'NoData'));
+            
+            if (ctx.chart) {
+                ctx.chart.destroy();
+            }
+
+            const filteredData = filterData(data, range);
+            console.log(`Filtered ${label} Data:`, filteredData);
+
+            if (!filteredData || filteredData.length === 0) {
+                ctx.style.display = 'none';
+                noDataDiv.classList.remove('d-none');
+                return;
+            }
+
+            ctx.style.display = 'block';
+            noDataDiv.classList.add('d-none');
+
+            // Calculate y-axis range with padding
+            const { min, max } = getMinMaxWithPadding(filteredData.filter(item => item.value !== null));
+            
+            ctx.chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: filteredData.map(item => formatDate(item.date)),
+                    datasets: [{
+                        label: label,
+                        data: filteredData.map(item => item.value),
+                        borderColor: color,
+                        backgroundColor: color.replace(')', ', 0.1)').replace('rgb', 'rgba'),
+                        borderWidth: 2,
+                        tension: 0.2,
+                        fill: true,
+                        pointBackgroundColor: color,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        spanGaps: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#6c757d'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return formatDate(filteredData[context[0].dataIndex].date);
+                                },
+                                label: function(context) {
+                                    let value = context.raw;
+                                    if (value === null) return `${label}: No data`;
+                                    if (label === 'Temperature') {
+                                        return `${label}: ${value.toFixed(1)}°C`;
+                                    } else if (label === 'Humidity') {
+                                        return `${label}: ${value.toFixed(1)}%`;
+                                    } else {
+                                        return `${label}: ${value} ppm`;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: yAxisLabel,
+                                font: {
+                                    weight: 'bold'
+                                },
+                                color: '#6c757d'
+                            },
+                            min: min,
+                            max: max,
+                            ticks: {
+                                color: '#6c757d',
+                                callback: function(value) {
+                                    if (label === 'Temperature') {
+                                        return value.toFixed(1) + '°C';
+                                    } else if (label === 'Humidity') {
+                                        return value.toFixed(1) + '%';
+                                    } else {
+                                        return value + ' ppm';
+                                    }
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                color: '#6c757d'
+                            },
+                            ticks: {
+                                color: '#6c757d',
+                                maxRotation: 45,
+                                minRotation: 45,
+                                autoSkip: true,
+                                maxTicksLimit: 12
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Function to update all charts
+        function updateAllCharts(range) {
+            updateChart(
+                'temperatureChart', 
+                'Temperature', 
+                historicalData.temperature, 
+                range, 
+                'Temperature (°C)', 
+                'rgb(255, 99, 132)'
+            );
+            updateChart(
+                'humidityChart', 
+                'Humidity', 
+                historicalData.humidity, 
+                range, 
+                'Humidity (%)', 
+                'rgb(54, 162, 235)'
+            );
+            updateChart(
+                'co2Chart', 
+                'CO₂', 
+                historicalData.co2, 
+                range, 
+                'CO₂ Concentration (ppm)', 
+                'rgb(75, 192, 192)'
+            );
+        }
+
+        // Initialize charts with monthly data
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAllCharts('month');
+
+            // Add click handlers for time range buttons
+            document.querySelectorAll('[data-range]').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active state of buttons
+                    document.querySelectorAll('[data-range]').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Update charts
+                    updateAllCharts(this.dataset.range);
+                });
+            });
+        });
+    </script>
+{% endblock %} 
