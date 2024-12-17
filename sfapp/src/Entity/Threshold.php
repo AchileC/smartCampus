@@ -1,0 +1,263 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\ThresholdRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ORM\Entity(repositoryClass: ThresholdRepository::class)]
+class Threshold
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    // Temperature thresholds for heating period
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $heatingTempCriticalMin = 17.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $heatingTempWarningMin = 19.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $heatingTempWarningMax = 21.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $heatingTempCriticalMax = 23.0;
+
+    // Temperature thresholds for non-heating period
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $nonHeatingTempCriticalMin = 22.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $nonHeatingTempWarningMin = 24.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $nonHeatingTempWarningMax = 28.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 10, max: 35)]
+    private float $nonHeatingTempCriticalMax = 30.0;
+
+    // Humidity thresholds
+    #[ORM\Column]
+    #[Assert\Range(min: 0, max: 100)]
+    private float $humCriticalMin = 20.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 0, max: 100)]
+    private float $humWarningMin = 30.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 0, max: 100)]
+    private float $humWarningMax = 60.0;
+
+    #[ORM\Column]
+    #[Assert\Range(min: 0, max: 100)]
+    private float $humCriticalMax = 70.0;
+
+    // CO2 thresholds (fixed for safety reasons)
+    public const CO2_CRITICAL_MIN = 400.0;
+    public const CO2_WARNING_MIN = 1000.0;
+    public const CO2_CRITICAL_MAX = 1500.0;
+    public const CO2_ERROR_MAX = 2000.0;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    // Getters and setters for heating period temperature thresholds
+    public function getHeatingTempCriticalMin(): float
+    {
+        return $this->heatingTempCriticalMin;
+    }
+
+    public function setHeatingTempCriticalMin(float $value): self
+    {
+        $this->heatingTempCriticalMin = $value;
+        return $this;
+    }
+
+    public function getHeatingTempWarningMin(): float
+    {
+        return $this->heatingTempWarningMin;
+    }
+
+    public function setHeatingTempWarningMin(float $value): self
+    {
+        $this->heatingTempWarningMin = $value;
+        return $this;
+    }
+
+    public function getHeatingTempWarningMax(): float
+    {
+        return $this->heatingTempWarningMax;
+    }
+
+    public function setHeatingTempWarningMax(float $value): self
+    {
+        $this->heatingTempWarningMax = $value;
+        return $this;
+    }
+
+    public function getHeatingTempCriticalMax(): float
+    {
+        return $this->heatingTempCriticalMax;
+    }
+
+    public function setHeatingTempCriticalMax(float $value): self
+    {
+        $this->heatingTempCriticalMax = $value;
+        return $this;
+    }
+
+    // Getters and setters for non-heating period temperature thresholds
+    public function getNonHeatingTempCriticalMin(): float
+    {
+        return $this->nonHeatingTempCriticalMin;
+    }
+
+    public function setNonHeatingTempCriticalMin(float $value): self
+    {
+        $this->nonHeatingTempCriticalMin = $value;
+        return $this;
+    }
+
+    public function getNonHeatingTempWarningMin(): float
+    {
+        return $this->nonHeatingTempWarningMin;
+    }
+
+    public function setNonHeatingTempWarningMin(float $value): self
+    {
+        $this->nonHeatingTempWarningMin = $value;
+        return $this;
+    }
+
+    public function getNonHeatingTempWarningMax(): float
+    {
+        return $this->nonHeatingTempWarningMax;
+    }
+
+    public function setNonHeatingTempWarningMax(float $value): self
+    {
+        $this->nonHeatingTempWarningMax = $value;
+        return $this;
+    }
+
+    public function getNonHeatingTempCriticalMax(): float
+    {
+        return $this->nonHeatingTempCriticalMax;
+    }
+
+    public function setNonHeatingTempCriticalMax(float $value): self
+    {
+        $this->nonHeatingTempCriticalMax = $value;
+        return $this;
+    }
+
+    // Getters and setters for humidity thresholds
+    public function getHumCriticalMin(): float
+    {
+        return $this->humCriticalMin;
+    }
+
+    public function setHumCriticalMin(float $value): self
+    {
+        $this->humCriticalMin = $value;
+        return $this;
+    }
+
+    public function getHumWarningMin(): float
+    {
+        return $this->humWarningMin;
+    }
+
+    public function setHumWarningMin(float $value): self
+    {
+        $this->humWarningMin = $value;
+        return $this;
+    }
+
+    public function getHumWarningMax(): float
+    {
+        return $this->humWarningMax;
+    }
+
+    public function setHumWarningMax(float $value): self
+    {
+        $this->humWarningMax = $value;
+        return $this;
+    }
+
+    public function getHumCriticalMax(): float
+    {
+        return $this->humCriticalMax;
+    }
+
+    public function setHumCriticalMax(float $value): self
+    {
+        $this->humCriticalMax = $value;
+        return $this;
+    }
+
+    // Getters and setters for CO2 thresholds
+    public function getCo2CriticalMin(): float
+    {
+        return self::CO2_CRITICAL_MIN;
+    }
+
+    public function getCo2WarningMin(): float
+    {
+        return self::CO2_WARNING_MIN;
+    }
+
+    public function getCo2CriticalMax(): float
+    {
+        return self::CO2_CRITICAL_MAX;
+    }
+
+    public function getCo2ErrorMax(): float
+    {
+        return self::CO2_ERROR_MAX;
+    }
+
+    // Validation methods
+    public function validateHeatingTemperatureThresholds(): bool
+    {
+        return $this->heatingTempCriticalMin < $this->heatingTempWarningMin &&
+            $this->heatingTempWarningMin < $this->heatingTempWarningMax &&
+            $this->heatingTempWarningMax < $this->heatingTempCriticalMax;
+    }
+
+    public function validateNonHeatingTemperatureThresholds(): bool
+    {
+        return $this->nonHeatingTempCriticalMin < $this->nonHeatingTempWarningMin &&
+            $this->nonHeatingTempWarningMin < $this->nonHeatingTempWarningMax &&
+            $this->nonHeatingTempWarningMax < $this->nonHeatingTempCriticalMax;
+    }
+
+    public function validateHumidityThresholds(): bool
+    {
+        return $this->humCriticalMin < $this->humWarningMin &&
+            $this->humWarningMin < $this->humWarningMax &&
+            $this->humWarningMax < $this->humCriticalMax;
+    }
+
+    public function validateCo2Thresholds(): bool
+    {
+        return $this->co2CriticalMin < $this->co2WarningMin &&
+            $this->co2WarningMin < $this->co2CriticalMax &&
+            $this->co2CriticalMax < $this->co2ErrorMax;
+    }
+} 

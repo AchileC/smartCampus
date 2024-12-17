@@ -5,11 +5,14 @@ namespace App\Controller;
 use App\Entity\Action;
 use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
+use App\Entity\Threshold;
 use App\Form\AddASType;
 use App\Form\FilterASType;
+use App\Form\ThresholdType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
 use App\Repository\AcquisitionSystemRepository;
+use App\Repository\ThresholdRepository;
 use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
@@ -25,7 +28,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 /**
  * Class HomeController
@@ -461,5 +464,42 @@ class HomeController extends AbstractController
         return $this->render('home/addAS.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/home/threshold', name: 'app_home_threshold')]
+    #[IsGranted('ROLE_TECHNICIAN')]
+    public function threshold(Request $request, ThresholdRepository $thresholdRepository, EntityManagerInterface $entityManager): Response
+    {
+        $threshold = $thresholdRepository->getDefaultThresholds();
+        $form = $this->createForm(ThresholdType::class, $threshold);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $entityManager->flush();
+                $this->addFlash('success', 'Thresholds updated successfully.');
+                return $this->redirectToRoute('app_home');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'An error occurred while saving the thresholds.');
+            }
+        }
+
+        return $this->render('home/threshold.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/home/threshold/reset', name: 'app_home_threshold_reset')]
+    #[IsGranted('ROLE_TECHNICIAN')]
+    public function resetThresholds(ThresholdRepository $thresholdRepository): Response
+    {
+        try {
+            $thresholdRepository->resetToDefault();
+            $this->addFlash('success', 'Thresholds have been reset to default values.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'An error occurred while resetting the thresholds.');
+        }
+
+        return $this->redirectToRoute('app_home_threshold');
     }
 }

@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ThresholdRepository;
 
 /**
  * Class RoomController
@@ -169,6 +170,7 @@ class RoomController extends AbstractController
      * and renders the detail view with its properties.
      *
      * @param RoomRepository $roomRepository The repository to fetch room data.
+     * @param ThresholdRepository $thresholdRepository The repository to fetch threshold data.
      * @param string $name The name of the room to display.
      *
      * @return Response The response rendering the room details page.
@@ -176,7 +178,7 @@ class RoomController extends AbstractController
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
      */
     #[Route('/rooms/{name}', name: 'app_rooms_details')]
-    public function details(RoomRepository $roomRepository, string $name): Response
+    public function details(RoomRepository $roomRepository, ThresholdRepository $thresholdRepository, string $name): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
@@ -192,7 +194,6 @@ class RoomController extends AbstractController
         $roomRepository->updateRoomState($room);
 
         try {
-
             // Appeler le service pour obtenir les prévisions météo
             $this->weatherApiService->fetchWeatherData('46.16', '-1.15', 'Xu9ot3p6Bx4iIcfE');
             $forecast = $this->weatherApiService->getForecast();
@@ -206,6 +207,7 @@ class RoomController extends AbstractController
         return $this->render('rooms/detail.html.twig', [
             'room' => $room,
             'todayForecast' => $todayForecast,
+            'thresholds' => $thresholdRepository->getDefaultThresholds(),
         ]);
     }
 

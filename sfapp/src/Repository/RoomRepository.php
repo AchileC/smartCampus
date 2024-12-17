@@ -17,9 +17,12 @@ use Doctrine\ORM\QueryBuilder;
  */
 class RoomRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private ThresholdRepository $thresholdRepository;
+
+    public function __construct(ManagerRegistry $registry, ThresholdRepository $thresholdRepository)
     {
         parent::__construct($registry, Room::class);
+        $this->thresholdRepository = $thresholdRepository;
     }
 
     public function findByCriteria(array $criteria): array
@@ -160,52 +163,42 @@ class RoomRepository extends ServiceEntityRepository
             $state = RoomStateEnum::WAITING;
         }
 
+        // Get thresholds
+        $thresholds = $this->thresholdRepository->getDefaultThresholds();
+
         // Temperature evaluation
-        // Heating period (Nov-Apr): optimal 19-21°C, warning 17-19°C and 21-23°C, critical <17°C or >23°C
-        // Non-heating (May-Oct): optimal 24-28°C, warning 22-24°C and 28-30°C, critical <22°C or >30°C
-        // Évaluation de la température
         if ($temperature !== null) {
             if ($isHeatingPeriod) {
-                if ($temperature < 17 || $temperature > 23) {
+                if ($temperature < $thresholds->getHeatingTempCriticalMin() || $temperature > $thresholds->getHeatingTempCriticalMax()) {
                     $state = RoomStateEnum::CRITICAL;
-                } elseif ($temperature < 19 || $temperature > 21) {
+                } elseif ($temperature < $thresholds->getHeatingTempWarningMin() || $temperature > $thresholds->getHeatingTempWarningMax()) {
                     $state = $state !== RoomStateEnum::CRITICAL ? RoomStateEnum::AT_RISK : $state;
                 }
             } else {
-                if ($temperature < 22 || $temperature > 30) {
+                if ($temperature < $thresholds->getNonHeatingTempCriticalMin() || $temperature > $thresholds->getNonHeatingTempCriticalMax()) {
                     $state = RoomStateEnum::CRITICAL;
-                } elseif ($temperature < 24 || $temperature > 28) {
+                } elseif ($temperature < $thresholds->getNonHeatingTempWarningMin() || $temperature > $thresholds->getNonHeatingTempWarningMax()) {
                     $state = $state !== RoomStateEnum::CRITICAL ? RoomStateEnum::AT_RISK : $state;
                 }
             }
         }
 
-        // CO2 evaluation (in ppm - parts per million)
-        // Optimal: 440-1000 ppm
-        // Warning: 1000-1500 ppm
-        // Critical: <440 ppm or >1500 ppm
+        // CO2 evaluation
         if ($co2 !== null) {
-            if ($co2 < 440 || $co2 > 2000) {
+            if ($co2 < $thresholds->getCo2CriticalMin() || $co2 > $thresholds->getCo2ErrorMax()) {
                 $state = RoomStateEnum::CRITICAL;
-                $sensorState = SensorStateEnum::NOT_WORKING;
-
-            } elseif ($co2 > 1500) {
-                $state = RoomStateEnum::CRITICAL;
-            } elseif ($co2 > 1000) {
+            } elseif ($co2 > $thresholds->getCo2WarningMin() && $co2 <= $thresholds->getCo2CriticalMax()) {
                 $state = $state !== RoomStateEnum::CRITICAL ? RoomStateEnum::AT_RISK : $state;
             }
         }
 
-        // Humidity evaluation (in percentage)
-        // Optimal: 30-60%
-        // Warning: 20-30% or 60-70%
-        // Critical: <20% or >70%
+        // Humidity evaluation
         if ($humidity !== null) {
-            if ($humidity < 20) {
+            if ($humidity < $thresholds->getHumCriticalMin()) {
                 $state = RoomStateEnum::CRITICAL;
-            } elseif ($humidity < 30 || ($humidity > 60 && $humidity <= 70)) {
+            } elseif ($humidity < $thresholds->getHumWarningMin() || ($humidity > $thresholds->getHumWarningMax() && $humidity <= $thresholds->getHumCriticalMax())) {
                 $state = $state !== RoomStateEnum::CRITICAL ? RoomStateEnum::AT_RISK : $state;
-            } elseif ($humidity > 70) {
+            } elseif ($humidity > $thresholds->getHumCriticalMax()) {
                 $state = RoomStateEnum::CRITICAL;
             }
         }
