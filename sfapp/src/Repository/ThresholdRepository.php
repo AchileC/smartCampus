@@ -49,12 +49,7 @@ class ThresholdRepository extends ServiceEntityRepository
             ->setHumCriticalMin(20.0)
             ->setHumWarningMin(30.0)
             ->setHumWarningMax(60.0)
-            ->setHumCriticalMax(70.0)
-            // CO2
-            ->setCo2CriticalMin(440.0)
-            ->setCo2WarningMin(1000.0)
-            ->setCo2CriticalMax(1500.0)
-            ->setCo2ErrorMax(2000.0);
+            ->setHumCriticalMax(70.0);
 
         $this->getEntityManager()->flush();
         

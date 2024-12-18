@@ -9,6 +9,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ThresholdRepository::class)]
 class Threshold
 {
+    // CO2 thresholds (fixed for safety reasons)
+    public const CO2_CRITICAL_MIN = 400.0;
+    public const CO2_WARNING_MIN = 1000.0;
+    public const CO2_CRITICAL_MAX = 1500.0;
+    public const CO2_ERROR_MAX = 2000.0;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -64,12 +70,6 @@ class Threshold
     #[ORM\Column]
     #[Assert\Range(min: 0, max: 100)]
     private float $humCriticalMax = 70.0;
-
-    // CO2 thresholds (fixed for safety reasons)
-    public const CO2_CRITICAL_MIN = 400.0;
-    public const CO2_WARNING_MIN = 1000.0;
-    public const CO2_CRITICAL_MAX = 1500.0;
-    public const CO2_ERROR_MAX = 2000.0;
 
     public function getId(): ?int
     {
@@ -211,7 +211,7 @@ class Threshold
         return $this;
     }
 
-    // Getters and setters for CO2 thresholds
+    // Getters for CO2 thresholds (fixed values)
     public function getCo2CriticalMin(): float
     {
         return self::CO2_CRITICAL_MIN;
@@ -252,12 +252,5 @@ class Threshold
         return $this->humCriticalMin < $this->humWarningMin &&
             $this->humWarningMin < $this->humWarningMax &&
             $this->humWarningMax < $this->humCriticalMax;
-    }
-
-    public function validateCo2Thresholds(): bool
-    {
-        return $this->co2CriticalMin < $this->co2WarningMin &&
-            $this->co2WarningMin < $this->co2CriticalMax &&
-            $this->co2CriticalMax < $this->co2ErrorMax;
     }
 } 
