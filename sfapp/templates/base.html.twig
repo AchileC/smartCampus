@@ -340,6 +340,50 @@
                 transition: color 0.3s ease;
             }
 
+            #notificationButton .badge {
+                position: absolute ;
+                top: 5px;
+                font-size: 0.75rem ;
+            }
+
+            /* Ajustement du menu déroulant des notifications */
+            .dropdown-menu {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            /* Style pour les items de notification */
+            .list-group-item {
+                font-size: 0.9rem;
+                line-height: 1.2;
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: 0;
+                right: 0; /* Aligné à droite */
+                transform: translate(50%, -50%); /* Décale légèrement le badge pour le centrer parfaitement */
+                font-size: 0.7rem; /* Taille de la police */
+                font-weight: bold;
+                color: white; /* Texte en blanc */
+                background-color: #dc3545; /* Rouge Bootstrap */
+                border-radius: 50%; /* Forme ronde */
+                padding: 0.25em 0.45em; /* Ajustement du padding */
+                line-height: 1;
+                z-index: 10; /* Priorité d'affichage */
+                box-shadow: 0 0 3px rgba(0, 0, 0, 0.3); /* Ombre légère */
+            }
+
+            .list-group-item.text-muted {
+                color: #6c757d; /* Couleur grise pour les notifications lues */
+                background-color: #f8f9fa; /* Fond légèrement gris */
+            }
+
+            .list-group-item.fw-bold {
+                font-weight: bold; /* Texte en gras pour les notifications non lues */
+            }
+
+
         </style>
     {% endblock %}
 </head>
@@ -413,6 +457,37 @@
                         </li>
                     </ul>
                 </div>
+
+                <div class="dropdown position-relative">
+                    <button class="btn btn-link text-white position-relative" id="notificationButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-bell-fill position-relative" style="font-size: 1.5rem;">
+                            {% if notifications|length > 0 %}
+                                <span class="notification-badge">
+                                    {{ notifications|length }}
+                                </span>
+                            {% endif %}
+                        </i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end p-2 shadow" aria-labelledby="notificationButton" style="width: 300px;">
+                        <li class="fw-bold text-center mb-2">Notifications</li>
+                        {% for notification in notifications %}
+                            <li>
+                                <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
+                                   class="list-group-item list-group-item-action {% if notification.isRead %}text-muted{% else %}fw-bold{% endif %}">
+                                    <small class="text-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
+                                    {{ notification.message }}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="text-center text-muted">No new notifications</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+
+
+
+
             {% else %}
                 <!-- Utilisateur non connecté -->
                 <a href="{{ path('app_login') }}" class="btn btn-primary ms-auto">Login</a>
@@ -552,6 +627,49 @@
                     }
                 }
             }
+
+            const notificationButton = document.getElementById("notificationButton");
+            const notificationBadge = document.querySelector(".notification-badge");
+            const notificationDropdown = document.querySelector("#notificationButton + .dropdown-menu");
+
+            // Marquer les notifications comme lues
+            function markNotificationsAsRead() {
+                fetch("{{ path('mark_notifications_as_read') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-Token": "{{ csrf_token('mark_notifications') }}",
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Cache la pastille de notification
+                            if (notificationBadge) {
+                                notificationBadge.style.display = "none";
+                            }
+                        }
+                    })
+                    .catch(error => console.error("Erreur AJAX :", error));
+            }
+
+            // Détecter la fermeture de la liste des notifications
+            document.addEventListener("click", function (event) {
+                const isDropdownOpen = notificationDropdown.classList.contains("show");
+                const isOutsideClick = !notificationDropdown.contains(event.target) && event.target !== notificationButton;
+
+                if (isDropdownOpen && isOutsideClick) {
+                    markNotificationsAsRead();
+                }
+            });
+
+            // Marquer les notifications comme lues lorsqu'on clique sur la cloche
+            notificationButton.addEventListener("click", function () {
+                if (notificationDropdown.classList.contains("show")) {
+                    markNotificationsAsRead();
+                }
+            });
+
 
 // Appelle la fonction lors du chargement de la page
             document.addEventListener('DOMContentLoaded', handleFormValidationErrors);

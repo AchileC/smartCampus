@@ -2,14 +2,15 @@
 //HomeController.php
 namespace App\Controller;
 
-use App\Entity\Action;
 use App\Entity\AcquisitionSystem;
-use App\Entity\Room;
+use App\Entity\Notification;
 use App\Form\AddASType;
 use App\Form\FilterASType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
 use App\Repository\AcquisitionSystemRepository;
+use App\Repository\NotificationRepository;
+use App\Repository\UserRepository;
 use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
@@ -21,10 +22,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Twig\Environment;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 
 /**
@@ -36,6 +36,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class HomeController extends AbstractController
 {
+
+    // Constructor pour injecter les dépendances
+    public function __construct(NotificationRepository $notificationRepository, Environment $twig)
+    {
+        $this->notificationRepository = $notificationRepository;
+        $this->twig = $twig;
+    }
+
     /**
      * @return Response
      */
@@ -66,9 +74,16 @@ class HomeController extends AbstractController
         RoomRepository              $roomRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
         ActionRepository            $actionRepository,
-        WeatherApiService           $weatherApiService
+        WeatherApiService           $weatherApiService,
+        NotificationRepository     $notificationRepository,
     ): Response
     {
+        $user = $this->getUser();
+        $notifications = $notificationRepository->findBy([
+            'recipient' => $user
+        ]);
+
+
         // Retrieve the number of rooms, acquisition systems, and critical or at-risk rooms from the repositories
         $roomsCount = $roomRepository->count([]);
         $asCount = $acquisitionSystemRepository->count([]);
@@ -98,6 +113,7 @@ class HomeController extends AbstractController
             'at_risk_count' => $atRiskCount,     // Number of at-risk rooms
             'forecast' => $forecast,             // Weather forecast data for 4 days
             'actions' => $actions,               // List of pending actions
+            'notifications' => $notifications,
         ]);
     }
 
@@ -172,44 +188,6 @@ class HomeController extends AbstractController
         ]);
     }
 
-    /**
-     * Deletes an action.
-     *
-     * @param Action $action The action to delete.
-     * @param Request $request The current HTTP request.
-     * @param EntityManagerInterface $entityManager The entity manager.
-     *
-     * @return Response A redirect response to the to-do list.
-     */
-    #[Route('/todolist/delete/{id}', name: 'app_todolist_delete', methods: ['POST'])]
-    public function delete(Action $action, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete_action_' . $action->getId(), $request->request->get('_token'))) {
-            $room = $action->getRoom();
-
-            if ($room) {
-                // Vérifier si previousSensorState est défini avant de restaurer l'état
-                if ($room->getSensorState() === SensorStateEnum::ASSIGNMENT || $room->getSensorState() === SensorStateEnum::UNASSIGNMENT) {
-                    $previousState = $room->getPreviousSensorState();
-                    if ($previousState !== null) {
-                        $room->setSensorState($previousState);
-                    } else {
-                        $room->setSensorState(SensorStateEnum::NOT_LINKED); // Par défaut si previousState est null
-                    }
-                }
-            }
-
-            // Supprimer l'action
-            $entityManager->remove($action);
-
-            // Enregistrer les modifications
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Action cancelled successfully, and the sensor state has been restored to its previous state.');
-        }
-
-        return $this->redirectToRoute('app_todolist');
-    }
 
     /**
      * Begins an action by changing its state to DOING.
@@ -263,7 +241,8 @@ class HomeController extends AbstractController
         Request                     $request,
         ActionRepository            $actionRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
-        EntityManagerInterface      $entityManager
+        EntityManagerInterface      $entityManager,
+        UserRepository             $userRepository
     ): Response
     {
         $action = $actionRepository->find($id);
@@ -311,7 +290,24 @@ class HomeController extends AbstractController
         }
 
         $action->setState(ActionStateEnum::DONE); // Change state to DONE
-        $entityManager->flush();
+
+        $manager = $userRepository->findOneByExactRole('ROLE_MANAGER');
+
+        if ($manager) {
+            $notification = new Notification();
+            $notification->setRead(false);
+            $notification->setMessage(sprintf(
+                "Task '%s' completed in '%s'.",
+                $action->getInfo()->value,
+                $action->getRoom()->getName()
+            ));
+            $notification->setCreateAt(new \DateTimeImmutable());
+            $notification->setRecipient($manager);
+            $notification->setRoom($action->getRoom());
+
+            $entityManager->persist($notification);
+            $entityManager->flush();
+        }
 
         $this->addFlash('success', 'Action has been validated.');
         return $this->redirectToRoute('app_todolist');
@@ -444,4 +440,41 @@ class HomeController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
+    #[Route('/notifications/mark-as-read', name: 'mark_notifications_as_read', methods: ['POST'])]
+    public function markAllAsRead(
+        NotificationRepository $notificationRepository,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): JsonResponse {
+        // Vérification du token CSRF pour la sécurité
+        if (!$this->isCsrfTokenValid('mark_notifications', $request->headers->get('X-CSRF-Token'))) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], 400);
+        }
+
+        // Vérification de l'authentification de l'utilisateur
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        }
+
+        // Récupération des notifications non lues de l'utilisateur
+        $notifications = $notificationRepository->findBy([
+            'recipient' => $user
+        ]);
+
+        // Met à jour chaque notification
+        foreach ($notifications as $notification) {
+            $notification->setRead(true);
+        }
+
+        $entityManager->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'All notifications marked as read.']);
+    }
+
+
+
+
 }

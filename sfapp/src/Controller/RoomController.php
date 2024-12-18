@@ -2,12 +2,14 @@
 // RoomController.php
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\Room;
 use App\Entity\Action;
 use App\Repository\ActionRepository;
 use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
+use App\Repository\UserRepository;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
@@ -295,14 +297,18 @@ class RoomController extends AbstractController
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
      */
     #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
-    public function requestInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    public function requestInstallation(
+        string $name,
+        RoomRepository $roomRepository,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository
+    ): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
         if (!$room) {
             throw $this->createNotFoundException('Room not found');
         }
-
 
         $action = new Action();
         $action->setInfo(ActionInfoEnum::ASSIGNMENT); // Type d'action : ASSIGNMENT
@@ -313,9 +319,13 @@ class RoomController extends AbstractController
 
         $room->setState(RoomStateEnum::WAITING);
         $room->setSensorState(SensorStateEnum::ASSIGNMENT);
+
         // Persister la tâche dans la base de données
         $entityManager->persist($action);
+
+        // Enregistrer les modifications dans la base de données
         $entityManager->flush();
+
 
         // Ajouter un message flash pour indiquer le succès
         $this->addFlash('success', 'A new assignment task has been created.');
