@@ -10,3 +10,9 @@ app:
     prefix: '/{_locale}'
     requirements:
         _locale: 'en|fr'
+
+app_home:
+    path: '/{_locale}/'
+    controller: App\Controller\HomeController::index
+    requirements:
+        _locale: 'en|fr'

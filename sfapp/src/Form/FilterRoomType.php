@@ -14,67 +14,61 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * Class FilterRoomType
- *
- * Defines a form to filter Room entities.
- */
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 class FilterRoomType extends AbstractType
 {
-    /**
-     * Builds the filter form for Room entities.
-     *
-     * The form includes fields for filtering by name, floor, and state.
-     *
-     * @param FormBuilderInterface $builder The form builder interface used to create form fields.
-     * @param array $options The options for the form.
-     *
-     * @return void
-     */
+    private TranslatorInterface $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', TextType::class, [
                 'label' => null,
                 'required' => false,
-                'attr' => ['placeholder' => 'Search for a room by name'],
+                'attr' => ['placeholder' => $this->translator->trans('filter.name.placeholder')],
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
-                    'Ground' => FloorEnum::GROUND,
-                    'First' => FloorEnum::FIRST,
-                    'Second' => FloorEnum::SECOND,
-                    'Third' => FloorEnum::THIRD,
+                    $this->translator->trans('filter.floor.ground') => FloorEnum::GROUND,
+                    $this->translator->trans('filter.floor.first') => FloorEnum::FIRST,
+                    $this->translator->trans('filter.floor.second') => FloorEnum::SECOND,
+                    $this->translator->trans('filter.floor.third') => FloorEnum::THIRD,
                 ],
                 'required' => false,
-                'placeholder' => 'Select a Floor',
+                'placeholder' => $this->translator->trans('filter.floor.placeholder'),
                 'label' => null,
             ])
             ->add('state', ChoiceType::class, [
                 'choices' => [
-                    'Stable' => RoomStateEnum::STABLE,
-                    'At Risk' => RoomStateEnum::AT_RISK,
-                    'Critical' => RoomStateEnum::CRITICAL,
+                    $this->translator->trans('filter.state.stable') => RoomStateEnum::STABLE,
+                    $this->translator->trans('filter.state.at_risk') => RoomStateEnum::AT_RISK,
+                    $this->translator->trans('filter.state.critical') => RoomStateEnum::CRITICAL,
                 ],
                 'required' => false,
-                'placeholder' => 'Select a State',
+                'placeholder' => $this->translator->trans('filter.state.placeholder'),
                 'label' => null,
                 'choice_label' => function ($choice, $key, $value) {
                     return $key;
                 },
                 'choice_value' => function (?RoomStateEnum $state) {
-                    return $state?->value; // Convertit l'enum en chaîne
+                    return $state?->value; // Convert enum to string
                 },
                 'data' => $options['state'] ?? null,
             ]);
 
         $builder
             ->add('filter', SubmitType::class, [
-                'label' => 'Search',
+                'label' => $this->translator->trans('filter.buttons.search'),
                 'attr' => ['class' => 'btn btn-primary']
             ])
             ->add('reset', SubmitType::class, [
-                'label' => 'Reset',
+                'label' => $this->translator->trans('filter.buttons.reset'),
                 'attr' => [
                     'class' => 'btn btn-secondary',
                     'formnovalidate' => 'formnovalidate',
@@ -82,15 +76,6 @@ class FilterRoomType extends AbstractType
             ]);
     }
 
-    /**
-     * Configures the options for the form.
-     *
-     * Sets the data class to be `Room` and allows optional fields.
-     *
-     * @param OptionsResolver $resolver The options resolver.
-     *
-     * @return void
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

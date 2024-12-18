@@ -32,30 +32,22 @@ security:
 
 
     access_control:
-        # Permet l'accès à /{_locale}/login à tout le monde
-        - { path: "^/{_locale}/login", roles: PUBLIC_ACCESS }
+    - { path: "^/{_locale}/login", roles: PUBLIC_ACCESS }
+    - { path: "^/{_locale}/unauthorized", roles: PUBLIC_ACCESS }
+    - { path: "^/{_locale}/error", roles: PUBLIC_ACCESS }
 
-        # Permet l'accès à /{_locale}/unauthorized et /{_locale}/error à tout le monde
-        - { path: "^/{_locale}/unauthorized", roles: PUBLIC_ACCESS }
-        - { path: "^/{_locale}/error", roles: PUBLIC_ACCESS }
+    # Règles spécifiques
+    - { path: "^/{_locale}/rooms/[a-zA-Z0-9]+/(update|delete)$", roles: ROLE_MANAGER }
+    - { path: "^/{_locale}/as", roles: ROLE_TECHNICIAN }
+    - { path: "^/{_locale}/todolist", roles: ROLE_TECHNICIAN }
 
-        # Permet l'accès à la liste générale des salles pour tout le monde
-        - { path: "^/{_locale}/rooms$", roles: PUBLIC_ACCESS }
+    # Règles générales
+    - { path: "^/{_locale}/rooms$", roles: PUBLIC_ACCESS }
+    - { path: "^/{_locale}/rooms/[a-zA-Z0-9]+$", roles: PUBLIC_ACCESS }
 
-        # Permet à tout le monde d'accéder aux détails d'une salle
-        - { path: "^/{_locale}/rooms/[a-zA-Z0-9]+$", roles: PUBLIC_ACCESS }
+    # Par défaut, toutes les autres routes sont publiques
+    - { path: "^/{_locale}/", roles: PUBLIC_ACCESS }
 
-        # Restreint l'accès aux routes update ou delete des salles aux managers uniquement
-        - { path: "^/{_locale}/rooms/[a-zA-Z0-9]+/(update|delete)$", roles: ROLE_MANAGER }
-
-        # Permet l'accès à /{_locale}/as uniquement aux techniciens
-        - { path: "^/{_locale}/as", roles: ROLE_TECHNICIAN }
-
-        # Permet l'accès à /{_locale}/todolist uniquement aux techniciens
-        - { path: "^/{_locale}/todolist", roles: ROLE_TECHNICIAN }
-
-        # Par défaut, toutes les autres routes sont publiques
-        - { path: "^/{_locale}/", roles: PUBLIC_ACCESS }
 
 when@test:
     security:

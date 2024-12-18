@@ -72,9 +72,10 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $locale = $request->getSession()->get('_locale', 'en');
         $request->getSession()->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);
         return new RedirectResponse(
-            $this->router->generate('app_login')
+            $this->router->generate('login', ['_locale' => $locale])
         );
     }
 

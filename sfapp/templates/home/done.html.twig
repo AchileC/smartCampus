@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 {# home/done.html.twig #}
-{% block title %}Completed Tasks History{% endblock %}
+{% block title %}{{ 'completed_tasks_history' | trans }}{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center">Completed Tasks History</h1>
+        <h1 class="text-center">{{ 'completed_tasks_history' | trans }}</h1>
 
-        <a href="{{ path('app_todolist') }}" class="btn btn-outline-secondary btn-sm mb-3">Back to To-Do List</a>
+        <a href="{{ path('app_todolist') }}" class="btn btn-outline-secondary btn-sm mb-3">{{ 'back_to_todolist' | trans }}</a>
 
         {% if doneActions is empty %}
             <div class="alert alert-info text-center mt-6">
-                No completed tasks to display.
+                {{ 'no_completed_tasks' | trans }}
             </div>
         {% else %}
             <div class="row mt-4">
@@ -21,34 +21,34 @@
                                 <!-- Type d'Action et Salle -->
                                 <h5>
                                     <span class="badge bg-{{ actionTypes[action.info.value]|default('secondary') }} text-uppercase">
-                                        {{ action.info.value | capitalize }}
+                                        {{ ('_action_info_state.' ~ action.info.value | upper) | trans }}
                                     </span>
-                                    on <strong>{{ action.room.name }}</strong>
+                                    {{ 'on_room' | trans }} <strong>{{ action.room.name }}</strong>
                                 </h5>
 
                                 <!-- Timeline -->
                                 <ul class="list-unstyled text-muted mt-2">
                                     <li>
-                                        <strong>Created:</strong> {{ action.createdAt | date('l d F, H:i') }}
+                                        <strong>{{ 'created_at' | trans }}:</strong> {{ action.createdAt | format_datetime(pattern='EEEE d MMMM Y H:m') }}
                                     </li>
                                     {% if action.startedAt is defined and action.startedAt is not null %}
                                         <li>
-                                            <strong>Started:</strong> {{ action.startedAt | date('l d F, H:i') }}
+                                            <strong>{{ 'started_on' | trans }}:</strong> {{ action.startedAt | format_datetime(pattern='EEEE d MMMM Y H:m') }}
                                         </li>
                                     {% endif %}
                                     <li>
-                                        <strong>Completed:</strong> {{ action.completedAt | date('l d F, H:i') }}
+                                        <strong>{{ 'completed_at' | trans }}:</strong> {{ action.completedAt | format_datetime(pattern='EEEE d MMMM Y H:m') }}
                                     </li>
                                 </ul>
 
                                 <!-- Acquisition System -->
                                 {% if action.acquisitionSystem is not null %}
                                     <p class="mt-3">
-                                        <strong>Acquisition System:</strong> {{ action.acquisitionSystem.name }}
+                                        <strong>{{ 'acquisition_system' | trans }}:</strong> {{ action.acquisitionSystem.name }}
                                     </p>
                                 {% else %}
                                     <p class="mt-3 text-muted">
-                                        <em>No acquisition system linked to this action.</em>
+                                        <em>{{ 'no_acquisition_system' | trans }}</em>
                                     </p>
                                 {% endif %}
                             </div>

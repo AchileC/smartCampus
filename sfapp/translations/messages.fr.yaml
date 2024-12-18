@@ -1,52 +1,139 @@
-_room: "Salle"
+# traduction française
+
+# mainstream words
+hello: "Bonjour"
+room: "Salle"
 rooms: "Salles"
 
-room:
-  hello: "Bonjour"
-  dashboard: "Tableau de bord"
-  infos: "Informations"
-  rooms: "Salles"
-  critical: "Critique"
-  at risk: "À risque"
-  stable: "Stable"
-  cardinal_direction:
-    east: "Est"
-    west: "Ouest"
-    north: "Nord"
-    south: "Sud"
+dashboard: "Tableau de bord"
+infos: "Informations"
 
-weather:
-  title: "Météo"
-  today: "Aujourd'hui"
-  no_data: "Aucune donnée météo disponible."
+# action enum info
+_action_state:
+  TO DO: "À faire"
+  DOING: "En cours"
+  DONE: "Terminé"
 
-task:
-  todolist: "Liste des tâches"
-  todolist_technician: "Liste des tâches des techniciens"
-  on_room: "dans"
-  created_at: "Créé le"
-  started_on: "Commencé le"
-  not_started: "Pas encore commencé"
-  no_pending: "Aucune tâche en attente."
-  access: "Accéder"
-  last_updated: "Dernière mise à jour"
+# room state enum
+_room_state:
+  CRITICAL: "Critique"
+  AT RISK: "À risque"
+  STABLE: "Stable"
+  WAITING: "En attente"
 
-details:
-  room: "Salle"
-  room_constants: "Constantes de la salle"
-  ambient_room_state: "Ambiance"
-  temperature: "Température"
-  humidity: "Humidité"
-  back_to_room_list: "Retour à la liste des salles"
-  general_information:
-    general_information: "Informations générales"
-    number_of_windows: "Nombre de fenêtres"
-    number_of_heaters: "Nombre de radiateurs"
-    surface: "Surface"
-    cardinal_direction: "Orientation"
+# sensor state enum
+_sensor_state:
+  NOT LINKED: "Non connecté"
+  LINKED: "Connecté"
+  PROBABLY BROKEN: "Probablement cassé"
+  ASSIGNMENT: "Assignement"
+  UNASSIGNMENT: "Dé-assignement"
 
-dashboard:
-  dashboard: "Tableau de bord"
-  as_list: "Liste des SA"
-  my_to_do_list: "Ma To-Do Liste"
 
+_action_info_state:
+  ASSIGNMENT: "Assignement"
+  UNASSIGNMENT: "Dé-assignement"
+
+temperature: "Température"
+humidity: "Humidité"
+
+# dashboard
+as_list: "Liste des SA"
+my_to_do_list: "Ma To-Do Liste"
+
+# orientation
+_cardinal_direction:
+  east: "Est"
+  west: "Ouest"
+  north: "Nord"
+  south: "Sud"
+
+# weather
+weather: "Météo"
+today: "Aujourd'hui"
+no_data: "Aucune donnée météo disponible."
+
+# todolist
+todolist: "Liste des tâches"
+todolist_technician: "Liste des tâches du technicien"
+
+#
+on_room: "en"
+created_at: "Créé le"
+started_on: "Commencé le"
+not_started: "Pas encore commencé"
+no_pending: "Aucune tâche en attente."
+access: "Accéder"
+last_updated: "Dernière mise à jour"
+
+
+# buttons
+update: "Modifier"
+back_to_room_list: "Retour à la liste des salles"
+
+# messages
+as_assigned_to_room: "Un système d'acquisition est assigné à cette salle."
+no_as_assigned_to_room: "Aucun système d'acquisition assigné à cette salle."
+
+
+# index.html.twig
+systems: "Systèmes d'acquisition"
+
+# details.twig.html
+room_constants: "Constantes de la salle"
+ambient_room_state: "Ambiance"
+general_information: "Informations générales"
+number_of_windows: "Nombre de fenêtres"
+number_of_heaters: "Nombre de radiateurs"
+surface: "Surface"
+cardinal_direction: "Orientation"
+room_monitoring: "Périodes de chauffe"
+heating: "Chauffe"
+non_heating: "Hors-chauffe"
+optimal_temp: "Température optimale"
+
+
+rooms_list:
+  list: "Liste des salles"
+no_match_create_room: "Aucun résultat trouvé. Vérifiez l'orthographe ou <a href=\"{{ path('app_rooms_add') }}\">créez une nouvelle salle</a>."
+no_match_adjust_filters: "Aucun résultat trouvé. Vérifiez l'orthographe ou ajustez les filtres."
+add_room: "Ajouter une salle"
+floor: "Étage"
+state: "État"
+sensor: "Capteur"
+details: "Détails"
+edit: "Modifier"
+delete: "Supprimer"
+delete_room: "Supprimer la salle"
+just_now: "À l'instant"
+dark_mode: "Mode sombre"
+
+# rooms : index.html.twig
+filter:
+  name:
+    placeholder: "Rechercher une salle par nom"
+  floor:
+    ground: "Rez-de-chaussée"
+    first: "Premier"
+    second: "Deuxième"
+    third: "Troisième"
+    placeholder: "Sélectionner un étage"
+  state:
+    stable: "Stable"
+    at_risk: "À risque"
+    critical: "Critique"
+    placeholder: "Sélectionner un état"
+  buttons:
+    search: "Rechercher"
+    reset: "Reset"
+
+awaiting_tasks: "tâches en attente"
+view_completed_tasks: "Voir les tâches terminées"
+
+# done.html.twig
+completed_tasks_history: "Historique des tâches terminées"
+back_to_todolist: "Retour à la liste des tâches"
+no_completed_tasks: "Aucune tâche terminée à afficher."
+completed_at: "Terminé le"
+acquisition_system: "Système d'acquisition"
+no_acquisition_system: "Aucun système d'acquisition lié à cette tâche."

@@ -6,17 +6,17 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-10 offset-md-1 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
-                <h1 class="text-center text-white mb-0">{{ 'details.room'| trans}} {{ room.name }}</h1>
+                <h1 class="text-center text-white mb-0">{{ 'room'| trans}} {{ room.name }}</h1>
             </div>
         </div>
 
         <!-- Room Information Card -->
         <div class="card w-75 mx-auto mt-4 shadow-lg">
             <div class="card-body">
-                <h5 class="card-title">{{ 'details.room_constants'|trans }}</h5>
-                <p class="card-text"><strong>{{ 'details.ambient_room_state'|trans}} </strong>
+                <h5 class="card-title">{{ 'room_constants'|trans }}</h5>
+                <p class="card-text"><strong>{{ 'ambient_room_state'|trans}} </strong>
                     <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %}">
-                        {{ ('room.' ~ room.state.value)|trans|upper }}
+                        {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
                     </span>
                 </p>
 
@@ -33,7 +33,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     {{ tempCritical ? '🚨' : (tempWarning ? '⚠️' : '✅') }}
-                                    <strong>{{ 'details.temperature'|trans }}:</strong>
+                                    <strong>{{ 'temperature'|trans }}:</strong>
                                     {{ temp is not null ? temp ~ '°C' : 'No value measured' }}
                                     {% if temp is not null %}
                                         <div class="mt-2 small {% if tempCritical %}text-danger{% elseif tempWarning %}text-warning{% else %}text-success{% endif %}">
@@ -105,7 +105,7 @@
                                     {% else %}
                                         ✅
                                     {% endif %}
-                                    <strong>{{ 'details.humidity'|trans }} </strong>
+                                    <strong>{{ 'humidity'|trans }} </strong>
                                     {{ hum is not null ? hum ~ '%' : 'No value measured' }}
                                     {% if hum is not null %}
                                         <div class="mt-2 small {% if humCritical %}text-danger{% elseif humWarning %}text-warning{% else %}text-success{% endif %}">
@@ -205,7 +205,7 @@
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                 <button class="btn btn-link text-white text-decoration-none w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#generalInfo" aria-expanded="false">
-                    <h5 class="mb-0">{{ 'details.general_information.general_information' | trans }}</h5>
+                    <h5 class="mb-0">{{ 'general_information' | trans }}</h5>
                     <i class="bi bi-chevron-down fs-3"></i>
                 </button>
             </div>
@@ -219,7 +219,7 @@
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-microsoft fs-2 text-secondary me-3"></i>
                                     <div>
-                                        <h6 class="mb-0">{{ 'details.general_information.number_of_windows'| trans }}</h6>
+                                        <h6 class="mb-0">{{ 'number_of_windows'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">{{ room.nbWindows }}</span>
                                     </div>
                                 </div>
@@ -227,7 +227,7 @@
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-thermometer-half fs-2 text-secondary me-3"></i>
                                     <div>
-                                        <h6 class="mb-0">{{ 'details.general_information.number_of_heaters'| trans }}</h6>
+                                        <h6 class="mb-0">{{ 'number_of_heaters'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">{{ room.nbHeaters }}</span>
                                     </div>
                                 </div>
@@ -243,9 +243,9 @@
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-compass fs-2 text-secondary me-3"></i>
                                     <div>
-                                        <h6 class="mb-0">{{ 'details.general_information.cardinal_direction'| trans }}</h6>
+                                        <h6 class="mb-0">{{ 'cardinal_direction'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">
-                                            {{ ('room.cardinal_direction.' ~ room.cardinalDirection.value ) |trans}}
+                                            {{ ('_cardinal_direction.' ~ room.cardinalDirection.value ) |trans}}
                                         </span>
                                     </div>
                                 </div>
@@ -256,15 +256,13 @@
                         <div class="col-md-4">
                             {% if room.acquisitionSystem %}
                                 <div class="alert alert-info mb-0">
-                                    <h6 class="alert-heading"><i class="fas fa-info-circle"></i> Room Monitoring</h6>
-                                    <p class="mb-1"><strong>Heating:</strong> Nov-Apr</p>
-                                    <p class="mb-1"><strong>Non-Heating:</strong> May-Oct</p>
+                                    <h6 class="alert-heading"><i class="fas fa-info-circle"></i><strong>{{ 'room_monitoring' | trans }}</strong></h6>
+                                    <p class="mb-1"><strong>{{ 'heating' | trans }}</strong> Nov-Apr</p>
+                                    <p class="mb-1"><strong>{{ 'non_heating' | trans }}</strong> May-Oct</p>
                                     <hr>
-                                    <p class="mb-1"><strong>Optimal temp:</strong></p>
-                                    <ul class="mb-0 ps-3">
-                                        <li>Heating: 19-21°C</li>
-                                        <li>Non-Heating: 24-28°C</li>
-                                    </ul>
+                                    <p class="mb-1"><strong>{{ 'optimal_temp' | trans }}</strong></p>
+                                    <p class="mb-1"><strong>{{ 'heating' | trans }}</strong> 19 - 21°C </p>
+                                    <p class="mb-1"><strong>{{ 'non_heating' | trans }}</strong> 24 - 28°C</p>
                                 </div>
                             {% endif %}
                         </div>
@@ -277,11 +275,11 @@
             <div class="card w-75 mx-auto mt-4 text-center">
                 <div class="card-body">
                     {% if not room.acquisitionSystem %}
-                        <h6 class="card-title">No assigned acquisition system.</h6>
+                        <h6 class="card-title">{{ 'no_as_assigned_to_room' | trans }}</h6>
                     {% else %}
-                        <h6 class="card-title">An acquisition system is assigned to this room.</h6>
+                        <h6 class="card-title">{{ 'as_assigned_to_room' | trans }}</h6>
                     {% endif %}
-                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">Update</a>
+                    <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-primary me-2">{{ 'update' | trans }}</a>
                 </div>
             </div>
         {% endif %}
@@ -289,7 +287,7 @@
         <!-- Back to List Button -->
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
-                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'details.back_to_room_list' | trans }}</a>
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'back_to_room_list' | trans }}</a>
             </div>
         </div>
     </div>
