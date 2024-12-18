@@ -24,7 +24,6 @@
         .threshold-visualization {
             margin-top: 15px;
             padding: 20px;
-            background-color: var(--bs-gray-100);
             border-radius: 4px;
             position: relative;
         }
@@ -55,7 +54,8 @@
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
             border-top: 0;
-            border-bottom: 12px solid var(--bs-dark);
+            border-bottom: 12px solid var(--bs-blue);
+
         }
 
         .slider-thumb::after {
@@ -70,6 +70,9 @@
 
         .slider-thumb:hover {
             border-bottom-color: var(--bs-primary);
+            transform: translateX(-50%) scale(1.2);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
         .slider-thumb.dragging {
@@ -87,12 +90,15 @@
             font-size: 12px;
             white-space: nowrap;
             color: white;
-            background-color: var(--bs-dark);
+            background-color: var(--bs-blue);
             font-weight: 500;
         }
 
         .slider-thumb:hover .slider-value {
             background-color: var(--bs-primary);
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s ease-in-out;
         }
 
         .slider-thumb.dragging .slider-value {
@@ -263,7 +269,6 @@
                         <td>24°C - Too warm, excessive energy consumption</td>
                     </tr>
                 </table>
-                <p class="text-muted small mt-2">Note: Optimal range 18-22°C balances comfort and energy efficiency during heating season.</p>
             </div>
             <div class="hidden-inputs">
                 {{ form_row(form.heatingTempCriticalMin) }}
@@ -320,7 +325,6 @@
                         <td>28°C - Too warm, risk of discomfort</td>
                     </tr>
                 </table>
-                <p class="text-muted small mt-2">Note: Optimal range 22-26°C provides comfort while minimizing cooling energy use.</p>
             </div>
             <div class="hidden-inputs">
                 {{ form_row(form.nonHeatingTempCriticalMin) }}
@@ -504,8 +508,8 @@
                             // Vérifie l'ordre des curseurs
                             if (isValidPosition(container, thumb.dataset.type, value)) {
                                 thumb.style.left = `${adjustedPercent}%`;
-                                thumb.querySelector('.slider-value').textContent = `${value.toFixed(1)}${getUnit(containerId)}`;
-                                updateHiddenInput(containerId, thumb.dataset.type, value.toFixed(1));
+                                thumb.querySelector('.slider-value').textContent = `${value}${getUnit(containerId)}`;
+                                updateHiddenInput(containerId, thumb.dataset.type, value);
                                 updateZones(container);
                             }
                         }
