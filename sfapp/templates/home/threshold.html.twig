@@ -243,6 +243,28 @@
                     <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
                 </div>
             </div>
+            <div class="recommended-values">
+                <h5>Recommended Values (Heating Period)</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Critical Min:</td>
+                        <td>16°C - Too cold, risk of discomfort and health issues</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Min:</td>
+                        <td>18°C - Minimum comfortable temperature for heating season</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Max:</td>
+                        <td>22°C - Maximum recommended temperature for heating season</td>
+                    </tr>
+                    <tr>
+                        <td>Critical Max:</td>
+                        <td>24°C - Too warm, excessive energy consumption</td>
+                    </tr>
+                </table>
+                <p class="text-muted small mt-2">Note: Optimal range 18-22°C balances comfort and energy efficiency during heating season.</p>
+            </div>
             <div class="hidden-inputs">
                 {{ form_row(form.heatingTempCriticalMin) }}
                 {{ form_row(form.heatingTempWarningMin) }}
@@ -278,6 +300,28 @@
                     <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
                 </div>
             </div>
+            <div class="recommended-values">
+                <h5>Recommended Values (Non-Heating Period)</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Critical Min:</td>
+                        <td>20°C - Too cold for comfort in summer</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Min:</td>
+                        <td>22°C - Lower bound of summer comfort zone</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Max:</td>
+                        <td>26°C - Upper bound of summer comfort zone</td>
+                    </tr>
+                    <tr>
+                        <td>Critical Max:</td>
+                        <td>28°C - Too warm, risk of discomfort</td>
+                    </tr>
+                </table>
+                <p class="text-muted small mt-2">Note: Optimal range 22-26°C provides comfort while minimizing cooling energy use.</p>
+            </div>
             <div class="hidden-inputs">
                 {{ form_row(form.nonHeatingTempCriticalMin) }}
                 {{ form_row(form.nonHeatingTempWarningMin) }}
@@ -312,6 +356,27 @@
                     <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
                     <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
                 </div>
+            </div>
+            <div class="recommended-values">
+                <h5>Recommended Humidity Values</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Critical Min:</td>
+                        <td>20% - Very dry, risk of respiratory issues and static electricity</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Min:</td>
+                        <td>30% - Minimum for comfort and health</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Max:</td>
+                        <td>60% - Maximum for comfort and mold prevention</td>
+                    </tr>
+                    <tr>
+                        <td>Critical Max:</td>
+                        <td>70% - High risk of mold growth and discomfort</td>
+                    </tr>
+                </table>
             </div>
             <div class="hidden-inputs">
                 {{ form_row(form.humCriticalMin) }}

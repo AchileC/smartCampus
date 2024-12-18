@@ -36,15 +36,15 @@ class ThresholdRepository extends ServiceEntityRepository
         // Reset to default values
         $threshold
             // Heating period temperature
-            ->setHeatingTempCriticalMin(17.0)
-            ->setHeatingTempWarningMin(19.0)
-            ->setHeatingTempWarningMax(21.0)
-            ->setHeatingTempCriticalMax(23.0)
+            ->setHeatingTempCriticalMin(16.0)
+            ->setHeatingTempWarningMin(18.0)
+            ->setHeatingTempWarningMax(22.0)
+            ->setHeatingTempCriticalMax(24.0)
             // Non-heating period temperature
-            ->setNonHeatingTempCriticalMin(22.0)
-            ->setNonHeatingTempWarningMin(24.0)
-            ->setNonHeatingTempWarningMax(28.0)
-            ->setNonHeatingTempCriticalMax(30.0)
+            ->setNonHeatingTempCriticalMin(20.0)
+            ->setNonHeatingTempWarningMin(22.0)
+            ->setNonHeatingTempWarningMax(26.0)
+            ->setNonHeatingTempCriticalMax(28.0)
             // Humidity
             ->setHumCriticalMin(20.0)
             ->setHumWarningMin(30.0)
