@@ -21,11 +21,20 @@
                         By confirming, the manager will see that you have started the task.
                     </p>
                     <div class="text-center">
-                        <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
-                            <button type="submit" class="btn btn-success">Begin</button>
-                            <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Cancel</a>
-                        </form>
-                    </div>
+                        {% if action.info.value == 'assignment' and noAsAvailable %}
+                            {# Display message and link to add AS if none are available #}
+                            <div class="alert alert-danger">
+                                <p>No Acquisition Systems are available to assign.</p>
+                                <a href="{{ path('app_acquisition_system_add', {'from_action': action.id}) }}" class="btn btn-primary">
+                                    Add an Acquisition System
+                                </a>
+                            </div>
+                        {% else %}
+                            <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
+                                <button type="submit" class="btn btn-success">Begin</button>
+                                <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Cancel</a>
+                            </form>
+                        {% endif %}
                 {% elseif action.state.value == 'doing' %}
                     {# Validate Action Template #}
                     <div class="alert alert-info text-center">

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Room;
 use App\Entity\Action;
 use App\Repository\ActionRepository;
+use App\Repository\AcquisitionSystemRepository;
 use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
@@ -317,24 +318,35 @@ class RoomController extends AbstractController
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
      */
     #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
-    public function requestInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
-    {
+    public function requesAssignment(
+        string $name,
+        RoomRepository $roomRepository,
+        AcquisitionSystemRepository $acquisitionSystemRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
         if (!$room) {
             throw $this->createNotFoundException('Room not found');
         }
 
+        // Vérifier les systèmes d'acquisition disponibles
+        $availableSystems = $acquisitionSystemRepository->findSystemsNotLinked();
 
+        if (empty($availableSystems)) {
+            $this->addFlash('warning', 'Assignment may take some time, as there are no more acquisition systems available.');
+        }
+
+        // Créer une nouvelle action pour l'assignation
         $action = new Action();
         $action->setInfo(ActionInfoEnum::ASSIGNMENT); // Type d'action : ASSIGNMENT
         $action->setState(ActionStateEnum::TO_DO);    // Etat : À FAIRE
         $action->setCreatedAt(new \DateTime());       // Date de création
         $action->setRoom($room);                      // Associer la salle à la tâche
 
-
         $room->setState(RoomStateEnum::WAITING);
         $room->setSensorState(SensorStateEnum::ASSIGNMENT);
+
         // Persister la tâche dans la base de données
         $entityManager->persist($action);
         $entityManager->flush();
@@ -342,9 +354,9 @@ class RoomController extends AbstractController
         // Ajouter un message flash pour indiquer le succès
         $this->addFlash('success', 'A new assignment task has been created.');
 
-
         return $this->redirectToRoute('app_rooms');
     }
+
 
     /**
      * Initiates the request to unassign an acquisition system from a room.

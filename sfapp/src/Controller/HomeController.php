@@ -141,7 +141,14 @@ class HomeController extends AbstractController
      * @throws NotFoundException If the action or room is not found.
      */
     #[Route('/todolist/edit/{id}', name: 'app_todolist_edit')]
-    public function editAction(int $id, Request $request, ActionRepository $actionRepository, RoomRepository $roomRepository, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response
+    public function editAction(
+        int $id,
+        Request $request,
+        ActionRepository $actionRepository,
+        RoomRepository $roomRepository,
+        AcquisitionSystemRepository $acquisitionSystemRepository,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $action = $actionRepository->find($id);
 
@@ -166,12 +173,16 @@ class HomeController extends AbstractController
 
             return $this->redirectToRoute('app_todolist');
         }
+
+        // Determine available Acquisition Systems
         $acquisitionSystems = $acquisitionSystemRepository->findSystemsNotLinked();
+        $noAsAvailable = count($acquisitionSystems) === 0;
 
         return $this->render('home/edit.html.twig', [
             'action' => $action,
             'rooms' => $rooms,
             'acquisitionSystems' => $acquisitionSystems,
+            'noAsAvailable' => $noAsAvailable,
         ]);
     }
 
@@ -212,6 +223,7 @@ class HomeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_todolist');
+
     }
 
     /**
@@ -226,7 +238,7 @@ class HomeController extends AbstractController
      * @throws NotFoundException If the action is not found.
      */
     #[Route('/todolist/{id}/begin', name: 'app_begin_action', methods: ['POST'])]
-    public function beginAction(int $id, ActionRepository $actionRepository, EntityManagerInterface $entityManager): Response
+    public function beginAction(int $id, ActionRepository $actionRepository, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response
     {
         $action = $actionRepository->find($id);
 
@@ -237,6 +249,14 @@ class HomeController extends AbstractController
         if ($action->getState() !== ActionStateEnum::TO_DO) {
             $this->addFlash('error', 'This action is not in a state that allows it to be started.');
             return $this->redirectToRoute('app_todolist');
+        }
+
+        $availableSystems = $acquisitionSystemRepository->findSystemsNotLinked();
+
+        if (empty($availableSystems)) {
+            return $this->redirectToRoute('app_acquisition_system_add', [
+                'from_action' => true,
+            ]);
         }
 
         $action->setState(ActionStateEnum::DOING); // Change state to DOING
@@ -416,17 +436,20 @@ class HomeController extends AbstractController
     /**
      * Adds a new acquisition system.
      *
-     * This method provides a form to add a new acquisition system. It validates
-     * the input, ensures uniqueness of the system name, and saves the system to the database.
-     *
      * @param Request $request The current HTTP request.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository The repository for acquisition systems.
+     * @param ActionRepository $actionRepository The repository for actions.
      * @param EntityManagerInterface $entityManager The entity manager to persist the data.
      *
      * @return Response The rendered page for adding an acquisition system or a redirect to the list page.
      */
     #[Route('/as/add', name: 'app_acquisition_system_add')]
-    public function addAS(Request $request, AcquisitionSystemRepository $acquisitionSystemRepository, EntityManagerInterface $entityManager): Response
+    public function addAS(
+        Request $request,
+        AcquisitionSystemRepository $acquisitionSystemRepository,
+        ActionRepository $actionRepository,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         // Initialize a new acquisition system with a default state
         $as = new AcquisitionSystem();
@@ -435,6 +458,8 @@ class HomeController extends AbstractController
         // Create and process the form
         $form = $this->createForm(AddASType::class, $as, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
+
+        $fromAction = $request->query->get('from_action', false);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Retrieve and format the number field
@@ -448,7 +473,10 @@ class HomeController extends AbstractController
             $existingAS = $acquisitionSystemRepository->findOneBy(['name' => $as->getName()]);
             if ($existingAS) {
                 $form->get('number')->addError(new FormError('The acquisition system name must be unique. This name is already in use.'));
-                return $this->render('home/addAS.html.twig', ['form' => $form->createView()]);
+                return $this->render('home/addAS.html.twig', [
+                    'form' => $form->createView(),
+                    'from_action' => $fromAction,
+                ]);
             }
 
             // Save the new acquisition system to the database
@@ -457,12 +485,16 @@ class HomeController extends AbstractController
 
             $this->addFlash('success', 'Acquisition system added successfully.');
 
-            // Redirect to the acquisition system list page
-            return $this->redirectToRoute('app_acquisition_system');
+            if ($fromAction) {
+                return $this->redirectToRoute('app_todolist_edit', ['id' => $fromAction]);
+            } else {
+                return $this->redirectToRoute('app_acquisition_system');
+            }
         }
 
         return $this->render('home/addAS.html.twig', [
             'form' => $form->createView(),
+            'from_action' => $fromAction,
         ]);
     }
 
