@@ -361,25 +361,25 @@
             <a href="{{ path('app_rooms') }}"
                class="nav-link {{ current_route starts with 'app_rooms' ? 'active' : '' }}">
                 <i class="bi bi-box"></i>
-                Rooms
+                {{ 'rooms' | trans }}
             </a>
             {% if is_granted('ROLE_TECHNICIAN') or is_granted('ROLE_MANAGER') %}
             <a href="{{ path('app_home') }}"
                class="nav-link {{ current_route starts with 'app_home' ? 'active' : '' }}">
                 <i class="bi bi-house-door"></i>
-                Dashboard
+                {{ 'dashboard.dashboard' | trans }}
             </a>
             {% endif %}
             {% if is_granted('ROLE_TECHNICIAN') %}
             <a href="{{ path('app_todolist') }}"
                class="nav-link {{ current_route starts with 'app_todolist' ? 'active' : '' }}">
                 <i class="bi bi-speedometer2"></i>
-                To-Do-List
+                {{ 'dashboard.my_to_do_list' | trans}}
             </a>
             <a href="{{ path('app_acquisition_system') }}"
                class="nav-link {{ current_route starts with 'app_acquisition_system' ? 'active' : '' }}">
                 <i class="bi bi-grid"></i>
-                AS List
+                {{ 'dashboard.as_list' | trans }}
             </a>
             {% endif %}
 

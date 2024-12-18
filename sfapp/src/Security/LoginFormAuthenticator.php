@@ -33,7 +33,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
     public function supports(Request $request): ?bool
     {
-        return ($request->getPathInfo() === '/login' && $request->isMethod('POST'));
+        return (preg_match('#^/[a-z]{2}/login$#', $request->getPathInfo()) && $request->isMethod('POST'));
     }
 
     public function authenticate(Request $request): Passport
@@ -62,8 +62,11 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        // Récupère la locale depuis la session
+        $locale = $request->getSession()->get('_locale', 'en');
+        // Redirige vers la route app_home en passant la locale
         return new RedirectResponse(
-            $this->router->generate('app_home')
+            $this->router->generate('app_home', ['_locale' => $locale])
         );
     }
 

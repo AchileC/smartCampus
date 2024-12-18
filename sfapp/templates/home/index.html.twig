@@ -1,13 +1,13 @@
-{% block title %}Dashboard{% endblock %}
-{# home/index.html.twig #}
 {% extends 'base.html.twig' %}
+{% block title %}{{ 'room.dashboard'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container-fluid p-4" style="font-family: Arial, sans-serif;">
         <!-- Titre principal -->
         <div class="text-center mb-4">
-            <h1>Hello {{ app.user.username }}!</h1>
-            <h3>{{ "now"|date("l, d F Y") }}</h3>
+            <h1>{{ 'room.hello'|trans }} {{ app.user.username }}!</h1>
+            <h3>{{ "now"|format_datetime(pattern='EEEE d MMMM Y') }}</h3>
+
         </div>
 
         <!-- Contenu principal en grille -->
@@ -16,20 +16,20 @@
             <div class="col-6 d-flex flex-column gap-3">
                 <!-- Infos -->
                 <div class="card p-3 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="border-radius: 10px;">
-                    <h3 class="text-center mb-4">Infos</h3>
+                    <h3 class="text-center mb-4">{{ 'room.infos'|trans }}</h3>
                     <div class="d-flex justify-content-center flex-wrap gap-3">
                         <!-- Nombre de salles visible pour tous -->
                         <div class="info-card border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white" style="width: 150px; border-radius: 10px;">
                             <h4 class="fw-bold">{{ rooms_count }}</h4>
-                            <p class="mb-0">Rooms</p>
+                            <p class="mb-0">{{ 'room.rooms'|trans }}</p>
                         </div>
 
                         <!-- Nombre d'AS visible uniquement pour les techniciens -->
                         {% if is_granted('ROLE_TECHNICIAN') %}
                             <div class="col-6 text-center">
-                                <div class="info-card border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-whiter">
+                                <div class="info-card border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white">
                                     <h4>{{ as_count }}</h4>
-                                    <p>Acquisition Systems (AS)</p>
+                                    <p>{{ 'room.systems'|trans }}</p>
                                 </div>
                             </div>
                         {% endif %}
@@ -42,7 +42,7 @@
                                style="width: 150px; border-radius: 10px;">
                                 <i class="bi bi-exclamation-triangle-fill mb-2" style="font-size: 1.5rem;"></i>
                                 <h4 class="fw-bold">{{ critical_count }}</h4>
-                                <p class="mb-0">Critical</p>
+                                <p class="mb-0">{{ 'room.critical'|trans }}</p>
                             </a>
 
                             <!-- Nombre de salles à risque -->
@@ -51,7 +51,7 @@
                                style="width: 150px; border-radius: 10px;">
                                 <i class="bi bi-info-circle-fill mb-2" style="font-size: 1.5rem;"></i>
                                 <h4 class="fw-bold">{{ at_risk_count }}</h4>
-                                <p class="mb-0">At Risk</p>
+                                <p class="mb-0">{{ 'room.at_risk'|trans }}</p>
                             </a>
                         {% endif %}
                     </div>
@@ -59,7 +59,7 @@
 
                 <!-- Météo -->
                 <div class="card p-3 flex-grow-1" style="border-radius: 10px;">
-                    <h3 class="text-center">Weather</h3>
+                    <h3 class="text-center">{{ 'weather.title'|trans }}</h3>
                     <div class="d-flex justify-content-around align-items-center mt-4 h-100">
                         {% set pictocodeMapping = {
                             1: '☀️',
@@ -84,9 +84,9 @@
                         {% for day in forecast %}
                             <div class="text-center">
                                 {% if loop.first %}
-                                    <h1 class="fw-bold">Today</h1>
+                                    <h1 class="fw-bold">{{ 'weather.today'|trans }}</h1>
                                 {% else %}
-                                    <h5>{{ day.date|date('l') }}</h5>
+                                    <h5>{{ day.date|format_datetime(pattern='EEEE') }}</h5>
                                 {% endif %}
                                 <div class="mb-2" style="font-size: 2.5rem;">
                                     {{ pictocodeMapping[day.pictocode] ?? '❓' }}
@@ -94,7 +94,7 @@
                                 <p>{{ day.temperature_min|round }}° / {{ day.temperature_max|round }}°</p>
                             </div>
                         {% else %}
-                            <p>No weather data available.</p>
+                            <p>{{ 'weather.no_data'|trans }}</p>
                         {% endfor %}
                     </div>
                 </div>
@@ -104,23 +104,23 @@
             <div class="col-6">
                 <div class="card p-5 h-60 d-flex flex-column justify-content-between" style="border-radius: 10px; max-height: 500px;">
                     {% if is_granted('ROLE_TECHNICIAN') %}
-                        <h3 class="text-center">To-Do-List</h3>
+                        <h3 class="text-center">{{ 'task.todolist'|trans }}</h3>
                     {% else %}
-                        <h3 class="text-center">Technician's To-Do-List</h3>
+                        <h3 class="text-center">{{ 'task.todolist_technician'|trans }}</h3>
                     {% endif %}
                     <div class="mt-4 flex-grow-1 overflow-auto" style="max-height: 300px;">
                         {% for action in actions %}
                             <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
                                 <div>
                                     <p class="mb-1">
-                                        <strong>{{ action.info.value }}</strong> on {{ action.room.name }}.
+                                        <strong>{{ action.info.value }}</strong> {{ 'task.on_room'|trans }} {{ action.room.name }}.
                                     </p>
                                     <p class="mb-1 small text-muted">
-                                        Created at: {{ action.createdAt|date("d/m/Y - H:i:s", "Europe/Paris") }}
+                                        {{ 'task.created_at'|trans }}: {{ action.createdAt|date("d/m/Y - H:i:s", "Europe/Paris") }}
                                         {% if action.startedAt %}
-                                            . Started on: {{ action.startedAt|date("d/m/Y - H:i:s", "Europe/Paris") }}
+                                            . {{ 'task.started_on'|trans }}: {{ action.startedAt|date("d/m/Y - H:i:s", "Europe/Paris") }}
                                         {% else %}
-                                            . <em>Not started yet</em>
+                                            . <em>{{ 'task.not_started'|trans }}</em>
                                         {% endif %}
                                     </p>
                                 </div>
@@ -130,37 +130,17 @@
                             </div>
                         {% endfor %}
                         {% if actions is empty %}
-                            <p class="text-center">No pending tasks.</p>
+                            <p class="text-center">{{ 'task.no_pending'|trans }}</p>
                         {% endif %}
                     </div>
                     {% if is_granted('ROLE_TECHNICIAN') %}
                         <div class="text-center mt-3">
-                            <a href="{{ path('app_todolist') }}" class="btn btn-primary">Access</a>
-                            <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
+                            <a href="{{ path('app_todolist') }}" class="btn btn-primary">{{ 'task.access'|trans }}</a>
+                            <p class="text-muted mt-2">{{ 'task.last_updated'|trans }}: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
                         </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            function updateCurrentTime() {
-                const timeElement = document.getElementById('current-time');
-
-                if (timeElement) {
-                    const now = new Date();
-                    const formattedTime = now.toLocaleTimeString('en-US', { hour12: false });
-                    timeElement.textContent = formattedTime;
-                }
-            }
-
-            setInterval(updateCurrentTime, 1000);
-            updateCurrentTime(); // Initial update
-        });
-    </script>
 {% endblock %}

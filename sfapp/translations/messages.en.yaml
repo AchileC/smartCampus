@@ -1,12 +1,43 @@
-# translations/messages.en.yaml
 room:
-  add_success: "Room added successfully."
-  delete_success: "Room deleted successfully."
-  name_label: "Room Name"
-  floor_label: "Floor"
-  description_label: "Description"
-  submit_button: "Add Room"
-  cancel_button: "Cancel"
-  validation:
-    name_not_blank: "Room name cannot be empty."
-    name_regex: "The name must start with a letter followed by at least three numbers."
+  hello: "Hello"
+  dashboard: "Dashboard"
+  infos: "Infos"
+  rooms: "Rooms"
+  critical: "Critical"
+  at_risk: "At Risk"
+  systems: "Systèmes d'acquisition"
+
+weather:
+  title: "Weather"
+  today: "Today"
+  no_data: "No weather data available."
+
+task:
+  todolist: "To-Do-List"
+  todolist_technician: "Technician's To-Do-List"
+  on_room: "on"
+  created_at: "Created at"
+  started_on: "Started on"
+  not_started: "Not started yet"
+  no_pending: "No pending tasks."
+  access: "Access"
+  last_updated: "Last updated"
+
+details:
+  title: "Room Details"
+  header: "Room"
+  constants: "Room Constants"
+  state: "Ambient Room State"
+  temp: "Temperature"
+  hum: "Humidity"
+  no_value: "No value measured"
+  temperature:
+    critical: "Critical error: Verify sensor functionality."
+    warning: "Monitor and adjust as needed."
+    optimal: "Optimal temperature maintained."
+  humidity:
+    critical: "Urgently ventilate or consider a dehumidifier."
+    warning: "Monitor and ventilate if needed."
+    optimal: "Optimal humidity level maintained."
+  no_system: "No acquisition system assigned."
+  back: "Back to Room List"

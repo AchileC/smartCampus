@@ -1,12 +1,52 @@
-# translations/messages.fr.yaml
+_room: "Salle"
+rooms: "Salles"
+
 room:
-  add_success: "Salle ajoutée avec succès."
-  delete_success: "Salle supprimée avec succès."
-  name_label: "Nom de la Salle"
-  floor_label: "Étage"
-  description_label: "Description"
-  submit_button: "Ajouter la Salle"
-  cancel_button: "Annuler"
-  validation:
-    name_not_blank: "Le nom de la salle ne peut pas être vide."
-    name_regex: "Le nom doit commencer par une lettre suivie d'au moins trois chiffres."
+  hello: "Bonjour"
+  dashboard: "Tableau de bord"
+  infos: "Informations"
+  rooms: "Salles"
+  critical: "Critique"
+  at risk: "À risque"
+  stable: "Stable"
+  cardinal_direction:
+    east: "Est"
+    west: "Ouest"
+    north: "Nord"
+    south: "Sud"
+
+weather:
+  title: "Météo"
+  today: "Aujourd'hui"
+  no_data: "Aucune donnée météo disponible."
+
+task:
+  todolist: "Liste des tâches"
+  todolist_technician: "Liste des tâches des techniciens"
+  on_room: "dans"
+  created_at: "Créé le"
+  started_on: "Commencé le"
+  not_started: "Pas encore commencé"
+  no_pending: "Aucune tâche en attente."
+  access: "Accéder"
+  last_updated: "Dernière mise à jour"
+
+details:
+  room: "Salle"
+  room_constants: "Constantes de la salle"
+  ambient_room_state: "Ambiance"
+  temperature: "Température"
+  humidity: "Humidité"
+  back_to_room_list: "Retour à la liste des salles"
+  general_information:
+    general_information: "Informations générales"
+    number_of_windows: "Nombre de fenêtres"
+    number_of_heaters: "Nombre de radiateurs"
+    surface: "Surface"
+    cardinal_direction: "Orientation"
+
+dashboard:
+  dashboard: "Tableau de bord"
+  as_list: "Liste des SA"
+  my_to_do_list: "Ma To-Do Liste"
+

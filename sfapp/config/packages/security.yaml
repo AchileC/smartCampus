@@ -24,7 +24,7 @@ security:
             custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
-                target: app_rooms
+                target: /{_locale}/app_rooms
                 csrf_token_generator: security.csrf.token_manager
 
             remember_me:
@@ -32,30 +32,31 @@ security:
 
 
     access_control:
-    # Permet l'accès à /login à tout le monde
-    - { path: ^/login, roles: PUBLIC_ACCESS }
+        # Permet l'accès à /{_locale}/login à tout le monde
+        - { path: "^/{_locale}/login", roles: PUBLIC_ACCESS }
 
-    # Permet l'accès à /unauthorized et /error à tout le monde
-    - { path: ^/unauthorized, roles: PUBLIC_ACCESS }
-    - { path: ^/error, roles: PUBLIC_ACCESS }
+        # Permet l'accès à /{_locale}/unauthorized et /{_locale}/error à tout le monde
+        - { path: "^/{_locale}/unauthorized", roles: PUBLIC_ACCESS }
+        - { path: "^/{_locale}/error", roles: PUBLIC_ACCESS }
 
-    # Permet l'accès à la liste générale des salles pour tout le monde
-    - { path: ^/rooms$, roles: PUBLIC_ACCESS }
+        # Permet l'accès à la liste générale des salles pour tout le monde
+        - { path: "^/{_locale}/rooms$", roles: PUBLIC_ACCESS }
 
-    # Permet à tout le monde d'accéder aux détails d'une salle
-    - { path: ^/rooms/[a-zA-Z0-9]+$, roles: PUBLIC_ACCESS }
+        # Permet à tout le monde d'accéder aux détails d'une salle
+        - { path: "^/{_locale}/rooms/[a-zA-Z0-9]+$", roles: PUBLIC_ACCESS }
 
-    # Restreint l'accès aux routes update ou delete des salles aux managers uniquement
-    - { path: ^/rooms/[a-zA-Z0-9]+/(update|delete)$, roles: ROLE_MANAGER }
+        # Restreint l'accès aux routes update ou delete des salles aux managers uniquement
+        - { path: "^/{_locale}/rooms/[a-zA-Z0-9]+/(update|delete)$", roles: ROLE_MANAGER }
 
-    # Permet l'accès à /as uniquement aux techniciens
-    - { path: ^/as, roles: ROLE_TECHNICIAN }
+        # Permet l'accès à /{_locale}/as uniquement aux techniciens
+        - { path: "^/{_locale}/as", roles: ROLE_TECHNICIAN }
 
-    # Permet l'accès à /todolist uniquement aux techniciens
-    - { path: ^/todolist, roles: ROLE_TECHNICIAN }
+        # Permet l'accès à /{_locale}/todolist uniquement aux techniciens
+        - { path: "^/{_locale}/todolist", roles: ROLE_TECHNICIAN }
 
-    # Par défaut, toutes les autres routes sont publiques
-    - { path: ^/, roles: PUBLIC_ACCESS }
+        # Par défaut, toutes les autres routes sont publiques
+        - { path: "^/{_locale}/", roles: PUBLIC_ACCESS }
+
 when@test:
     security:
         password_hashers:

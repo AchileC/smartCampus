@@ -6,18 +6,18 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-10 offset-md-1 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
-                <h1 class="text-center text-white mb-0">Room {{ room.name }}</h1>
+                <h1 class="text-center text-white mb-0">{{ 'details.room'| trans}} {{ room.name }}</h1>
             </div>
         </div>
 
         <!-- Room Information Card -->
         <div class="card w-75 mx-auto mt-4 shadow-lg">
             <div class="card-body">
-                <h5 class="card-title">Room Constants</h5>
-                <p class="card-text"><strong>Ambient Room State </strong>
+                <h5 class="card-title">{{ 'details.room_constants'|trans }}</h5>
+                <p class="card-text"><strong>{{ 'details.ambient_room_state'|trans}} </strong>
                     <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %}">
-                    {{ room.state.value | upper }}
-                </span>
+                        {{ ('room.' ~ room.state.value)|trans|upper }}
+                    </span>
                 </p>
 
                 {% if room.acquisitionSystem %}
@@ -32,8 +32,8 @@
                         <li class="list-group-item {{ tempClass }} p-3">
                             <div class="row">
                                 <div class="col-md-6">
-                                    {{ tempCritical ? '🚨' : (tempWarning ? '⚠️' : '✅') }} 
-                                    <strong>Temperature:</strong>
+                                    {{ tempCritical ? '🚨' : (tempWarning ? '⚠️' : '✅') }}
+                                    <strong>{{ 'details.temperature'|trans }}:</strong>
                                     {{ temp is not null ? temp ~ '°C' : 'No value measured' }}
                                     {% if temp is not null %}
                                         <div class="mt-2 small {% if tempCritical %}text-danger{% elseif tempWarning %}text-warning{% else %}text-success{% endif %}">
@@ -105,7 +105,7 @@
                                     {% else %}
                                         ✅
                                     {% endif %}
-                                    <strong>Humidity:</strong>
+                                    <strong>{{ 'details.humidity'|trans }} </strong>
                                     {{ hum is not null ? hum ~ '%' : 'No value measured' }}
                                     {% if hum is not null %}
                                         <div class="mt-2 small {% if humCritical %}text-danger{% elseif humWarning %}text-warning{% else %}text-success{% endif %}">
@@ -205,7 +205,7 @@
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                 <button class="btn btn-link text-white text-decoration-none w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#generalInfo" aria-expanded="false">
-                    <h5 class="mb-0">General Information</h5>
+                    <h5 class="mb-0">{{ 'details.general_information.general_information' | trans }}</h5>
                     <i class="bi bi-chevron-down fs-3"></i>
                 </button>
             </div>
@@ -219,7 +219,7 @@
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-microsoft fs-2 text-secondary me-3"></i>
                                     <div>
-                                        <h6 class="mb-0">Number of Windows</h6>
+                                        <h6 class="mb-0">{{ 'details.general_information.number_of_windows'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">{{ room.nbWindows }}</span>
                                     </div>
                                 </div>
@@ -227,7 +227,7 @@
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-thermometer-half fs-2 text-secondary me-3"></i>
                                     <div>
-                                        <h6 class="mb-0">Number of Heaters</h6>
+                                        <h6 class="mb-0">{{ 'details.general_information.number_of_heaters'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">{{ room.nbHeaters }}</span>
                                     </div>
                                 </div>
@@ -243,9 +243,9 @@
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-compass fs-2 text-secondary me-3"></i>
                                     <div>
-                                        <h6 class="mb-0">Cardinal Direction</h6>
+                                        <h6 class="mb-0">{{ 'details.general_information.cardinal_direction'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">
-                                            {{ room.cardinalDirection ? room.cardinalDirection.value | capitalize : 'Non spécifiée' }}
+                                            {{ ('room.cardinal_direction.' ~ room.cardinalDirection.value ) |trans}}
                                         </span>
                                     </div>
                                 </div>
@@ -289,7 +289,7 @@
         <!-- Back to List Button -->
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
-                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to Room List</a>
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'details.back_to_room_list' | trans }}</a>
             </div>
         </div>
     </div>
