@@ -10,6 +10,18 @@
             <h3>{{ "now"|date("l, d F Y") }}</h3>
         </div>
 
+        <!-- Flash Messages -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
         <!-- Contenu principal en grille -->
         <div class="row gx-3 align-items-stretch" style="height: calc(100% - 300px);">
             <!-- Colonne gauche -->
