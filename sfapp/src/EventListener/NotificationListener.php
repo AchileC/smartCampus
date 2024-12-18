@@ -34,7 +34,6 @@ class NotificationListener
         // Récupère les notifications non lues de l'utilisateur
         $notifications = $this->notificationRepository->findBy([
             'recipient' => $user,
-            'isRead' => false
         ]);
 
         // Ajoute les notifications globalement pour Twig

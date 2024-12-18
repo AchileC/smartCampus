@@ -39,11 +39,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         foreach ($users as $user) {
             if (in_array($role, $user->getRoles(), true)) {
-                return $user; // Retourne le premier utilisateur trouvé
+                return $user;
             }
         }
 
-        return null; // Aucun utilisateur trouvé
+        return null;
     }
 
 

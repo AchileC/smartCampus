@@ -473,8 +473,4 @@ class HomeController extends AbstractController
 
         return new JsonResponse(['success' => true, 'message' => 'All notifications marked as read.']);
     }
-
-
-
-
 }

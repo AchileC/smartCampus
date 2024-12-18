@@ -16,15 +16,6 @@ class NotificationRepository extends ServiceEntityRepository
         parent::__construct($registry, Notification::class);
     }
 
-    public function findAllByUser(User $user): array
-    {
-        return $this->createQueryBuilder('n')
-            ->where('n.recipient = :user')
-            ->setParameter('user', $user)
-            ->orderBy('n.createAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
 
     //    /**
     //     * @return Notification[] Returns an array of Notification objects
