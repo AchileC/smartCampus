@@ -480,32 +480,33 @@
                 </div>
 
                 {% set unreadNotifications = notifications|filter(notification => not notification.isRead) %}
-                <div class="dropdown position-relative">
-                    <button class="btn btn-link text-white position-relative" id="notificationButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell-fill position-relative" style="font-size: 1.5rem;">
-                            {% if unreadNotifications|length > 0 %}
-                                <span class="notification-badge">
-                                    {{ unreadNotifications|length }}
-                                </span>
-                            {% endif %}
-                        </i>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
-                        <li class="fw-bold text-center mb-2 sticky-header">Notifications</li>
-                        {% for notification in notifications|reverse %}
-                            <li>
-                                <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
-                                   class="list-group-item list-group-item-action {% if notification.isRead %}text-muted{% else %}fw-bold{% endif %}">
-                                    <small class="text-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
-                                    {{ notification.message }}
-                                </a>
-                            </li>
-                        {% else %}
-                            <li class="text-center text-muted">No new notifications</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-
+                {% if is_granted('ROLE_MANAGER') %}
+                    <div class="dropdown position-relative">
+                        <button class="btn btn-link text-white position-relative" id="notificationButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bell-fill position-relative" style="font-size: 1.5rem;">
+                                {% if unreadNotifications|length > 0 %}
+                                    <span class="notification-badge">
+                        {{ unreadNotifications|length }}
+                    </span>
+                                {% endif %}
+                            </i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
+                            <li class="fw-bold text-center mb-2 sticky-header">Notifications</li>
+                            {% for notification in notifications|reverse %}
+                                <li>
+                                    <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
+                                       class="list-group-item list-group-item-action {% if notification.isRead %}text-muted{% else %}fw-bold{% endif %}">
+                                        <small class="text-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
+                                        {{ notification.message }}
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="text-center text-muted">No new notifications</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
 
 
             {% else %}
