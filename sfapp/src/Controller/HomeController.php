@@ -607,4 +607,28 @@ class HomeController extends AbstractController
 
         return new JsonResponse(['success' => true, 'message' => 'All notifications marked as read.']);
     }
+
+    #[Route('/notifications/mark-as-read/{id}', name: 'mark_notification_as_read')]
+    public function markAsRead(
+        int $id,
+        NotificationRepository $notificationRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException('User not authenticated');
+        }
+
+        $notification = $notificationRepository->find($id);
+        if (!$notification || $notification->getRecipient() !== $user) {
+            throw $this->createNotFoundException('Notification not found');
+        }
+
+        // Marquer la notification comme lue
+        $notification->setRead(true);
+        $entityManager->flush();
+
+        // Redirige vers la salle associée
+        return $this->redirectToRoute('app_rooms_details', ['name' => $notification->getRoom()->getName()]);
+    }
 }
