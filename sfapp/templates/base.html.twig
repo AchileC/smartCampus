@@ -382,12 +382,22 @@
                 padding-bottom: 5px; /* Optionnel, si vous voulez un peu d'espace */
             }
 
+            .btn-link {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                /* Ajoutez une taille fixe si nécessaire */
+                width: 40px;
+                height: 40px;
+            }
+
             .notification-badge {
                 position: absolute;
                 top: 0;
                 right: 0;
                 transform: translate(50%, -50%);
-                font-size: 0.7rem;
+                font-size: 0.8rem;
                 font-weight: bold;
                 color: white;
                 background-color: #dc3545;
@@ -395,23 +405,25 @@
                 padding: 0.25em 0.45em;
                 line-height: 1;
                 z-index: 10;
+                width: 20px;
+                height: 20px;
                 box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+                pointer-events: none; /* Empêche la badge d'interférer avec les interactions */
             }
 
-            [data-bs-theme="light"] .list-group-item.fw-bold {
-                background-color: #e9ecef;
-                color: #212529;
+
+            .list-group-item.fw-bold {
+                background: #2c2f33;
                 border-left: 4px solid #0d6efd;
                 position: relative;
                 padding-left: 1rem;
             }
 
-            [data-bs-theme="dark"] .list-group-item.fw-bold {
-                background-color: #2c2f33;
-                color: #f8f9fa;
-                border-left: 4px solid #0d6efd;
+            .list-group-item.fw-muted {
+                border-left: 4px solid #343a40;
                 position: relative;
                 padding-left: 1rem;
+                color: #6c757d;
             }
 
             .dropdown-menu > li.sticky-header {
@@ -495,39 +507,39 @@
                         </ul>
                     </div>
                     <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
-                        <i class="bi bi-gear-fill" style="font-size: 1rem;"></i>
+                        <i class="bi bi-gear-fill" style="font-size: 1.25rem;"></i>
                     </button>
-
-                </div>
-
-                {% set unreadNotifications = notifications|filter(notification => not notification.isRead) %}
-                {% if is_granted('ROLE_MANAGER') %}
-                    <div class="dropdown position-relative">
-                        <button class="btn btn-link text-white position-relative" id="notificationButton" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-bell-fill position-relative" style="font-size: 1.5rem;">
-                                {% if unreadNotifications|length > 0 %}
-                                    <span class="notification-badge">
+                    {% set unreadNotifications = notifications|filter(notification => not notification.isRead) %}
+                    {% if is_granted('ROLE_MANAGER') %}
+                        <div class="dropdown position-relative">
+                            <button class="btn btn-link text-white position-relative" id="notificationButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell-fill position-relative" style="font-size: 1.25em;">
+                                    {% if unreadNotifications|length > 0 %}
+                                        <span class="notification-badge">
                         {{ unreadNotifications|length }}
                     </span>
-                                {% endif %}
-                            </i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
-                            <li class="fw-bold text-center mb-2 sticky-header">Notifications</li>
-                            {% for notification in notifications|reverse %}
-                                <li>
-                                    <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
-                                       class="list-group-item list-group-item-action {% if notification.isRead %}text-muted{% else %}fw-bold{% endif %}">
-                                        <small class="text-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
-                                        {{ notification.message }}
-                                    </a>
-                                </li>
-                            {% else %}
-                                <li class="text-center text-muted">No new notifications</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
+                                    {% endif %}
+                                </i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
+                                <li class="fw-bold text-center mb-2 sticky-header">Notifications</li>
+                                {% for notification in notifications|reverse %}
+                                    <li>
+                                        <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
+                                           class="list-group-item list-group-item-action {% if notification.isRead %}fw-muted{% else %}fw-bold{% endif %}">
+                                            <small class="fw-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
+                                            {{ notification.message }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="text-center text-muted">No new notifications</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+
+
 
 
             {% else %}
