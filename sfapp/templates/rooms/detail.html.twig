@@ -34,27 +34,27 @@
                                 <div class="col-md-6">
                                     {{ tempCritical ? '🚨' : (tempWarning ? '⚠️' : '✅') }}
                                     <strong>{{ 'temperature'|trans }}:</strong>
-                                    {{ temp is not null ? temp ~ '°C' : 'No value measured' }}
+                                    {{ temp is not null ? temp ~ '°C' : 'no_value_measured'|trans }}
                                     {% if temp is not null %}
                                         <div class="mt-2 small {% if tempCritical %}text-danger{% elseif tempWarning %}text-warning{% else %}text-success{% endif %}">
                                             {% if tempCritical %}
-                                                Critical error: Verify sensor functionality.
+                                                {{ 'critical_error_verify_sensor'|trans }}
                                             {% elseif tempWarning %}
                                                 {% if isHeatingPeriod %}
                                                     {% if temp < 17 %}
-                                                        Check heating system and adjust to reach 19°C.
+                                                        {{ 'check_heating_system_adjust_19'|trans }}
                                                     {% elseif temp > 21 %}
-                                                        Reduce heating to avoid overconsumption.
+                                                        {{ 'heating_period_reduce_heating'|trans }}
                                                     {% endif %}
                                                 {% else %}
                                                     {% if temp < 24 %}
-                                                        Adjust AC to reach 26°C if present.
+                                                        {{ 'adjust_ac_to_26'|trans }}
                                                     {% elseif temp > 28 %}
-                                                        Activate AC/fans (max 26°C) and ventilate.
+                                                        {{ 'activate_ac_or_ventilate'|trans }}
                                                     {% endif %}
                                                 {% endif %}
                                             {% else %}
-                                                Optimal temperature maintained.
+                                                {{ 'optimal_temperature_maintained'|trans }}
                                             {% endif %}
                                         </div>
                                     {% endif %}
@@ -105,16 +105,16 @@
                                     {% else %}
                                         ✅
                                     {% endif %}
-                                    <strong>{{ 'humidity'|trans }} </strong>
-                                    {{ hum is not null ? hum ~ '%' : 'No value measured' }}
+                                    <strong>{{ 'humidity'|trans }}:</strong>
+                                    {{ hum is not null ? hum ~ '%' : 'no_value_measured'|trans }}
                                     {% if hum is not null %}
                                         <div class="mt-2 small {% if humCritical %}text-danger{% elseif humWarning %}text-warning{% else %}text-success{% endif %}">
                                             {% if humCritical %}
-                                                Urgently ventilate; consider dehumidifier
+                                                {{ 'urgently_ventilate_consider_dehumidifier'|trans }}
                                             {% elseif humWarning %}
-                                                Monitor and ventilate if needed
+                                                {{ 'monitor_and_ventilate_if_needed'|trans }}
                                             {% else %}
-                                                Optimal humidity level
+                                                {{ 'optimal_humidity_level'|trans }}
                                             {% endif %}
                                         </div>
                                     {% endif %}
@@ -157,17 +157,17 @@
                                         ✅
                                     {% endif %}
                                     <strong>CO₂:</strong>
-                                    {{ co2 is not null ? co2 ~ ' ppm' : 'No value measured' }}
+                                    {{ co2 is not null ? co2 ~ ' ppm' : 'no_value_measured'|trans }}
                                     {% if co2 is not null %}
                                         <div class="mt-2 small {% if co2Error or co2Critical %}text-danger{% elseif co2Warning %}text-warning{% else %}text-success{% endif %}">
                                             {% if co2Error %}
-                                                Check sensor status
+                                                {{ 'check_sensor_status'|trans }}
                                             {% elseif co2 > 1500 and co2 <= 2000 %}
-                                                Ventilate immediately
+                                                {{ 'ventilate_immediately'|trans }}
                                             {% elseif co2 > 1000 %}
-                                                Consider ventilation soon
+                                                {{ 'consider_ventilation_soon'|trans }}
                                             {% else %}
-                                                Good air quality
+                                                {{ 'good_air_quality'|trans }}
                                             {% endif %}
                                         </div>
                                     {% endif %}
@@ -196,6 +196,7 @@
                 {% else %}
                     <p class="text-muted">No acquisition system</p>
                 {% endif %}
+
             </div>
         </div>
 

@@ -408,14 +408,14 @@
                             <!-- Bouton Logout -->
                             <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                <button type="submit" class="btn btn-outline-danger ">Logout</button>
+                                <button type="submit" class="btn btn-outline-danger ">{{ 'logout' | trans }}</button>
                             </form>
                         </li>
                     </ul>
                 </div>
             {% else %}
                 <!-- Utilisateur non connecté -->
-                <a href="{{ path('app_login') }}" class="btn btn-primary ms-auto">Login</a>
+                <a href="{{ path('app_login') }}" class="btn btn-primary ms-auto">{{ 'login' | trans }}</a>
             {% endif %}
         </div>
     </div>

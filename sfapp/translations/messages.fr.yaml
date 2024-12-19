@@ -4,6 +4,8 @@
 hello: "Bonjour"
 room: "Salle"
 rooms: "Salles"
+login: "Connexion"
+logout: "Déconnexion"
 
 dashboard: "Tableau de bord"
 infos: "Informations"
@@ -20,6 +22,7 @@ _room_state:
   AT RISK: "À risque"
   STABLE: "Stable"
   WAITING: "En attente"
+  NONE: "Aucun"
 
 # sensor state enum
 _sensor_state:
@@ -65,19 +68,17 @@ not_started: "Pas encore commencé"
 no_pending: "Aucune tâche en attente."
 access: "Accéder"
 last_updated: "Dernière mise à jour"
+add: "Ajouter"
 
 
 # buttons
 update: "Modifier"
 back_to_room_list: "Retour à la liste des salles"
 
-# messages
-as_assigned_to_room: "Un système d'acquisition est assigné à cette salle."
-no_as_assigned_to_room: "Aucun système d'acquisition assigné à cette salle."
-
-
-# index.html.twig
+# home index.html.twig
 systems: "Systèmes d'acquisition"
+at_risk: "À risque"
+critical: "Critique"
 
 # details.twig.html
 room_constants: "Constantes de la salle"
@@ -91,13 +92,20 @@ room_monitoring: "Périodes de chauffe"
 heating: "Chauffe"
 non_heating: "Hors-chauffe"
 optimal_temp: "Température optimale"
+as_assigned_to_room: "Un système d'acquisition est assigné à cette salle."
+no_as_assigned_to_room: "Aucun système d'acquisition assigné à cette salle."
 
+# aslist.html.twig
+
+no_linked_as: "Aucun SA connecté"
+access_to_linked_room: "Accéder à la salle"
+_add_as: "Ajouter un SA"
 
 rooms_list:
   list: "Liste des salles"
 no_match_create_room: "Aucun résultat trouvé. Vérifiez l'orthographe ou <a href=\"{{ path('app_rooms_add') }}\">créez une nouvelle salle</a>."
 no_match_adjust_filters: "Aucun résultat trouvé. Vérifiez l'orthographe ou ajustez les filtres."
-add_room: "Ajouter une salle"
+_add_room: "Ajouter une salle"
 floor: "Étage"
 state: "État"
 sensor: "Capteur"
@@ -137,3 +145,137 @@ no_completed_tasks: "Aucune tâche terminée à afficher."
 completed_at: "Terminé le"
 acquisition_system: "Système d'acquisition"
 no_acquisition_system: "Aucun système d'acquisition lié à cette tâche."
+
+# addas.html.twig
+
+add_acquisition_system: "Ajouter un système d'acquisition"
+cancel: "Annuler"
+number: "Numéro"
+add_as:
+  number:
+    required: "Le numéro est obligatoire."
+    invalid: "Le numéro doit comporter exactement trois chiffres."
+    placeholder: "Entrez un numéro entre 000 et 999"
+
+# add.html.twig
+room_name: "Nom de la salle"
+add_room:
+  name:
+    label: "Nom de la salle"
+    required: "Le nom de la salle est obligatoire."
+    length: "Le nom de la salle doit contenir exactement {{ limit }} caractères."
+    pattern: "Le nom doit commencer par une lettre suivie de trois chiffres."
+  floor:
+    label: "Étage"
+    placeholder: "Sélectionnez un étage"
+    required: "Un étage est obligatoire."
+  nb_windows:
+    label: "Nombre de fenêtres"
+    positive: "Le nombre de fenêtres ne peut pas être négatif."
+    placeholder: "Ex : 2"
+  nb_heaters:
+    label: "Nombre de radiateurs"
+    positive: "Le nombre de radiateurs ne peut pas être négatif."
+    placeholder: "Ex : 2"
+  surface:
+    label: "Surface (m²)"
+    positive: "La surface doit être supérieure à zéro."
+    range: "La surface doit être comprise entre {{ min }} m² et {{ max }} m²."
+    placeholder: "Ex : 25.5"
+  cardinal:
+    label: "Orientation cardinale"
+    placeholder: "Sélectionnez une orientation"
+    required: "Une orientation est obligatoire."
+
+_delete_room:
+  modal:
+    title: "Confirmation de Suppression"
+    close: "Fermer"
+    confirmation: "Êtes-vous sûr de vouloir supprimer la salle %room% ?"
+    warning: "Si un système d'acquisition est assigné, il sera automatiquement dé-assigné."
+    delete_button: "Supprimer"
+    cancel_button: "Annuler"
+
+# translations/messages.fr.yaml
+sensor_state:
+  assignment_pending: "Une demande d'assignation ou de dé-assignation du système d'acquisition est en attente."
+  linked: "Un système d'acquisition est assigné à cette salle. Vous pouvez demander sa dé-assignation."
+  not_linked: "Vous pouvez demander l'installation d'un système d'acquisition dans cette salle."
+  probably_broken: "Le système de capteurs semble cassé et nécessite une maintenance."
+  unspecified: "L'état du système d'acquisition n'est pas spécifié."
+cancel_installation: "Annuler l'installation"
+request_unassignment: "Demander la dé-assignation"
+request_assignment: "Demander l'assignation"
+request_maintenance: "Demander une maintenance"
+room_state_text: "État de la salle"
+room_state:
+  stable: "Stable"
+  at_risk: "À risque"
+  critical: "Critique"
+
+begin_task: "Commencer la tâche"
+validate_task: "Valider la tâche"
+begin_task_confirmation: "En confirmant, le chargé de mission verra que vous avez commencé la tâche."
+validate_task_confirmation: "En confirmant, vous certifiez que la tâche est terminée. Le chargé de mission sera informé."
+begin: "Commencer"
+not_now: "Pas maintenant"
+choose_acquisition_system: "Choisissez le système d'acquisition maintenant assigné à cette salle :"
+choose_placeholder: "Choisir..."
+no_acquisition_system_required: "Cette tâche ne nécessite pas de système d'acquisition."
+confirm: "Confirmer"
+installation: "Installation"
+uninstallation: "Désinstallation"
+
+# advices
+# Général
+no_value_measured: "Aucune valeur mesurée"
+
+# Température
+critical_error_verify_sensor: " Vérifiez l'état du capteur."
+heating_period_check_heating: "Vérifiez le système de chauffage et ajustez pour atteindre 19°C."
+heating_period_reduce_heating: "Réduisez le chauffage pour éviter la surconsommation."
+non_heating_adjust_ac: "Ajustez la climatisation pour atteindre 26°C si disponible."
+non_heating_activate_ac: "Activez la climatisation/ventilation (max 26°C) et aérez."
+optimal_temperature_maintained: "Température optimale maintenue."
+
+# Humidité
+urgently_ventilate: "Ventilez d'urgence; envisagez un déshumidificateur."
+monitor_and_ventilate_if_needed: "Surveillez et aérez si nécessaire."
+optimal_humidity_level: "Niveau d'humidité optimal."
+
+# CO₂
+co2: "CO₂"
+check_sensor_status: "Vérifiez l'état du capteur."
+ventilate_immediately: "Ventilez immédiatement."
+consider_ventilation_soon: "Pensez à aérer."
+good_air_quality: "Bonne qualité de l'air."
+
+# Tooltip pour les barres de progression
+temperature_ranges:
+  heating_period:
+    low: "10-17°C"
+    warning_low: "17-19°C"
+    optimal: "19-21°C"
+    warning_high: "21-23°C"
+    high: "23-35°C"
+  non_heating_period:
+    low: "10-22°C"
+    warning_low: "22-24°C"
+    optimal: "24-28°C"
+    warning_high: "28-30°C"
+    high: "30-35°C"
+
+humidity_ranges:
+  low: "0-20%"
+  warning_low: "20-30%"
+  optimal: "30-60%"
+  warning_high: "60-70%"
+  high: "> 70%"
+
+co2_ranges:
+  low: "< 440 ppm"
+  optimal: "440-1000 ppm"
+  warning: "1000-1500 ppm"
+  high: "> 1500 ppm"
+
+##

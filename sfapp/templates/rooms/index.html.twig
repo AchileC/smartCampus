@@ -53,7 +53,7 @@
 {#                </small>#}
                 {% if is_granted('ROLE_MANAGER') %}
                     <a href="{{ path('app_rooms_add') }}" class="btn btn-success">
-                        <i class="bi bi-plus-lg"></i> {{ 'add_room' | trans }}
+                        <i class="bi bi-plus-lg"></i> {{ '_add_room' | trans }}
                     </a>
                 {% endif %}
             </div>
@@ -159,7 +159,7 @@
                                                     data-delete-url="{{ path('app_rooms_delete', {'name': room.name}) }}"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteRoomModal"
-                                                    aria-label="{{ 'delete_room' | trans }}">
+                                                    aria-label="{{ '_delete_room' | trans }}">
                                                 <i class="bi bi-trash"></i> {{ 'delete' | trans }}
                                             </button>
                                         {% endif %}
@@ -173,28 +173,30 @@
         </div>
     </div>
 
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteRoomModalLabel">Delete Confirmation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete the room <strong><span id="roomNameToDelete"></span></strong>?
-                        <p class="text-danger mt-2">⚠️ <strong>If an acquisition system is assigned, it will be automatically unassigned.</strong></p>
-                    </div>
-                    <div class="modal-footer d-flex flex-column align-items-stretch">
-                        <form id="deleteRoomForm" method="post" class="mb-2">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
-                            <button type="submit" class="btn btn-danger w-100">Delete</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cancel</button>
-                    </div>
+    <!-- Modale de Suppression -->
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">{{ '_delete_room.modal.title'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ '_delete_room.modal.close'|trans }}"></button>
+                </div>
+                <div class="modal-body">
+                    {{ '_delete_room.modal.confirmation'|trans({
+                        '%room%': '<strong><span id="roomNameToDelete"></span></strong>'
+                    })|raw }}
+                    <p class="text-danger mt-2">⚠️ <strong>{{ '_delete_room.modal.warning'|trans }}</strong></p>
+                </div>
+                <div class="modal-footer d-flex flex-column align-items-stretch">
+                    <form id="deleteRoomForm" method="post" class="mb-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('_delete_room') }}">
+                        <button type="submit" class="btn btn-danger w-100">{{ '_delete_room.modal.delete_button'|trans }}</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">{{ '_delete_room.modal.cancel_button'|trans }}</button>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}
 

@@ -1,5 +1,6 @@
 <?php
 // AddRoomType.php
+
 namespace App\Form;
 
 use App\Entity\Room;
@@ -13,128 +14,149 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * Class AddRoomType
+ * Classe AddRoomType
  *
- * Defines a form to add a new Room entity.
+ * Définit un formulaire pour ajouter une nouvelle entité `Room`.
  */
 class AddRoomType extends AbstractType
 {
+    private TranslatorInterface $translator;
+
     /**
-     * Builds the form for adding a new Room.
+     * Constructeur
      *
-     * The form includes fields for room name, floor, number of windows, number of heaters, surface area, and cardinal direction.
+     * @param TranslatorInterface $translator Le service de traduction Symfony.
+     */
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
+    /**
+     * Construit le formulaire pour ajouter une nouvelle salle.
      *
-     * @param FormBuilderInterface $builder The form builder interface used to create form fields.
-     * @param array $options The options for the form.
+     * Le formulaire inclut des champs pour le nom de la salle, l'étage, le nombre de fenêtres, le nombre de radiateurs,
+     * la surface et l'orientation cardinale.
+     *
+     * @param FormBuilderInterface $builder Le constructeur de formulaire utilisé pour créer les champs.
+     * @param array $options Les options pour le formulaire.
      *
      * @return void
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Room Name Field
+            // Champ pour le nom de la salle
             ->add('name', TextType::class, [
-                'label' => 'Room Name',
+                'label' => $this->translator->trans('add_room.name.label'),
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'Room name is required.',
+                        'message' => $this->translator->trans('add_room.name.required'),
                         'groups' => ['add'],
                     ]),
                     new Assert\Length([
                         'min' => 4,
                         'max' => 4,
-                        'exactMessage' => 'Room name must be exactly {{ limit }} characters long.',
+                        'exactMessage' => $this->translator->trans('add_room.name.length'),
                         'groups' => ['add'],
                     ]),
                     new Assert\Regex([
                         'pattern' => '/^[A-Za-z]\d{3,}$/',
-                        'message' => 'The name must start with a letter followed by three digits.',
+                        'message' => $this->translator->trans('add_room.name.pattern'),
                         'groups' => ['add'],
                     ]),
                 ],
             ])
 
-            // Floor Selection Field
+            // Champ pour sélectionner l'étage
             ->add('floor', ChoiceType::class, [
-                'choices' => FloorEnum::cases(),
-                'choice_label' => fn(FloorEnum $floor) => ucfirst($floor->value),
-                'choice_value' => fn(?FloorEnum $floor) => $floor?->value,
-                'label' => 'Floor',
-                'placeholder' => 'Select Floor',
+                'choices' => [
+                    $this->translator->trans('filter.floor.ground') => FloorEnum::GROUND,
+                    $this->translator->trans('filter.floor.first') => FloorEnum::FIRST,
+                    $this->translator->trans('filter.floor.second') => FloorEnum::SECOND,
+                    $this->translator->trans('filter.floor.third') => FloorEnum::THIRD,
+                ],
+                'choice_value' => fn(?FloorEnum $floor) => $floor?->value, // Convertit l'enum en chaîne pour la valeur
+                'label' => $this->translator->trans('add_room.floor.label'),
+                'placeholder' => $this->translator->trans('add_room.floor.placeholder'),
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'A floor is required.',
+                        'message' => $this->translator->trans('add_room.floor.required'),
                         'groups' => ['add'],
                     ]),
                 ],
             ])
 
-            // Number of Windows Field
+            // Champ pour le nombre de fenêtres
             ->add('nbWindows', IntegerType::class, [
-                'label' => 'Number of Windows',
+                'label' => $this->translator->trans('add_room.nb_windows.label'),
                 'constraints' => [
                     new Assert\PositiveOrZero([
-                        'message' => 'Number of windows cannot be negative.',
+                        'message' => $this->translator->trans('add_room.nb_windows.positive'),
                         'groups' => ['add'],
                     ]),
                 ],
                 'attr' => [
                     'min' => 0,
-                    'placeholder' => 'Ex: 2',
+                    'placeholder' => $this->translator->trans('add_room.nb_windows.placeholder'),
                 ],
             ])
 
-            // Number of Heaters Field
+            // Champ pour le nombre de radiateurs
             ->add('nbHeaters', IntegerType::class, [
-                'label' => 'Number of Heaters',
+                'label' => $this->translator->trans('add_room.nb_heaters.label'),
                 'constraints' => [
                     new Assert\PositiveOrZero([
-                        'message' => 'Number of heaters cannot be negative.',
+                        'message' => $this->translator->trans('add_room.nb_heaters.positive'),
                         'groups' => ['add'],
                     ]),
                 ],
                 'attr' => [
                     'min' => 0,
-                    'placeholder' => 'Ex: 2',
+                    'placeholder' => $this->translator->trans('add_room.nb_heaters.placeholder'),
                 ],
             ])
 
-            // Surface Area Field
+            // Champ pour la surface
             ->add('surface', NumberType::class, [
-                'label' => 'Surface Area (m²)',
+                'label' => $this->translator->trans('add_room.surface.label'),
                 'scale' => 1,
                 'constraints' => [
                     new Assert\Positive([
-                        'message' => 'Surface area must be greater than zero.',
+                        'message' => $this->translator->trans('add_room.surface.positive'),
                         'groups' => ['add'],
                     ]),
                     new Assert\Range([
                         'min' => 10.0,
                         'max' => 30.0,
-                        'notInRangeMessage' => 'Surface area must be between {{ min }} m² and {{ max }} m².',
+                        'notInRangeMessage' => $this->translator->trans('add_room.surface.range'),
                         'groups' => ['add'],
                     ]),
                 ],
                 'attr' => [
                     'min' => 0,
                     'step' => '0.1',
-                    'placeholder' => 'Ex: 25.5',
+                    'placeholder' => $this->translator->trans('add_room.surface.placeholder'),
                     'oninput' => 'this.value = this.value.replace(/[^0-9.]/g, "").match(/^\d+(\.\d+)?/)?.[0] || ""',
                 ],
             ])
 
-            // Cardinal Direction Field
+            // Champ pour l'orientation cardinale
             ->add('cardinalDirection', ChoiceType::class, [
-                'choices' => CardinalEnum::cases(),
-                'choice_label' => fn(CardinalEnum $cardinal) => ucfirst($cardinal->value),
-                'choice_value' => fn(?CardinalEnum $cardinal) => $cardinal?->value,
-                'label' => 'Cardinal Direction',
-                'placeholder' => 'Select Direction',
+                'choices' => CardinalEnum::cases(), // Utilise les cases de l'enum pour les choix
+                'choice_label' => function (CardinalEnum $cardinal) {
+                    // Traduit la valeur de l'enum en utilisant le traducteur
+                    return $this->translator->trans(sprintf('_cardinal_direction.%s', strtolower($cardinal->name)));
+                },
+                'choice_value' => fn(?CardinalEnum $cardinal) => $cardinal?->value, // Convertit l'enum en chaîne pour la valeur
+                'label' => $this->translator->trans('add_room.cardinal.label'),
+                'placeholder' => $this->translator->trans('add_room.cardinal.placeholder'),
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'A direction is required.',
+                        'message' => $this->translator->trans('add_room.cardinal.required'),
                         'groups' => ['add'],
                     ]),
                 ],
@@ -142,11 +164,11 @@ class AddRoomType extends AbstractType
     }
 
     /**
-     * Configures the options for the form.
+     * Configure les options pour le formulaire.
      *
-     * Sets the data class to be `Room` and includes validation groups.
+     * Définit la classe de données comme étant `Room` et inclut les groupes de validation.
      *
-     * @param OptionsResolver $resolver The options resolver.
+     * @param OptionsResolver $resolver Le résolveur des options.
      *
      * @return void
      */

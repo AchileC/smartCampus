@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 {# home/addAS.html.twig #}
-{% block title %}Add an Acquisition System{% endblock %}
+{% block title %}{{ 'add_acquisition_system'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="mb-4 text-center">Add an Acquisition System</h1>
+        <h1 class="mb-4 text-center">{{ 'add_acquisition_system'|trans }}</h1>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -15,13 +15,13 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row justify-content-center">
-                                    <!-- AS Name with ESP- prefix -->
+                                    <!-- Nom du SA avec préfixe AS- -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.number, 'Number', {'label_attr': {'class': 'form-label text-center'}}) }}
+                                        {{ form_label(form.number, 'acquisition_system'|trans ~ ' ' ~ 'number'|trans, {'label_attr': {'class': 'form-label text-center'}}) }}
                                         <div class="input-group mb-4" style="max-width: 400px; margin: 0 auto;">
-                                            <!-- Fixed prefix -->
+                                            <!-- Préfixe fixe -->
                                             <span class="input-group-text">AS-</span>
-                                            <!-- Input field -->
+                                            <!-- Champ de saisie -->
                                             {{ form_widget(form.number, {
                                                 'attr': {
                                                     'class': 'form-control' ~ (form.number.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -38,10 +38,10 @@
                             </div>
                         </div>
 
-                        <!-- Submit and Cancel Buttons -->
+                        <!-- Boutons Envoyer et Annuler -->
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary me-3">Add Acquisition System</button>
-                            <a href="{{ path('app_acquisition_system') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary me-3">{{ 'add'|trans }}</button>
+                            <a href="{{ path('app_acquisition_system') }}" class="btn btn-secondary">{{ 'cancel'|trans }}</a>
                         </div>
 
                         {{ form_end(form) }}

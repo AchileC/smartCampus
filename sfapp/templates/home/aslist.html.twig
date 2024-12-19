@@ -1,18 +1,18 @@
 {% extends 'base.html.twig' %}
 {# home/aslist.html.twig #}
-{% block title %}Acquisition System List{% endblock %}
+{% block title %}{{ 'as_list'|trans }}{% endblock %}
 
 {% block body %}
 
     <div class="container mt-4">
-        <h1 class="mb-4 text-center">Acquisition System List</h1>
+        <h1 class="mb-4 text-center">{{ 'as_list'|trans }}</h1>
 
-        <!-- Button to add an acquisition system -->
+        <!-- Bouton pour ajouter un système d'acquisition -->
         <div class="mb-4">
-            <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link">Add AS</a>
+            <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link">{{ '_add_as'|trans }}</a>
         </div>
 
-        <!-- Flash messages block -->
+        <!-- Bloc des messages flash -->
         <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
             {% for type, messages in app.flashes %}
                 {% for message in messages %}
@@ -24,38 +24,38 @@
             {% endfor %}
         </div>
 
-        <!-- Filter form -->
+        <!-- Formulaire de filtre -->
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row align-items-center">
 
-            <!-- Name search field -->
+            <!-- Champ de recherche par nom -->
             <div class="col-md-3 mb-4">
-                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
+                {{ form_row(filterForm.name, {'attr': {'class': 'form-control', 'placeholder': 'filter.name.placeholder'|trans }}) }}
             </div>
 
-            <!-- State filter field -->
+            <!-- Champ de filtrage par état -->
             <div class="col-md-3 mb-4">
-                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
+                {{ form_row(filterForm.state, {'attr': {'class': 'form-select', 'placeholder': 'filter.state.placeholder'|trans }}) }}
             </div>
 
-            <!-- Reset button -->
+            <!-- Bouton reset -->
             <div class="col-md-1">
                 {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
             </div>
 
-            <!-- Filter button -->
+            <!-- Bouton de recherche -->
             <div class="col-md-2 d-flex justify-content-end">
-                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary'}}) }}
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary', 'value': 'filter.buttons.search'|trans }}) }}
             </div>
         </div>
         {{ form_end(filterForm) }}
 
         <div class="row">
             {% if as|length == 0 %}
-                <!-- Message when no results match the filters -->
+                <!-- Message quand aucun résultat ne correspond aux filtres -->
                 <div class="col-12 text-center">
                     <p id="no-match-message" data-add-room-link="{{ path('app_acquisition_system') }}">
-                            No match. Check spelling or <a href="{{ path('app_acquisition_system') }}">create a new room</a>.
+                        {{ 'no_match_adjust_filters'|trans|raw }}
                     </p>
                 </div>
             {% else %}
@@ -64,25 +64,25 @@
                         <div class="card">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div>
-                                    <!-- Display system name and state -->
+                                    <!-- Afficher le nom du système et son état -->
                                     <h5 class="card-title">{{ system.name }}</h5>
-                                    <p class="card-text"><strong>State:</strong>
+                                    <p class="card-text"><strong>{{ 'state'|trans }}:</strong>
                                         <span class="badge-custom-size
                                         {% if system.state.value == 'linked' %}bg-success
                                         {% elseif system.state.value == 'not linked' %}bg-secondary
                                         {% else %}bg-danger{% endif %}">
-                                        {{ system.state.value | upper }}
+                                        {{ ('_sensor_state.' ~ system.state.value | upper) | trans | upper}}
                                     </span>
                                     </p>
                                 </div>
 
                                 <div>
-                                    <!-- Actions for accessing or displaying the linked room -->
+                                    <!-- Actions pour accéder ou afficher la salle liée -->
                                     <div class="d-flex gap-2">
                                         {% if system.room is not null %}
-                                            <a href="{{ path('app_rooms_details', { name: system.room.name }) }}" class="btn btn-outline-secondary">Access to linked room</a>
+                                            <a href="{{ path('app_rooms_details', { name: system.room.name }) }}" class="btn btn-outline-secondary">{{ 'access_to_linked_room'|trans }}</a>
                                         {% else %}
-                                            <button type="button" class="btn btn-outline-secondary disabled">No linked room</button>
+                                            <button type="button" class="btn btn-outline-secondary disabled">{{ 'no_linked_as'|trans }}</button>
                                         {% endif %}
                                     </div>
                                 </div>
