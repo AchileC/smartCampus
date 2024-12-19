@@ -168,8 +168,9 @@
                                     <i class="bi bi-plus-circle"></i> {{ 'request_assignment'|trans }}
                                 </button>
                             </form>
-                        {% elseif sensorState == 'probably broken' %}
-                            <!-- Cas : Capteurs probablement cassés -->
+
+                        {% elseif sensorState == 'not working' %}
+                            <!-- Case: Sensors Not Working -->
                             <p class="mb-3">
                                 {{ 'sensor_state.probably_broken'|trans }}
                             </p>

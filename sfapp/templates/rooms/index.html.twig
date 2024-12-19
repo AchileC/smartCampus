@@ -135,12 +135,13 @@
                                     {% if is_granted('ROLE_TECHNICIAN') %}
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
                                             <span class="badge-custom-size
-                                        {% if room.sensorState.value == 'linked' %}bg-success
-                                        {% elseif room.sensorState.value == 'probably broken' %}bg-warning
-                                        {% elseif room.sensorState.value == 'not linked' %}bg-secondary
-                                        {% else %}bg-danger{% endif %}">
-                                        {{ ('_sensor_state.' ~ room.sensorState.value | upper) | trans | upper }}
-                                        </span>
+                                            {% if room.sensorState.value == 'linked' %}bg-success
+                                            {% elseif room.sensorState.value == 'not working' %}bg-warning
+                                            {% elseif room.sensorState.value == 'not linked' %}bg-secondary
+                                            {% else %}bg-danger{% endif %}">
+                                            {{'_sensor_state.' ~ room.sensorState.value | upper) | trans | upper }}
+                                            </span>
+                                       </span>
                                         </p>
                                     {% endif %}
                                 </div>

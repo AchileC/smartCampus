@@ -200,6 +200,133 @@
             </div>
         </div>
 
+        {% if todayForecast is not null %}
+            {# Définir le mapping des pictocodes #}
+            {% set pictocodeMapping = {
+                1: '☀️',
+                2: '🌤️',
+                3: '⛅',
+                4: '☁️',
+                5: '🌫️',
+                6: '🌧️',
+                7: '🌦️',
+                8: '⛈️',
+                9: '🌨️',
+                10: '🌥️❄️',
+                11: '🌨️🌧️',
+                12: '🌦️',
+                13: '🌨️',
+                14: '🌦️',
+                15: '🌨️',
+                16: '🌦️',
+                17: '🌨️'
+            } %}
+
+            <div class="card w-75 mx-auto mt-4 shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Weather Forecast</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-thermometer-snow fs-3 me-3 text-info"></i>
+                                <strong>Min Temperature : </strong>&nbsp;{{ todayForecast.temperature_min|round }}°C
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-thermometer-sun fs-3 me-3 text-danger"></i>
+                                <strong>Max Temperature : </strong>&nbsp;{{ todayForecast.temperature_max|round }}°C
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-cloud-rain fs-3 me-3 text-secondary"></i>
+                                <strong>Precipitation : </strong>&nbsp;{{ todayForecast.precipitation }} mm
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            {# Afficher l'icône basée sur le pictocode #}
+                            {% set pictocode = todayForecast.pictocode %}
+                            {% set weatherIcon = pictocodeMapping[pictocode] ?? '❓' %}
+                            <span style="font-size: 5rem;">{{ weatherIcon }}</span>
+                        </div>
+                    </div>
+
+                    {# Générer des conseils d'action basés sur la météo #}
+                    {% set advice = [] %}
+
+                    {# Conseils basés sur la température max #}
+                    {# Advice based on max temperature #}
+                    {% if todayForecast.temperature_max >= 35 %}
+                        {% set advice = advice|merge(['Extreme heat expected! Lower radiator settings and open windows or doors to ventilate the classroom. Monitor the temperature closely to ensure comfort.']) %}
+                    {% elseif todayForecast.temperature_max >= 28 %}
+                        {% set advice = advice|merge(['Very hot today. Consider lowering the radiator settings and ventilate the classroom by opening windows or doors to maintain a comfortable environment.']) %}
+                    {% elseif todayForecast.temperature_max >= 22 %}
+                        {% set advice = advice|merge(['Comfortable temperatures. Adjust radiator settings to maintain a pleasant classroom environment. Ventilate as needed to keep the air fresh.']) %}
+                    {% elseif todayForecast.temperature_max <= 0 %}
+                        {% set advice = advice|merge(['Freezing temperatures. Ensure radiators are set to a higher temperature to keep the classroom warm. Keep windows closed to conserve heat.']) %}
+                    {% elseif todayForecast.temperature_max <= 15 %}
+                        {% set advice = advice|merge(['Cold today. Increase radiator settings as necessary and ensure windows are closed to maintain warmth.']) %}
+                    {% endif %}
+
+                    {# Advice based on min temperature #}
+                    {% if todayForecast.temperature_min <= -15 %}
+                        {% set advice = advice|merge(['Extremely low temperatures! Set radiators to maximum to ensure the classroom stays warm. Minimize window openings to retain heat.']) %}
+                    {% endif %}
+
+                    {# Advice based on precipitation #}
+                    {% if todayForecast.precipitation >= 100 %}
+                        {% set advice = advice|merge(['Heavy rainfall expected. Ensure windows are tightly closed to prevent humidity ingress. Use doors to ventilate if necessary.']) %}
+                    {% elseif todayForecast.precipitation >= 50 %}
+                        {% set advice = advice|merge(['Moderate rainfall expected. Keep windows closed and use doors to ventilate the classroom as needed while avoiding excess humidity.']) %}
+                    {% elseif todayForecast.precipitation > 0 %}
+                        {% set advice = advice|merge(['Light rain expected. Ventilate the classroom by opening windows or doors briefly to refresh the air without allowing excessive humidity.']) %}
+                    {% endif %}
+
+                    {# Advice based on pictocode #}
+                    {% if todayForecast.pictocode in [6,7,8,9,10,11,12,13,14,15,16,17] %}
+                        {% set advice = advice|merge(['Wet conditions anticipated. Ensure proper ventilation to avoid humidity buildup by using doors if opening windows is not ideal.']) %}
+                    {% elseif todayForecast.pictocode in [1,2,3,4,5] %}
+                        {% set advice = advice|merge(['Clear or partly cloudy weather. Take the opportunity to ventilate the classroom by opening windows (or doors if it\'s too cold outside) during cooler parts of the day.']) %}
+                    {% endif %}
+
+                    {# Additional advice for ventilation in a classroom context #}
+                    {% if todayForecast.temperature_max >= 20 and todayForecast.temperature_min >= 10 and todayForecast.pictocode in [1,2,3,4,5] %}
+                        {% set advice = advice|merge(['Good conditions for ventilation. Open windows or doors during breaks to refresh the air without disrupting the classroom environment.']) %}
+                    {% endif %}
+
+                    {# Prioritize advice to avoid contradictions #}
+                    {# Extreme conditions advice takes precedence and may exclude less critical advice #}
+                    {% if todayForecast.temperature_max >= 35 %}
+                        {% set advice = advice|merge(['Priority: Extreme heat conditions.']) %}
+                    {% elseif todayForecast.temperature_max <= 0 %}
+                        {% set advice = advice|merge(['Priority: Extreme cold conditions.']) %}
+                    {% endif %}
+
+                    {# Display the advice #}
+                    {% if advice is not empty %}
+                        <div class="alert alert-secondary mt-4 p-3">
+                            <h6 class="mb-3"><strong>Actionable Advice :</strong></h6>
+                            <ul class="list-unstyled mb-0">
+                                {% for tip in advice %}
+                                    <li class="mb-2" style="display: flex; align-items: flex-start;">
+                                        <i class="bi bi-exclamation-circle-fill text-primary me-2"></i>
+                                        <span>{{ tip }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="mt-3 text-success">
+                            No specific advice for today.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="card w-75 mx-auto mt-4 shadow-lg">
+                <div class="card-body">
+                    <p class="text-muted">Weather forecasts are currently unavailable.</p>
+                </div>
+            </div>
+        {% endif %}
+
 
         <!-- Description Card -->
         <div class="card w-75 mx-auto mt-4 shadow-lg">

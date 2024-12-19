@@ -3,7 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Room;
+use App\Entity\Action;
+use App\Utils\ActionInfoEnum;
+use App\Utils\ActionStateEnum;
 use App\Utils\RoomStateEnum;
+use App\Utils\SensorStateEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
@@ -150,6 +154,7 @@ class RoomRepository extends ServiceEntityRepository
         $isHeatingPeriod = $currentMonth >= 11 || $currentMonth <= 4;
 
         $state = RoomStateEnum::STABLE; // Default state
+        $sensorState = $room->getSensorState();
 
         if ($temperature == null && $humidity == null && $co2 == null) {
             $state = RoomStateEnum::WAITING;
@@ -182,6 +187,8 @@ class RoomRepository extends ServiceEntityRepository
         if ($co2 !== null) {
             if ($co2 < 440 || $co2 > 2000) {
                 $state = RoomStateEnum::CRITICAL;
+                $sensorState = SensorStateEnum::NOT_WORKING;
+
             } elseif ($co2 > 1500) {
                 $state = RoomStateEnum::CRITICAL;
             } elseif ($co2 > 1000) {
@@ -203,11 +210,43 @@ class RoomRepository extends ServiceEntityRepository
             }
         }
 
+        if ($sensorState === SensorStateEnum::NOT_WORKING) {
+            $this->createTaskForTechnician($room);
+        }
+
         // Update room state and persist changes
+        $room->setSensorState($sensorState);
+        $acquisitionSystem->setState($sensorState);
         $room->setState($state);
         $this->getEntityManager()->persist($room);
         $this->getEntityManager()->flush();
     }
+
+    private function createTaskForTechnician(Room $room): void
+    {
+        $entityManager = $this->getEntityManager();
+
+        $existingTask = $entityManager->getRepository(Action::class)->findOneBy([
+            'room' => $room,
+            'info' => ActionInfoEnum::MAINTENANCE, // Vérifie uniquement les tâches de maintenance
+            'state' => ActionStateEnum::TO_DO, // Vérifie les tâches qui ne sont pas encore terminées
+        ]);
+
+        if ($existingTask) {
+            return; // Une tâche existe déjà, donc on ne fait rien
+        }
+
+        // Crée une nouvelle tâche si aucune n'existe
+        $action = new Action();
+        $action->setRoom($room);
+        $action->setInfo(ActionInfoEnum::MAINTENANCE); // Type d'action spécifique
+        $action->setState(ActionStateEnum::TO_DO);
+        $action->setCreatedAt(new \DateTime());
+
+        $entityManager->persist($action);
+        $entityManager->flush();
+    }
+
 
     public function countByState(string $state): int
     {

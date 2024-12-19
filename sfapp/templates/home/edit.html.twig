@@ -13,6 +13,7 @@
                 {% if action.state.value == 'to do' %}
                     {# Begin Action Template #}
                     <div class="alert alert-warning text-center">
+                        <h2 class="fw-bold">{{ action.info.value | capitalize }} of an acquisition system on {{ action.room.name }}</h2>
                         <h2 class="fw-bold">
                             {{ 'installation'|trans }} {{ 'on_room'|trans }} {{ action.room.name }}
                         </h2>
@@ -46,8 +47,8 @@
                         {{ 'validate_task_confirmation'|trans }}
                     </p>
 
-                    <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
-                        {% if action.info.value != 'unassignment' %}
+                <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
+                    {% if action.info.value == 'assignment' %}
                             <div class="form-group mt-3 text-center">
                                 <label for="acquisitionSystem">{{ 'choose_acquisition_system'|trans }}</label>
                                 <div class="d-flex justify-content-center mt-4">
@@ -61,6 +62,30 @@
                                     </div>
                                 </div>
                             </div>
+                    {% elseif action.info.value == 'maintenance' %}
+                        <div class="form-group mt-3 text-center">
+                            <label for="maintenanceStatus">Is the acquisition system repaired?</label>
+                            <div class="d-flex justify-content-center mt-4">
+                                <div class="dropdown custom-dropdown" style="width: 200px;">
+                                    <select id="maintenanceStatus" name="maintenanceStatus" class="form-select text-center">
+                                        <option value="">Choose...</option>
+                                        <option value="yes">Yes, it's repaired</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-info text-center mt-3">
+                            <i class="bi bi-info-circle"></i> Please indicate if the acquisition system is operational after maintenance.
+                        </p>
+                    {% else%}
+                        <p class="text-warning text-center">This task does not require an acquisition system.</p>
+                    {% endif %}
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success">Confirm</button>
+                        <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+
+                </form>
                         {% else %}
                             <p class="text-warning text-center">{{ 'no_acquisition_system_required'|trans }}</p>
                         {% endif %}
