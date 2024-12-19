@@ -2,6 +2,7 @@
 // RoomController.php
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\Room;
 use App\Entity\Action;
 use App\Repository\ActionRepository;
@@ -9,6 +10,7 @@ use App\Repository\AcquisitionSystemRepository;
 use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
+use App\Repository\UserRepository;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
@@ -349,6 +351,8 @@ class RoomController extends AbstractController
 
         // Persister la tâche dans la base de données
         $entityManager->persist($action);
+
+        // Enregistrer les modifications dans la base de données
         $entityManager->flush();
 
         // Ajouter un message flash pour indiquer le succès

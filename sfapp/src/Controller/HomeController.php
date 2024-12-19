@@ -2,8 +2,8 @@
 //HomeController.php
 namespace App\Controller;
 
-use App\Entity\Action;
 use App\Entity\AcquisitionSystem;
+use App\Entity\Notification;
 use App\Entity\Room;
 use App\Entity\Threshold;
 use App\Form\AddASType;
@@ -12,6 +12,8 @@ use App\Form\ThresholdType;
 use App\Repository\ActionRepository;
 use App\Repository\RoomRepository;
 use App\Repository\AcquisitionSystemRepository;
+use App\Repository\NotificationRepository;
+use App\Repository\UserRepository;
 use App\Repository\ThresholdRepository;
 use App\Service\WeatherApiService;
 use App\Utils\ActionStateEnum;
@@ -24,6 +26,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Twig\Environment;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -39,6 +45,14 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  */
 class HomeController extends AbstractController
 {
+
+    // Constructor pour injecter les dépendances
+    public function __construct(NotificationRepository $notificationRepository, Environment $twig)
+    {
+        $this->notificationRepository = $notificationRepository;
+        $this->twig = $twig;
+    }
+
     /**
      * @return Response
      */
@@ -69,9 +83,16 @@ class HomeController extends AbstractController
         RoomRepository              $roomRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
         ActionRepository            $actionRepository,
-        WeatherApiService           $weatherApiService
+        WeatherApiService           $weatherApiService,
+        NotificationRepository     $notificationRepository,
     ): Response
     {
+        $user = $this->getUser();
+        $notifications = $notificationRepository->findBy([
+            'recipient' => $user
+        ]);
+
+
         // Retrieve the number of rooms, acquisition systems, and critical or at-risk rooms from the repositories
         $roomsCount = $roomRepository->count([]);
         $asCount = $acquisitionSystemRepository->count([]);
@@ -101,6 +122,7 @@ class HomeController extends AbstractController
             'at_risk_count' => $atRiskCount,     // Number of at-risk rooms
             'forecast' => $forecast,             // Weather forecast data for 4 days
             'actions' => $actions,               // List of pending actions
+            'notifications' => $notifications,
         ]);
     }
 
@@ -286,7 +308,8 @@ class HomeController extends AbstractController
         Request                     $request,
         ActionRepository            $actionRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
-        EntityManagerInterface      $entityManager
+        EntityManagerInterface      $entityManager,
+        UserRepository             $userRepository
     ): Response
     {
         $action = $actionRepository->find($id);
@@ -352,7 +375,24 @@ class HomeController extends AbstractController
         }
 
         $action->setState(ActionStateEnum::DONE); // Change state to DONE
-        $entityManager->flush();
+
+        $manager = $userRepository->findOneByExactRole('ROLE_MANAGER');
+
+        if ($manager) {
+            $notification = new Notification();
+            $notification->setRead(false);
+            $notification->setMessage(sprintf(
+                "Task '%s' completed in '%s'.",
+                $action->getInfo()->value,
+                $action->getRoom()->getName()
+            ));
+            $notification->setCreateAt(new \DateTimeImmutable());
+            $notification->setRecipient($manager);
+            $notification->setRoom($action->getRoom());
+
+            $entityManager->persist($notification);
+            $entityManager->flush();
+        }
 
         $this->addFlash('success', 'Action has been validated.');
         return $this->redirectToRoute('app_todolist');
@@ -533,5 +573,38 @@ class HomeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_home_threshold');
+    }
+
+
+    #[Route('/notifications/mark-as-read', name: 'mark_notifications_as_read', methods: ['POST'])]
+    public function markAllAsRead(
+        NotificationRepository $notificationRepository,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): JsonResponse {
+        // Vérification du token CSRF pour la sécurité
+        if (!$this->isCsrfTokenValid('mark_notifications', $request->headers->get('X-CSRF-Token'))) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], 400);
+        }
+
+        // Vérification de l'authentification de l'utilisateur
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'User not authenticated'], 401);
+        }
+
+        // Récupération des notifications non lues de l'utilisateur
+        $notifications = $notificationRepository->findBy([
+            'recipient' => $user
+        ]);
+
+        // Met à jour chaque notification
+        foreach ($notifications as $notification) {
+            $notification->setRead(true);
+        }
+
+        $entityManager->flush();
+
+        return new JsonResponse(['success' => true, 'message' => 'All notifications marked as read.']);
     }
 }
