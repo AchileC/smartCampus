@@ -412,7 +412,7 @@
                 width: 20px;
                 height: 20px;
                 box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-                pointer-events: none; /* Empêche la badge d'interférer avec les interactions */
+                pointer-events: none;
             }
 
 
@@ -536,10 +536,15 @@
                                 </i>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
-                                <li class="fw-bold text-center mb-2 sticky-header">Notifications</li>
+                                <li class="fw-bold text-center mb-2 sticky-header d-flex justify-content-between align-items-center px-2">
+                                    <span>Notifications</span>
+                                    <button class="btn btn-sm btn-link text-white p-0" id="markAllAsReadButton" title="Mark all as read">
+                                        <i class="bi bi-check2" style="font-size: 1.25rem;"></i>
+                                    </button>
+                                </li>
                                 {% for notification in notifications|reverse %}
                                     <li>
-                                        <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
+                                        <a href="{{ path('mark_notification_as_read', { id: notification.id }) }}"
                                            class="list-group-item list-group-item-action {% if notification.isRead %}fw-muted{% else %}fw-bold{% endif %}">
                                             <small class="fw-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
                                             {{ notification.message }}
@@ -747,11 +752,10 @@
                 }
             }
 
-            const notificationButton = document.getElementById("notificationButton");
+            const markAllAsReadButton = document.getElementById("markAllAsReadButton");
             const notificationBadge = document.querySelector(".notification-badge");
-            const notificationDropdown = document.querySelector("#notificationButton + .dropdown-menu");
 
-            function markNotificationsAsRead() {
+            markAllAsReadButton.addEventListener("click", function () {
                 fetch("{{ path('mark_notifications_as_read') }}", {
                     method: "POST",
                     headers: {
@@ -760,26 +764,23 @@
                         "Content-Type": "application/json",
                     },
                 })
-                    .then(response => {
-                        if (response.ok && notificationBadge) {
-                            notificationBadge.style.display = "none";
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Cache la pastille de notification s'il y en a une
+                            if (notificationBadge) {
+                                notificationBadge.style.display = "none";
+                            }
+
+                            // Optionnel : rafraîchir la liste ou modifier l'apparence des notifications
+                            const notificationItems = document.querySelectorAll(".list-group-item.fw-bold");
+                            notificationItems.forEach(item => {
+                                item.classList.remove("fw-bold");
+                                item.classList.add("fw-muted");
+                            });
                         }
                     })
                     .catch(error => console.error("Erreur AJAX :", error));
-            }
-
-            document.addEventListener("click", function (event) {
-                const isDropdownOpen = notificationDropdown.classList.contains("show");
-                const isOutsideClick = !notificationDropdown.contains(event.target) && event.target !== notificationButton;
-                if (isDropdownOpen && isOutsideClick) {
-                    markNotificationsAsRead();
-                }
-            });
-
-            notificationButton.addEventListener("click", function () {
-                if (notificationDropdown.classList.contains("show")) {
-                    markNotificationsAsRead();
-                }
             });
 
 
