@@ -15,6 +15,14 @@ class Threshold
     public const CO2_CRITICAL_MAX = 1500.0;
     public const CO2_ERROR_MAX = 2000.0;
 
+    // Fixed thresholds for aberrant data (sensor malfunction)
+    public const TEMP_ABERRANT_MIN = 10.0;
+    public const TEMP_ABERRANT_MAX = 40.0;
+    public const HUM_ABERRANT_MIN = 20.0;
+    public const HUM_ABERRANT_MAX = 100.0;
+    public const CO2_ABERRANT_MIN = 400.0;
+    public const CO2_ABERRANT_MAX = 2000.0;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -230,6 +238,32 @@ class Threshold
     public function getCo2ErrorMax(): float
     {
         return self::CO2_ERROR_MAX;
+    }
+
+    // Add methods to check for aberrant values
+    public function isTemperatureAberrant(?float $temperature): bool
+    {
+        if ($temperature === null) return false;
+        return $temperature < self::TEMP_ABERRANT_MIN || $temperature > self::TEMP_ABERRANT_MAX;
+    }
+
+    public function isHumidityAberrant(?float $humidity): bool
+    {
+        if ($humidity === null) return false;
+        return $humidity < self::HUM_ABERRANT_MIN || $humidity > self::HUM_ABERRANT_MAX;
+    }
+
+    public function isCo2Aberrant(?float $co2): bool
+    {
+        if ($co2 === null) return false;
+        return $co2 < self::CO2_ABERRANT_MIN || $co2 > self::CO2_ABERRANT_MAX;
+    }
+
+    public function hasAberrantValues(?float $temperature, ?float $humidity, ?float $co2): bool
+    {
+        return $this->isTemperatureAberrant($temperature) ||
+               $this->isHumidityAberrant($humidity) ||
+               $this->isCo2Aberrant($co2);
     }
 
     // Validation methods

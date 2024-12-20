@@ -194,6 +194,25 @@
             font-weight: 500;
             color: var(--bs-primary);
         }
+
+        /* Style for the aberrant values accordion */
+        .aberrant-values-accordion {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .aberrant-values-accordion .accordion-button {
+            background-color: var(--bs-body-bg);
+        }
+        
+        .aberrant-values-accordion .accordion-button:not(.collapsed) {
+            color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+        }
+        
+        .aberrant-values-accordion .accordion-body {
+            background-color: var(--bs-body-bg);
+        }
     </style>
 {% endblock %}
 
@@ -390,6 +409,33 @@
             </div>
         </div>
 
+        {# Aberrant Values Information in Accordion #}
+        <div class="accordion aberrant-values-accordion" id="aberrantValuesAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#aberrantValuesInfo" aria-expanded="false" aria-controls="aberrantValuesInfo">
+                        <i class="bi bi-info-circle me-2"></i> Fixed Aberrant Value Thresholds Information
+                    </button>
+                </h2>
+                <div id="aberrantValuesInfo" class="accordion-collapse collapse" data-bs-parent="#aberrantValuesAccordion">
+                    <div class="accordion-body">
+                        <p class="mb-2">The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as "NOT WORKING" and a maintenance task will be created:</p>
+                        <ul class="mb-0">
+                            <li><strong>Temperature:</strong> Below 10°C or above 40°C</li>
+                            <li><strong>Humidity:</strong> Below 20% or above 100%</li>
+                            <li><strong>CO₂:</strong> Below 400ppm or above 2000ppm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+    <div class="threshold-tooltip"></div>
+
+
+        
+
         <div class="btn-toolbar">
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-save"></i> Save Changes
@@ -402,11 +448,12 @@
                 <i class="bi bi-x-lg"></i> Cancel
             </a>
         </div>
+        </div>
+        
 
         {{ form_end(form) }}
-    </div>
 
-    <div class="threshold-tooltip"></div>
+        
 {% endblock %}
 
 {% block javascripts %}

@@ -156,8 +156,8 @@ class RoomRepository extends ServiceEntityRepository
         $currentMonth = (int)(new \DateTime())->format('m');
         $isHeatingPeriod = $currentMonth >= 11 || $currentMonth <= 4;
 
-        $state = RoomStateEnum::STABLE; // Default state
-        $sensorState = $room->getSensorState();
+        $state = RoomStateEnum::STABLE;
+        $sensorState = SensorStateEnum::LINKED;
 
         if ($temperature == null && $humidity == null && $co2 == null) {
             $state = RoomStateEnum::WAITING;
@@ -166,8 +166,16 @@ class RoomRepository extends ServiceEntityRepository
         // Get thresholds
         $thresholds = $this->thresholdRepository->getDefaultThresholds();
 
+        // Check for aberrant values first
+        if ($thresholds->isTemperatureAberrant($temperature) ||
+            $thresholds->isHumidityAberrant($humidity) ||
+            $thresholds->isCo2Aberrant($co2)) {
+            $sensorState = SensorStateEnum::NOT_WORKING;
+            // Don't return here, continue evaluating other conditions
+        }
+
         // Temperature evaluation
-        if ($temperature !== null) {
+        if ($temperature !== null && !$thresholds->isTemperatureAberrant($temperature)) {
             if ($isHeatingPeriod) {
                 if ($temperature < $thresholds->getHeatingTempCriticalMin() || $temperature > $thresholds->getHeatingTempCriticalMax()) {
                     $state = RoomStateEnum::CRITICAL;
@@ -184,7 +192,7 @@ class RoomRepository extends ServiceEntityRepository
         }
 
         // CO2 evaluation
-        if ($co2 !== null) {
+        if ($co2 !== null && !$thresholds->isCo2Aberrant($co2)) {
             if ($co2 < $thresholds->getCo2CriticalMin() || $co2 > $thresholds->getCo2ErrorMax()) {
                 $state = RoomStateEnum::CRITICAL;
             } elseif ($co2 > $thresholds->getCo2WarningMin() && $co2 <= $thresholds->getCo2CriticalMax()) {
@@ -193,7 +201,7 @@ class RoomRepository extends ServiceEntityRepository
         }
 
         // Humidity evaluation
-        if ($humidity !== null) {
+        if ($humidity !== null && !$thresholds->isHumidityAberrant($humidity)) {
             if ($humidity < $thresholds->getHumCriticalMin()) {
                 $state = RoomStateEnum::CRITICAL;
             } elseif ($humidity < $thresholds->getHumWarningMin() || ($humidity > $thresholds->getHumWarningMax() && $humidity <= $thresholds->getHumCriticalMax())) {
@@ -203,6 +211,7 @@ class RoomRepository extends ServiceEntityRepository
             }
         }
 
+        // Create maintenance task if sensor is not working
         if ($sensorState === SensorStateEnum::NOT_WORKING) {
             $this->createTaskForTechnician($room);
         }
