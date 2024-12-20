@@ -342,6 +342,11 @@
 
             /* Styles pour le bouton de paramètres */
             .settings-button {
+                position: absolute; /* Place le bouton par rapport à la barre latérale */
+                bottom: 1.25rem; /* Distance du bas de la barre latérale */
+                left: 80%; /* Centre horizontalement si nécessaire */
+                transform: translateX(-50%); /* Centre exact si aligné au centre */
+                z-index: 10;
                 margin-left: 5px; /* Réduit l'espace entre le bouton utilisateur et le bouton paramètres */
                 background-color: transparent;
                 border: none;
@@ -488,9 +493,10 @@
 
 
         <div class="user-section d-flex align-items-center">
-            {% if app.user %}
                 <!-- Utilisateur connecté -->
                 <div class="d-flex align-items-center">
+
+                    {% if app.user %}
                     <div class="dropdown">
                         <button class="btn d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
@@ -506,6 +512,15 @@
                             </li>
                         </ul>
                     </div>
+
+
+                    {% else %}
+                        <a class="btn d-flex align-items-center" href="{{ path('app_login') }}" role="button" aria-expanded="false" style="color: #adb5bd;">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                            <span>Login</span>
+                        </a>
+                        <!-- Utilisateur non connecté -->
+                    {% endif %}
                     <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
                         <i class="bi bi-gear-fill" style="font-size: 1.25rem;"></i>
                     </button>
@@ -538,14 +553,6 @@
                         </div>
                     {% endif %}
                 </div>
-
-
-
-
-            {% else %}
-                <!-- Utilisateur non connecté -->
-                <a href="{{ path('app_login') }}" class="btn btn-primary ms-auto">Login</a>
-            {% endif %}
         </div>
     </div>
 
