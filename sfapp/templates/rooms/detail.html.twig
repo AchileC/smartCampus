@@ -25,12 +25,18 @@
                         <!-- Temperature -->
                         {% set temp = room.acquisitionSystem.temperature %}
                         {% set isHeatingPeriod = "now"|date("m") in ["11", "12", "01", "02", "03", "04"] %}
-                        {% if isHeatingPeriod %}
-                            {% set tempCritical = temp < thresholds.heatingTempCriticalMin or temp > thresholds.heatingTempCriticalMax %}
-                            {% set tempWarning = not tempCritical and (temp < thresholds.heatingTempWarningMin or temp > thresholds.heatingTempWarningMax) %}
+                        {% set tempAberrant = thresholds.isTemperatureAberrant(temp) %}
+                        {% if not tempAberrant %}
+                            {% if isHeatingPeriod %}
+                                {% set tempCritical = temp < thresholds.heatingTempCriticalMin or temp > thresholds.heatingTempCriticalMax %}
+                                {% set tempWarning = not tempCritical and (temp < thresholds.heatingTempWarningMin or temp > thresholds.heatingTempWarningMax) %}
+                            {% else %}
+                                {% set tempCritical = temp < thresholds.nonHeatingTempCriticalMin or temp > thresholds.nonHeatingTempCriticalMax %}
+                                {% set tempWarning = not tempCritical and (temp < thresholds.nonHeatingTempWarningMin or temp > thresholds.nonHeatingTempWarningMax) %}
+                            {% endif %}
                         {% else %}
-                            {% set tempCritical = temp < thresholds.nonHeatingTempCriticalMin or temp > thresholds.nonHeatingTempCriticalMax %}
-                            {% set tempWarning = not tempCritical and (temp < thresholds.nonHeatingTempWarningMin or temp > thresholds.nonHeatingTempWarningMax) %}
+                            {% set tempCritical = true %}
+                            {% set tempWarning = false %}
                         {% endif %}
                         {% set tempClass = tempCritical ? 'list-group-item-danger' : (tempWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
                         <li class="list-group-item {{ tempClass }} p-3">
@@ -41,7 +47,9 @@
                                     {{ temp is not null ? temp ~ '°C' : 'no_value_measured'|trans }}
                                     {% if temp is not null %}
                                         <div class="mt-2 small {% if tempCritical %}text-danger{% elseif tempWarning %}text-warning{% else %}text-success{% endif %}">
-                                            {% if tempCritical %}
+                                            {% if tempAberrant %}
+                                                Temperature sensor is broken or malfunctioning. Please contact maintenance.
+                                            {% elseif tempCritical %}
                                                 {{ 'critical_error_verify_sensor'|trans }}
                                             {% elseif tempWarning %}
                                                 {% if isHeatingPeriod %}
@@ -108,8 +116,14 @@
 
                         <!-- Humidity -->
                         {% set hum = room.acquisitionSystem.humidity %}
-                        {% set humWarning = (hum > thresholds.humWarningMax and hum <= thresholds.humCriticalMax) or (hum < thresholds.humWarningMin and hum >= thresholds.humCriticalMin) %}
-                        {% set humCritical = hum > thresholds.humCriticalMax or hum < thresholds.humCriticalMin %}
+                        {% set humAberrant = thresholds.isHumidityAberrant(hum) %}
+                        {% if not humAberrant %}
+                            {% set humWarning = (hum > thresholds.humWarningMax and hum <= thresholds.humCriticalMax) or (hum < thresholds.humWarningMin and hum >= thresholds.humCriticalMin) %}
+                            {% set humCritical = hum > thresholds.humCriticalMax or hum < thresholds.humCriticalMin %}
+                        {% else %}
+                            {% set humCritical = true %}
+                            {% set humWarning = false %}
+                        {% endif %}
                         {% set humClass = humCritical ? 'list-group-item-danger' : (humWarning ? 'list-group-item-warning' : 'list-group-item-success') %}
                         <li class="list-group-item {{ humClass }} p-3">
                             <div class="row">
@@ -125,7 +139,9 @@
                                     {{ hum is not null ? hum ~ '%' : 'no_value_measured'|trans }}
                                     {% if hum is not null %}
                                         <div class="mt-2 small {% if humCritical %}text-danger{% elseif humWarning %}text-warning{% else %}text-success{% endif %}">
-                                            {% if humCritical %}
+                                            {% if humAberrant %}
+                                                Humidity sensor is broken or malfunctioning. Please contact maintenance.
+                                            {% elseif humCritical %}
                                                 {{ 'urgently_ventilate_consider_dehumidifier'|trans }}
                                             {% elseif humWarning %}
                                                 {{ 'monitor_and_ventilate_if_needed'|trans }}
@@ -164,9 +180,16 @@
 
                         <!-- CO₂ -->
                         {% set co2 = room.acquisitionSystem.co2 %}
-                        {% set co2Warning = co2 > thresholds.co2WarningMin and co2 <= thresholds.co2CriticalMax %}
-                        {% set co2Critical = co2 > thresholds.co2CriticalMax and co2 <= thresholds.co2ErrorMax %}
-                        {% set co2Error = co2 < thresholds.co2CriticalMin or co2 > thresholds.co2ErrorMax %}
+                        {% set co2Aberrant = thresholds.isCo2Aberrant(co2) %}
+                        {% if not co2Aberrant %}
+                            {% set co2Warning = co2 > thresholds.co2WarningMin and co2 <= thresholds.co2CriticalMax %}
+                            {% set co2Critical = co2 > thresholds.co2CriticalMax and co2 <= thresholds.co2ErrorMax %}
+                            {% set co2Error = co2 < thresholds.co2CriticalMin %}
+                        {% else %}
+                            {% set co2Warning = false %}
+                            {% set co2Critical = false %}
+                            {% set co2Error = true %}
+                        {% endif %}
                         {% set co2Class = co2Error ? 'list-group-item-danger' : (co2Critical ? 'list-group-item-danger' : (co2Warning ? 'list-group-item-warning' : 'list-group-item-success')) %}
                         <li class="list-group-item {{ co2Class }} p-3">
                             <div class="row">
@@ -182,7 +205,9 @@
                                     {{ co2 is not null ? co2 ~ ' ppm' : 'no_value_measured'|trans }}
                                     {% if co2 is not null %}
                                         <div class="mt-2 small {% if co2Error or co2Critical %}text-danger{% elseif co2Warning %}text-warning{% else %}text-success{% endif %}">
-                                            {% if co2Error %}
+                                            {% if co2Aberrant %}
+                                                CO₂ sensor is broken or malfunctioning. Please contact maintenance.
+                                            {% elseif co2Error %}
                                                 {{ 'check_sensor_status'|trans }}
                                             {% elseif co2 > thresholds.co2CriticalMax and co2 <= thresholds.co2ErrorMax %}
                                                 {{ 'ventilate_immediately'|trans }}
