@@ -342,6 +342,11 @@
 
             /* Styles pour le bouton de paramètres */
             .settings-button {
+                position: absolute; /* Place le bouton par rapport à la barre latérale */
+                bottom: 1.25rem; /* Distance du bas de la barre latérale */
+                left: 80%; /* Centre horizontalement si nécessaire */
+                transform: translateX(-50%); /* Centre exact si aligné au centre */
+                z-index: 10;
                 margin-left: 5px; /* Réduit l'espace entre le bouton utilisateur et le bouton paramètres */
                 background-color: transparent;
                 border: none;
@@ -360,6 +365,83 @@
                 display: flex;
                 align-items: center;
             }
+
+
+            .dropdown-menu {
+                max-height: 300px;
+                overflow-y: auto;
+                width: 340px;
+                padding: 0;
+            }
+            .list-group-item {
+                font-size: 0.9rem;
+                line-height: 1.2;
+            }
+
+            .list-group-item::after {
+                content: "";
+                display: block;
+                margin: 0 auto;
+                width: 80%; /* Ajustez la largeur selon vos préférences */
+                border-bottom: 1px solid #555;
+                padding-bottom: 5px; /* Optionnel, si vous voulez un peu d'espace */
+            }
+
+            .btn-link {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                /* Ajoutez une taille fixe si nécessaire */
+                width: 40px;
+                height: 40px;
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                transform: translate(50%, -50%);
+                font-size: 0.8rem;
+                font-weight: bold;
+                color: white;
+                background-color: #dc3545;
+                border-radius: 50%;
+                padding: 0.25em 0.45em;
+                line-height: 1;
+                z-index: 10;
+                width: 20px;
+                height: 20px;
+                box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+                pointer-events: none; /* Empêche la badge d'interférer avec les interactions */
+            }
+
+
+            .list-group-item.fw-bold {
+                background: #2c2f33;
+                border-left: 4px solid #0d6efd;
+                position: relative;
+                padding-left: 1rem;
+            }
+
+            .list-group-item.fw-muted {
+                border-left: 4px solid #343a40;
+                position: relative;
+                padding-left: 1rem;
+                color: #6c757d;
+            }
+
+            .dropdown-menu > li.sticky-header {
+                position: sticky;
+                top: 0;
+                z-index: 20;
+                background-color: #343a40;
+                color: #ffffff;
+                padding: 10px 0;
+                border-bottom: 1px solid #555;
+                margin: 0;
+            }
+
 
 
         </style>
@@ -411,9 +493,10 @@
 
 
         <div class="user-section d-flex align-items-center">
-            {% if app.user %}
                 <!-- Utilisateur connecté -->
                 <div class="d-flex align-items-center">
+
+                    {% if app.user %}
                     <div class="dropdown">
                         <button class="btn d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
@@ -429,29 +512,47 @@
                             </li>
                         </ul>
                     </div>
-                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
-                        <i class="bi bi-gear-fill" style="font-size: 1rem;"></i>
-                    </button>
 
-                <div class="dropdown">
-                    <button class="btn d-flex align-items-center dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
-                        <span>{{ app.user.username }}</span>
+
+                    {% else %}
+                        <a class="btn d-flex align-items-center" href="{{ path('app_login') }}" role="button" aria-expanded="false" style="color: #adb5bd;">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                            <span>{{ 'login' | trans }}</span>
+                        </a>
+                        <!-- Utilisateur non connecté -->
+                    {% endif %}
+                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
+                        <i class="bi bi-gear-fill" style="font-size: 1.25rem;"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li>
-                            <!-- Bouton Logout -->
-                            <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                <button type="submit" class="btn btn-outline-danger ">{{ 'logout' | trans }}</button>
-                            </form>
-                        </li>
-                    </ul>
+                    {% set unreadNotifications = notifications|filter(notification => not notification.isRead) %}
+                    {% if is_granted('ROLE_MANAGER') %}
+                        <div class="dropdown position-relative">
+                            <button class="btn btn-link text-white position-relative" id="notificationButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-bell-fill position-relative" style="font-size: 1.25em;">
+                                    {% if unreadNotifications|length > 0 %}
+                                        <span class="notification-badge">
+                        {{ unreadNotifications|length }}
+                    </span>
+                                    {% endif %}
+                                </i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
+                                <li class="fw-bold text-center mb-2 sticky-header">Notifications</li>
+                                {% for notification in notifications|reverse %}
+                                    <li>
+                                        <a href="{{ path('app_rooms_details', { name: notification.room.name }) }}"
+                                           class="list-group-item list-group-item-action {% if notification.isRead %}fw-muted{% else %}fw-bold{% endif %}">
+                                            <small class="fw-muted">{{ notification.createAt|date('d/m/Y H:i', 'Europe/Paris') }}</small><br>
+                                            {{ notification.message }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="text-center text-muted">No new notifications</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 </div>
-            {% else %}
-                <!-- Utilisateur non connecté -->
-                <a href="{{ path('app_login') }}" class="btn btn-primary ms-auto">{{ 'login' | trans }}</a>
-            {% endif %}
         </div>
     </div>
 
@@ -536,23 +637,6 @@
                 toggleIcon.classList.toggle('bi-list', !isOpen);
                 toggleIcon.classList.toggle('bi-arrow-bar-left', isOpen);
             };
-
-            /**
-             * @var {HTMLInputElement} themeToggleSwitch - The theme toggle switch element.
-             * @var {HTMLElement} themeLabel - The label displaying the current theme.
-             */
-            const themeToggleSwitch = document.getElementById("theme-toggle-switch");
-            const themeLabel = document.getElementById("theme-label");
-
-            // Set the initial theme based on localStorage or system preferences
-            const savedTheme = localStorage.getItem("theme");
-            const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-            const currentTheme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
-
-            // Apply the current theme
-            document.documentElement.setAttribute("data-bs-theme", currentTheme);
-            themeToggleSwitch.checked = currentTheme === "dark";
-            themeLabel.innerText = "Dark Mode";
 
             /**
              * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
@@ -655,6 +739,43 @@
                     }
                 }
             }
+
+            const notificationButton = document.getElementById("notificationButton");
+            const notificationBadge = document.querySelector(".notification-badge");
+            const notificationDropdown = document.querySelector("#notificationButton + .dropdown-menu");
+
+            function markNotificationsAsRead() {
+                fetch("{{ path('mark_notifications_as_read') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-Token": "{{ csrf_token('mark_notifications') }}",
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(response => {
+                        if (response.ok && notificationBadge) {
+                            notificationBadge.style.display = "none";
+                        }
+                    })
+                    .catch(error => console.error("Erreur AJAX :", error));
+            }
+
+            document.addEventListener("click", function (event) {
+                const isDropdownOpen = notificationDropdown.classList.contains("show");
+                const isOutsideClick = !notificationDropdown.contains(event.target) && event.target !== notificationButton;
+                if (isDropdownOpen && isOutsideClick) {
+                    markNotificationsAsRead();
+                }
+            });
+
+            notificationButton.addEventListener("click", function () {
+                if (notificationDropdown.classList.contains("show")) {
+                    markNotificationsAsRead();
+                }
+            });
+
+
 
 // Appelle la fonction lors du chargement de la page
             document.addEventListener('DOMContentLoaded', handleFormValidationErrors);

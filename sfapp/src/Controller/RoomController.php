@@ -2,12 +2,15 @@
 // RoomController.php
 namespace App\Controller;
 
+use App\Entity\Notification;
 use App\Entity\Room;
 use App\Entity\Action;
 use App\Repository\ActionRepository;
+use App\Repository\AcquisitionSystemRepository;
 use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
+use App\Repository\UserRepository;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
@@ -20,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ThresholdRepository;
 
 /**
  * Class RoomController
@@ -169,6 +173,7 @@ class RoomController extends AbstractController
      * and renders the detail view with its properties.
      *
      * @param RoomRepository $roomRepository The repository to fetch room data.
+     * @param ThresholdRepository $thresholdRepository The repository to fetch threshold data.
      * @param string $name The name of the room to display.
      *
      * @return Response The response rendering the room details page.
@@ -176,7 +181,7 @@ class RoomController extends AbstractController
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
      */
     #[Route('/rooms/{name}', name: 'app_rooms_details')]
-    public function details(RoomRepository $roomRepository, string $name): Response
+    public function details(RoomRepository $roomRepository, ThresholdRepository $thresholdRepository, string $name): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
@@ -192,7 +197,6 @@ class RoomController extends AbstractController
         $roomRepository->updateRoomState($room);
 
         try {
-
             // Appeler le service pour obtenir les prévisions météo
             $this->weatherApiService->fetchWeatherData('46.16', '-1.15', 'Xu9ot3p6Bx4iIcfE');
             $forecast = $this->weatherApiService->getForecast();
@@ -206,6 +210,7 @@ class RoomController extends AbstractController
         return $this->render('rooms/detail.html.twig', [
             'room' => $room,
             'todayForecast' => $todayForecast,
+            'thresholds' => $thresholdRepository->getDefaultThresholds(),
         ]);
     }
 
@@ -315,34 +320,47 @@ class RoomController extends AbstractController
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
      */
     #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
-    public function requestInstallation(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
-    {
+    public function requesAssignment(
+        string $name,
+        RoomRepository $roomRepository,
+        AcquisitionSystemRepository $acquisitionSystemRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
         if (!$room) {
             throw $this->createNotFoundException('Room not found');
         }
 
+        // Vérifier les systèmes d'acquisition disponibles
+        $availableSystems = $acquisitionSystemRepository->findSystemsNotLinked();
 
+        if (empty($availableSystems)) {
+            $this->addFlash('warning', 'Assignment may take some time, as there are no more acquisition systems available.');
+        }
+
+        // Créer une nouvelle action pour l'assignation
         $action = new Action();
         $action->setInfo(ActionInfoEnum::ASSIGNMENT); // Type d'action : ASSIGNMENT
         $action->setState(ActionStateEnum::TO_DO);    // Etat : À FAIRE
         $action->setCreatedAt(new \DateTime());       // Date de création
         $action->setRoom($room);                      // Associer la salle à la tâche
 
-
         $room->setState(RoomStateEnum::WAITING);
         $room->setSensorState(SensorStateEnum::ASSIGNMENT);
+
         // Persister la tâche dans la base de données
         $entityManager->persist($action);
+
+        // Enregistrer les modifications dans la base de données
         $entityManager->flush();
 
         // Ajouter un message flash pour indiquer le succès
         $this->addFlash('success', 'A new assignment task has been created.');
 
-
         return $this->redirectToRoute('app_rooms');
     }
+
 
     /**
      * Initiates the request to unassign an acquisition system from a room.

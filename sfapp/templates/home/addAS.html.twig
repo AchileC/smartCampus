@@ -15,13 +15,13 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row justify-content-center">
-                                    <!-- Nom du SA avec préfixe AS- -->
+                                    <!-- AS Name with ESP- prefix -->
                                     <div class="col-md-6">
                                         {{ form_label(form.number, 'acquisition_system'|trans ~ ' ' ~ 'number'|trans, {'label_attr': {'class': 'form-label text-center'}}) }}
                                         <div class="input-group mb-4" style="max-width: 400px; margin: 0 auto;">
-                                            <!-- Préfixe fixe -->
+                                            <!-- Fixed prefix -->
                                             <span class="input-group-text">AS-</span>
-                                            <!-- Champ de saisie -->
+                                            <!-- Input field -->
                                             {{ form_widget(form.number, {
                                                 'attr': {
                                                     'class': 'form-control' ~ (form.number.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -38,7 +38,7 @@
                             </div>
                         </div>
 
-                        <!-- Boutons Envoyer et Annuler -->
+                        <!-- Submit and Cancel Buttons -->
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary me-3">{{ 'add'|trans }}</button>
                             <a href="{{ path('app_acquisition_system') }}" class="btn btn-secondary">{{ 'cancel'|trans }}</a>

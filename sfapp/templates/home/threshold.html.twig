@@ -1,0 +1,657 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Configure Thresholds{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .threshold-section {
+            background-color: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .threshold-section h3 {
+            color: var(--bs-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .threshold-visualization {
+            margin-top: 15px;
+            padding: 20px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .progress {
+            height: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            overflow: visible;
+        }
+
+        .slider-container {
+            position: relative;
+            margin-bottom: 60px;
+            padding: 0 10px;
+        }
+
+        .slider-thumb {
+            width: 0;
+            height: 0;
+            position: absolute;
+            top: 30px;
+            transform: translateX(-50%);
+            cursor: grab;
+            z-index: 10;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 0;
+            border-bottom: 12px solid var(--bs-blue);
+
+        }
+
+        .slider-thumb::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -12px;
+            right: -12px;
+            bottom: -4px;
+            z-index: -1;
+        }
+
+        .slider-thumb:hover {
+            border-bottom-color: var(--bs-primary);
+            transform: translateX(-50%) scale(1.2);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+        }
+
+        .slider-thumb.dragging {
+            cursor: grabbing;
+            border-bottom-color: var(--bs-primary);
+        }
+
+        .slider-value {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            color: white;
+            background-color: var(--bs-blue);
+            font-weight: 500;
+        }
+
+        .slider-thumb:hover .slider-value {
+            background-color: var(--bs-primary);
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .slider-thumb.dragging .slider-value {
+            background-color: var(--bs-primary);
+        }
+
+        .slider-label {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            white-space: nowrap;
+            color: var(--bs-secondary);
+            font-weight: 500;
+        }
+
+        .btn-toolbar {
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .period-switch {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            margin-bottom: 20px;
+        }
+
+        /* Zones de couleur pour les seuils */
+        .zone-critical-low { 
+            background-color: #dc3545;
+            border-radius: 8px 0 0 8px;
+        }
+        .zone-warning-low { background-color: #ffc107; }
+        .zone-optimal { background-color: #198754; }
+        .zone-warning-high { background-color: #ffc107; }
+        .zone-critical-high { 
+            background-color: #dc3545;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Style pour les valeurs cachées */
+        .hidden-inputs {
+            display: none;
+        }
+
+        /* Info icons */
+        .info-icon {
+            font-size: 1.2rem;
+            color: var(--bs-primary);
+            cursor: help;
+        }
+
+        /* Tooltip personnalisé */
+        .threshold-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .threshold-tooltip.visible {
+            opacity: 1;
+        }
+
+        /* Style pour la grille de valeurs recommandées */
+        .recommended-values {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: rgba(var(--bs-info-rgb), 0.1);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .recommended-values table {
+            width: 100%;
+            margin-bottom: 0;
+        }
+
+        .recommended-values td {
+            padding: 4px 8px;
+        }
+
+        .recommended-values td:first-child {
+            font-weight: 500;
+            color: var(--bs-primary);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Configure Thresholds</h1>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {{ form_start(form) }}
+        <div class="period-switch d-flex align-items-center">
+            <span class="me-2">Period:</span>
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="period" id="heating" value="heating" checked>
+                <label class="btn btn-outline-primary" for="heating">Heating (Nov-Apr)</label>
+
+                <input type="radio" class="btn-check" name="period" id="nonHeating" value="nonHeating">
+                <label class="btn btn-outline-primary" for="nonHeating">Non-Heating (May-Oct)</label>
+            </div>
+        </div>
+
+        {# Temperature Section - Heating Period #}
+        <div class="threshold-section heating-period">
+            <h3>
+                <i class="bi bi-thermometer-half"></i>
+                Temperature Thresholds (Heating Period)
+                <i class="bi bi-info-circle info-icon" data-tooltip="Recommended temperature ranges for the heating period (November to April)"></i>
+            </h3>
+            <div class="threshold-visualization">
+                <div class="slider-container" id="heating-temp-slider" 
+                     data-min="10" data-max="35" data-step="1"
+                     data-critical-min="{{ form.heatingTempCriticalMin.vars.value }}"
+                     data-warning-min="{{ form.heatingTempWarningMin.vars.value }}"
+                     data-warning-max="{{ form.heatingTempWarningMax.vars.value }}"
+                     data-critical-max="{{ form.heatingTempCriticalMax.vars.value }}">
+                    <div class="progress">
+                        <div class="zone-critical-low"></div>
+                        <div class="zone-warning-low"></div>
+                        <div class="zone-optimal"></div>
+                        <div class="zone-warning-high"></div>
+                        <div class="zone-critical-high"></div>
+                    </div>
+                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">Critical Min</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">Warning Min</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
+                </div>
+            </div>
+            <div class="recommended-values">
+                <h5>Recommended Values (Heating Period)</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Critical Min:</td>
+                        <td>16°C - Too cold, risk of discomfort and health issues</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Min:</td>
+                        <td>18°C - Minimum comfortable temperature for heating season</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Max:</td>
+                        <td>22°C - Maximum recommended temperature for heating season</td>
+                    </tr>
+                    <tr>
+                        <td>Critical Max:</td>
+                        <td>24°C - Too warm, excessive energy consumption</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="hidden-inputs">
+                {{ form_row(form.heatingTempCriticalMin) }}
+                {{ form_row(form.heatingTempWarningMin) }}
+                {{ form_row(form.heatingTempWarningMax) }}
+                {{ form_row(form.heatingTempCriticalMax) }}
+            </div>
+        </div>
+
+        {# Temperature Section - Non-Heating Period #}
+        <div class="threshold-section non-heating-period" style="display: none;">
+            <h3>
+                <i class="bi bi-thermometer-sun"></i>
+                Temperature Thresholds (Non-Heating Period)
+                <i class="bi bi-info-circle info-icon" data-tooltip="Recommended temperature ranges for the non-heating period (May to October)"></i>
+            </h3>
+            <div class="threshold-visualization">
+                <div class="slider-container" id="non-heating-temp-slider" 
+                     data-min="10" data-max="35" data-step="1"
+                     data-critical-min="{{ form.nonHeatingTempCriticalMin.vars.value }}"
+                     data-warning-min="{{ form.nonHeatingTempWarningMin.vars.value }}"
+                     data-warning-max="{{ form.nonHeatingTempWarningMax.vars.value }}"
+                     data-critical-max="{{ form.nonHeatingTempCriticalMax.vars.value }}">
+                    <div class="progress">
+                        <div class="zone-critical-low"></div>
+                        <div class="zone-warning-low"></div>
+                        <div class="zone-optimal"></div>
+                        <div class="zone-warning-high"></div>
+                        <div class="zone-critical-high"></div>
+                    </div>
+                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">Critical Min</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">Warning Min</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
+                </div>
+            </div>
+            <div class="recommended-values">
+                <h5>Recommended Values (Non-Heating Period)</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Critical Min:</td>
+                        <td>20°C - Too cold for comfort in summer</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Min:</td>
+                        <td>22°C - Lower bound of summer comfort zone</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Max:</td>
+                        <td>26°C - Upper bound of summer comfort zone</td>
+                    </tr>
+                    <tr>
+                        <td>Critical Max:</td>
+                        <td>28°C - Too warm, risk of discomfort</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="hidden-inputs">
+                {{ form_row(form.nonHeatingTempCriticalMin) }}
+                {{ form_row(form.nonHeatingTempWarningMin) }}
+                {{ form_row(form.nonHeatingTempWarningMax) }}
+                {{ form_row(form.nonHeatingTempCriticalMax) }}
+            </div>
+        </div>
+
+        {# Humidity Section #}
+        <div class="threshold-section">
+            <h3>
+                <i class="bi bi-droplet-half"></i>
+                Humidity Thresholds
+                <i class="bi bi-info-circle info-icon" data-tooltip="Recommended humidity ranges for optimal comfort and air quality"></i>
+            </h3>
+            <div class="threshold-visualization">
+                <div class="slider-container" id="humidity-slider" 
+                     data-min="0" data-max="100" data-step="1"
+                     data-critical-min="{{ form.humCriticalMin.vars.value }}"
+                     data-warning-min="{{ form.humWarningMin.vars.value }}"
+                     data-warning-max="{{ form.humWarningMax.vars.value }}"
+                     data-critical-max="{{ form.humCriticalMax.vars.value }}">
+                    <div class="progress">
+                        <div class="zone-critical-low"></div>
+                        <div class="zone-warning-low"></div>
+                        <div class="zone-optimal"></div>
+                        <div class="zone-warning-high"></div>
+                        <div class="zone-critical-high"></div>
+                    </div>
+                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">Critical Min</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">Warning Min</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
+                </div>
+            </div>
+            <div class="recommended-values">
+                <h5>Recommended Humidity Values</h5>
+                <table class="table table-sm">
+                    <tr>
+                        <td>Critical Min:</td>
+                        <td>20% - Very dry, risk of respiratory issues and static electricity</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Min:</td>
+                        <td>30% - Minimum for comfort and health</td>
+                    </tr>
+                    <tr>
+                        <td>Warning Max:</td>
+                        <td>60% - Maximum for comfort and mold prevention</td>
+                    </tr>
+                    <tr>
+                        <td>Critical Max:</td>
+                        <td>70% - High risk of mold growth and discomfort</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="hidden-inputs">
+                {{ form_row(form.humCriticalMin) }}
+                {{ form_row(form.humWarningMin) }}
+                {{ form_row(form.humWarningMax) }}
+                {{ form_row(form.humCriticalMax) }}
+            </div>
+        </div>
+
+        <div class="btn-toolbar">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Changes
+            </button>
+            <a href="{{ path('app_home_threshold_reset') }}" class="btn btn-secondary" 
+               onclick="return confirm('Are you sure you want to reset all thresholds to their default values?')">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset to Default
+            </a>
+            <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-lg"></i> Cancel
+            </a>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    <div class="threshold-tooltip"></div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion des tooltips personnalisés
+            const tooltip = document.querySelector('.threshold-tooltip');
+            document.querySelectorAll('.info-icon').forEach(icon => {
+                icon.addEventListener('mouseenter', e => {
+                    tooltip.textContent = e.target.dataset.tooltip;
+                    tooltip.style.left = `${e.pageX + 10}px`;
+                    tooltip.style.top = `${e.pageY + 10}px`;
+                    tooltip.classList.add('visible');
+                });
+                
+                icon.addEventListener('mouseleave', () => {
+                    tooltip.classList.remove('visible');
+                });
+            });
+
+            // Gestion des périodes (chauffage/non-chauffage)
+            const heatingPeriodSection = document.querySelector('.heating-period');
+            const nonHeatingPeriodSection = document.querySelector('.non-heating-period');
+            const periodRadios = document.querySelectorAll('input[name="period"]');
+
+            periodRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === 'heating') {
+                        heatingPeriodSection.style.display = 'block';
+                        nonHeatingPeriodSection.style.display = 'none';
+                    } else {
+                        heatingPeriodSection.style.display = 'none';
+                        nonHeatingPeriodSection.style.display = 'block';
+                    }
+                });
+            });
+
+            // Initialisation des sliders
+            function initializeSlider(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const min = parseFloat(container.dataset.min);
+                const max = parseFloat(container.dataset.max);
+                const step = parseFloat(container.dataset.step) || 1;
+                const range = max - min;
+                const thumbs = container.querySelectorAll('.slider-thumb');
+                const progress = container.querySelector('.progress');
+                const zones = {
+                    'critical-min': container.dataset.criticalMin,
+                    'warning-min': container.dataset.warningMin,
+                    'warning-max': container.dataset.warningMax,
+                    'critical-max': container.dataset.criticalMax,
+                    'error-max': container.dataset.errorMax
+                };
+
+                // Positionne initialement les curseurs
+                thumbs.forEach(thumb => {
+                    const type = thumb.dataset.type;
+                    const value = zones[type];
+                    if (value) {
+                        const percent = ((value - min) / range) * 100;
+                        thumb.style.left = `${percent}%`;
+                        thumb.querySelector('.slider-value').textContent = `${value}${getUnit(containerId)}`;
+                    }
+                });
+
+                // Met à jour les zones colorées
+                updateZones(container);
+
+                // Gestion du drag & drop
+                thumbs.forEach(thumb => {
+                    thumb.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        thumb.classList.add('dragging');
+                        
+                        const startX = e.clientX;
+                        const startLeft = thumb.offsetLeft;
+                        
+                        function onMouseMove(e) {
+                            const dx = e.clientX - startX;
+                            let newLeft = startLeft + dx;
+                            const containerRect = progress.getBoundingClientRect();
+                            
+                            // Limites du conteneur
+                            newLeft = Math.max(0, Math.min(newLeft, containerRect.width));
+                            
+                            // Conversion en pourcentage
+                            const percent = (newLeft / containerRect.width) * 100;
+                            let value = min + (range * (percent / 100));
+                            
+                            // Arrondir à l'étape la plus proche
+                            value = Math.round(value / step) * step;
+                            
+                            // Recalculer le pourcentage après l'arrondi
+                            const adjustedPercent = ((value - min) / range) * 100;
+                            
+                            // Vérifie l'ordre des curseurs
+                            if (isValidPosition(container, thumb.dataset.type, value)) {
+                                thumb.style.left = `${adjustedPercent}%`;
+                                thumb.querySelector('.slider-value').textContent = `${value}${getUnit(containerId)}`;
+                                updateHiddenInput(containerId, thumb.dataset.type, value);
+                                updateZones(container);
+                            }
+                        }
+                        
+                        function onMouseUp() {
+                            thumb.classList.remove('dragging');
+                            document.removeEventListener('mousemove', onMouseMove);
+                            document.removeEventListener('mouseup', onMouseUp);
+                        }
+                        
+                        document.addEventListener('mousemove', onMouseMove);
+                        document.addEventListener('mouseup', onMouseUp);
+                    });
+                });
+            }
+
+            // Fonction pour obtenir l'unité en fonction du type de slider
+            function getUnit(containerId) {
+                if (containerId.includes('temp')) return '°C';
+                if (containerId.includes('humidity')) return '%';
+                if (containerId.includes('co2')) return ' ppm';
+                return '';
+            }
+
+            // Vérifie si la nouvelle position est valide par rapport aux autres curseurs
+            function isValidPosition(container, type, value) {
+                const values = getAllValues(container);
+                
+                if (container.id.includes('co2')) {
+                    switch(type) {
+                        case 'critical-min':
+                            return value < values['warning-min'];
+                        case 'warning-min':
+                            return value > values['critical-min'] && value < values['critical-max'];
+                        case 'critical-max':
+                            return value > values['warning-min'] && value < values['error-max'];
+                        case 'error-max':
+                            return value > values['critical-max'];
+                    }
+                } else {
+                    switch(type) {
+                        case 'critical-min':
+                            return value < values['warning-min'];
+                        case 'warning-min':
+                            return value > values['critical-min'] && value < values['warning-max'];
+                        case 'warning-max':
+                            return value > values['warning-min'] && value < values['critical-max'];
+                        case 'critical-max':
+                            return value > values['warning-max'];
+                    }
+                }
+                return true;
+            }
+
+            // Récupère toutes les valeurs actuelles des curseurs
+            function getAllValues(container) {
+                const values = {};
+                container.querySelectorAll('.slider-thumb').forEach(thumb => {
+                    const type = thumb.dataset.type;
+                    const value = parseFloat(thumb.querySelector('.slider-value').textContent);
+                    values[type] = value;
+                });
+                return values;
+            }
+
+            // Met à jour les zones colorées
+            function updateZones(container) {
+                const values = getAllValues(container);
+                const min = parseFloat(container.dataset.min);
+                const max = parseFloat(container.dataset.max);
+                const range = max - min;
+                
+                const zones = container.querySelectorAll('.progress > div');
+                if (container.id.includes('co2')) {
+                    // Zones pour CO2 (maintenant avec zone warning)
+                    const widths = [
+                        ((values['critical-min'] - min) / range) * 100,
+                        ((values['warning-min'] - values['critical-min']) / range) * 100,
+                        ((values['critical-max'] - values['warning-min']) / range) * 100,
+                        ((values['error-max'] - values['critical-max']) / range) * 100,
+                        ((max - values['error-max']) / range) * 100
+                    ];
+                    zones.forEach((zone, index) => {
+                        if (widths[index] > 0) {
+                            zone.style.width = `${widths[index]}%`;
+                            zone.style.display = 'block';
+                        } else {
+                            zone.style.width = '0';
+                            zone.style.display = 'none';
+                        }
+                    });
+                } else {
+                    // Zones standard
+                    const widths = [
+                        ((values['critical-min'] - min) / range) * 100,
+                        ((values['warning-min'] - values['critical-min']) / range) * 100,
+                        ((values['warning-max'] - values['warning-min']) / range) * 100,
+                        ((values['critical-max'] - values['warning-max']) / range) * 100,
+                        ((max - values['critical-max']) / range) * 100
+                    ];
+                    zones.forEach((zone, index) => {
+                        if (widths[index] > 0) {
+                            zone.style.width = `${widths[index]}%`;
+                            zone.style.display = 'block';
+                        } else {
+                            zone.style.width = '0';
+                            zone.style.display = 'none';
+                        }
+                    });
+                }
+            }
+
+            // Met à jour les champs cachés du formulaire
+            function updateHiddenInput(containerId, type, value) {
+                let inputId;
+                if (containerId === 'heating-temp-slider') {
+                    inputId = `threshold_heatingTemp${capitalizeFirstLetter(type)}`;
+                } else if (containerId === 'non-heating-temp-slider') {
+                    inputId = `threshold_nonHeatingTemp${capitalizeFirstLetter(type)}`;
+                } else if (containerId === 'humidity-slider') {
+                    inputId = `threshold_hum${capitalizeFirstLetter(type)}`;
+                } else if (containerId === 'co2-slider') {
+                    inputId = `threshold_co2${capitalizeFirstLetter(type)}`;
+                }
+                
+                if (inputId) {
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        input.value = value;
+                    }
+                }
+            }
+
+            function capitalizeFirstLetter(string) {
+                return string.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+            }
+
+            // Initialise tous les sliders
+            initializeSlider('heating-temp-slider');
+            initializeSlider('non-heating-temp-slider');
+            initializeSlider('humidity-slider');
+            initializeSlider('co2-slider');
+        });
+    </script>
+{% endblock %} 

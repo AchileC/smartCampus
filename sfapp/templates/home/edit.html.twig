@@ -26,11 +26,20 @@
                         {{ 'begin_task_confirmation'|trans }}
                     </p>
                     <div class="text-center">
-                        <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
-                            <button type="submit" class="btn btn-success">{{ 'begin'|trans }}</button>
-                            <a href="{{ path('app_todolist') }}" class="btn btn-secondary">{{ 'not_now'|trans }}</a>
-                        </form>
-                    </div>
+                        {% if action.info.value == 'assignment' and noAsAvailable %}
+                            {# Display message and link to add AS if none are available #}
+                            <div class="alert alert-danger">
+                                <p>No Acquisition Systems are available to assign.</p>
+                                <a href="{{ path('app_acquisition_system_add', {'from_action': action.id}) }}" class="btn btn-primary">
+                                    Add an Acquisition System
+                                </a>
+                            </div>
+                        {% else %}
+                            <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
+                                <button type="submit" class="btn btn-success">{{ 'begin'|trans }}</button>
+                                <a href="{{ path('app_todolist') }}" class="btn btn-secondary">{{ 'not_now'|trans }}</a>
+                            </form>
+                        {% endif %}
                 {% elseif action.state.value == 'doing' %}
                     {# Validate Action Template #}
                     <div class="alert alert-info text-center">
@@ -77,15 +86,7 @@
                         <p class="text-info text-center mt-3">
                             <i class="bi bi-info-circle"></i> Please indicate if the acquisition system is operational after maintenance.
                         </p>
-                    {% else%}
-                        <p class="text-warning text-center">This task does not require an acquisition system.</p>
-                    {% endif %}
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-success">Confirm</button>
-                        <a href="{{ path('app_todolist') }}" class="btn btn-secondary">Cancel</a>
-                    </div>
 
-                </form>
                         {% else %}
                             <p class="text-warning text-center">{{ 'no_acquisition_system_required'|trans }}</p>
                         {% endif %}

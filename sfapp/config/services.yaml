@@ -1,3 +1,8 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     weather_api_shared_secret: '%env(WEATHER_API_SHARED_SECRET)%'
     weather_api_base_url: '%env(WEATHER_API_BASE_URL)%'
@@ -5,6 +10,7 @@ parameters:
     locale: 'en'
 
 services:
+    # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
@@ -26,6 +32,11 @@ services:
     App\EventListener\AuthenticationExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    App\EventListener\NotificationListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
 
     App\EventListener\LocaleListener:
         arguments:
