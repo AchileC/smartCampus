@@ -2,7 +2,6 @@
 // RoomController.php
 namespace App\Controller;
 
-use App\Entity\Notification;
 use App\Entity\Room;
 use App\Entity\Action;
 use App\Repository\ActionRepository;
@@ -10,7 +9,6 @@ use App\Repository\AcquisitionSystemRepository;
 use App\Form\FilterRoomType;
 use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
-use App\Repository\UserRepository;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
@@ -73,12 +71,16 @@ class RoomController extends AbstractController
         $stateParam = $request->query->get('state');
         $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
 
-        $isManager = $this->isGranted('ROLE_MANAGER');
-
         $filterForm = $this->createForm(FilterRoomType::class, null, [
             'state' => $stateEnum,
         ]);
         $filterForm->handleRequest($request);
+
+        $rooms = $roomRepository->findByCriteria([]);
+
+        foreach ($rooms as $r) {
+            $roomRepository->updateAcquisitionSystemFromJson($r);
+        }
 
         $criteria = [];
 
@@ -113,19 +115,16 @@ class RoomController extends AbstractController
             if ($data->getState()) {
                 $criteria['state'] = $data->getState();
             }
-
         }
 
         $rooms = $roomRepository->findByCriteria($criteria);
 
-        $optionsEnabled = $request->query->get('optionsEnabled', false);
-
         return $this->render('rooms/index.html.twig', [
-            'optionsEnabled' => $optionsEnabled, // Passez la variable ici
             'rooms' => $rooms,
             'filterForm' => $filterForm->createView(),
         ]);
     }
+
 
     /**
      * Adds a new room to the database.
@@ -193,10 +192,8 @@ class RoomController extends AbstractController
             throw new AccessDeniedHttpException('This room is not yet equipped.');
         }
 
-        $roomRepository->updateJsonFromApi($room);
-
-        $roomRepository->updateAcquisitionSystemFromJson($room);
-        $roomRepository->updateRoomState($room);
+        // Puis on met à jour le système depuis le JSON et l'état.
+        $roomRepository->loadSensorData($room);
 
         try {
             // Appeler le service pour obtenir les prévisions météo
@@ -215,6 +212,7 @@ class RoomController extends AbstractController
             'thresholds' => $thresholdRepository->getDefaultThresholds(),
         ]);
     }
+
 
     /**
      * Updates an existing room based on the provided name.

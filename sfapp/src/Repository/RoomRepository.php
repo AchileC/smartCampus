@@ -2,6 +2,7 @@
 //RoomRepository.php
 namespace App\Repository;
 
+use App\Entity\AcquisitionSystem;
 use App\Entity\Room;
 use App\Entity\Action;
 use App\Utils\ActionInfoEnum;
@@ -61,53 +62,7 @@ class RoomRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function updateJsonFromApi(): void
-    {
-        $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
-        $sensorNames = ['temp', 'hum', 'co2'];
-        $data = [];
 
-        foreach ($sensorNames as $sensorName) {
-            $response = $this->httpClient->request('GET', $url, [
-                'headers' => [
-                    'dbname' => 'sae34bdm1eq2',
-                    'username' => 'm1eq2',
-                    'userpass' => 'kabxaq-4qopra-quXvit',
-                ],
-                'query' => [
-                    'nom' => $sensorName,
-                ]
-            ]);
-
-            if (200 !== $response->getStatusCode()) {
-                throw new \RuntimeException("Impossible de récupérer les données du capteur $sensorName.");
-            }
-
-            $responseData = $response->toArray();
-            // responseData est un tableau de captures. Normalement c'est déjà un tableau comme [ {...}, {...} ].
-            // On fusionne les données pour avoir un seul tableau global
-            $data = array_merge($data, $responseData);
-        }
-
-        if (empty($data)) {
-            throw new \RuntimeException('Aucune donnée récupérée depuis l’API.');
-        }
-
-        // Récupérer la localisation depuis la première entrée du tableau $data
-        $localisation = $data[0]['localisation'] ?? 'unknown';
-
-        // Chemin du fichier "live" en se basant sur la localisation
-        $liveFilePath = $this->jsonDirectory . '/' . $localisation . '.json';
-
-        // Chemin du fichier "history" en se basant sur la localisation
-        $historyFilePath = $this->jsonDirectory . '/history/' . $localisation . '_history.json';
-
-        // Écriture du fichier "live"
-        file_put_contents($liveFilePath, json_encode($data, JSON_PRETTY_PRINT));
-
-        // Mise à jour du fichier "history"
-        $this->appendToHistory($historyFilePath, $data);
-    }
 
     private function appendToHistory(string $filePath, array $newData): void
     {
@@ -158,9 +113,57 @@ class RoomRepository extends ServiceEntityRepository
         file_put_contents($filePath, json_encode($historyData, JSON_PRETTY_PRINT));
     }
 
+    public function updateJsonFromApiForRoom(Room $room): void
+    {
+        $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
+        $sensorNames = ['temp', 'hum', 'co2'];
+        $data = [];
+
+        foreach ($sensorNames as $sensorName) {
+            $response = $this->httpClient->request('GET', $url, [
+                'headers' => [
+                    'dbname' => 'sae34bdm1eq2',
+                    'username' => 'm1eq2',
+                    'userpass' => 'kabxaq-4qopra-quXvit',
+                ],
+                'query' => [
+                    'nom' => $sensorName,
+                ]
+            ]);
+
+            if (200 !== $response->getStatusCode()) {
+                throw new \RuntimeException("Impossible de récupérer les données du capteur $sensorName.");
+            }
+
+            $responseData = $response->toArray();
+            $data = array_merge($data, $responseData);
+        }
+
+        if (empty($data)) {
+            throw new \RuntimeException('Aucune donnée récupérée depuis l’API.');
+        }
+
+        // Récupérer la localisation depuis la première entrée du tableau $data$
+        $localisation = $data[0]['localisation'] ?? 'unknown';
+
+        // Chemin du fichier "live" en se basant sur la localisation
+        $liveFilePath = $this->jsonDirectory . '/' . $localisation . '.json';
+
+        // Chemin du fichier "history" en se basant sur la localisation
+        $historyFilePath = $this->jsonDirectory . '/history/' . $localisation . '_history.json';
+
+        // Écriture du fichier "live"
+        file_put_contents($liveFilePath, json_encode($data, JSON_PRETTY_PRINT));
+
+        // Mise à jour du fichier "history"
+        $this->appendToHistory($historyFilePath, $data);
+    }
+
 
     public function loadSensorData(Room $room): array
     {
+        $this->updateRoomState($room);
+
         // Chemin du fichier JSON basé sur le nom de la salle
         $filePath = __DIR__ . '/../../assets/json/' . $room->getName() . '.json';
 
@@ -194,15 +197,10 @@ class RoomRepository extends ServiceEntityRepository
      */
     public function updateAcquisitionSystemFromJson(Room $room): void
     {
-        // Check if room has an acquisition system
-        $acquisitionSystem = $room->getAcquisitionSystem();
-
-        if (!$acquisitionSystem) {
-            return;
-        }
-
         // Load data from JSON file
+        $this->updateJsonFromApiForRoom($room);
         $data = $this->loadSensorData($room);
+        $acquisitionSystem = $room->getAcquisitionSystem();
 
         if (empty($data)) {
             return;

@@ -17,6 +17,9 @@ class AcquisitionSystem
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $name = null;
+
     #[ORM\Column(nullable: true)]
     private ?float $temperature = null;
 
@@ -30,14 +33,8 @@ class AcquisitionSystem
     #[ORM\JoinColumn(nullable: true)]
     private ?Room $room = null;
 
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $name = null;
-
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $state = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $captureName = null;
 
 
     public function getId(): ?int
