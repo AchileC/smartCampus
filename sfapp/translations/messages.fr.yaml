@@ -28,7 +28,7 @@ _room_state:
 _sensor_state:
   NOT LINKED: "Non connecté"
   LINKED: "Connecté"
-  PROBABLY BROKEN: "Probablement cassé"
+  NOT WORKING: "Non fonctionnel"
   ASSIGNMENT: "Assignement"
   UNASSIGNMENT: "Dé-assignement"
 
@@ -36,6 +36,7 @@ _sensor_state:
 _action_info_state:
   ASSIGNMENT: "Assignement"
   UNASSIGNMENT: "Dé-assignement"
+  MAINTENANCE: "Maintenance"
 
 temperature: "Température"
 humidity: "Humidité"
@@ -43,6 +44,7 @@ humidity: "Humidité"
 # dashboard
 as_list: "Liste des SA"
 my_to_do_list: "Ma To-Do Liste"
+configure_thresholds: "Configurer les seuils"
 
 # orientation
 _cardinal_direction:
@@ -279,3 +281,78 @@ co2_ranges:
   high: "> 1500 ppm"
 
 ##
+
+# edit.html.twig
+
+indicate_as: " Veuillez indiquer si le système d'acquisition est opérationnel après la maintenance."
+yes_repaired: "Oui, c'est réparé"
+repaired?: "Le système d'acquisition est-il réparé ?"
+
+# Weather
+today_weather_forecast: "Prévisions météo d'aujourd'hui"
+min_temperature: "Température minimale"
+max_temperature: "Température maximale"
+precipitation: "Précipitations"
+
+# Advice
+extreme_heat_advice: "Chaleur extrême attendue ! Baissez les réglages des radiateurs et ouvrez les fenêtres ou les portes pour ventiler la salle de classe. Surveillez la température pour garantir le confort."
+very_hot_advice: "Il fait très chaud aujourd'hui. Pensez à réduire les réglages des radiateurs et ventilez la salle en ouvrant fenêtres ou portes pour maintenir un environnement confortable."
+comfortable_temperature_advice: "Températures confortables. Ajustez les réglages des radiateurs pour maintenir un environnement agréable. Ventilez si nécessaire pour garder l'air frais."
+freezing_temperature_advice: "Températures glaciales. Assurez-vous que les radiateurs sont réglés à une température élevée pour garder la salle de classe chaude. Gardez les fenêtres fermées pour conserver la chaleur."
+cold_temperature_advice: "Il fait froid aujourd'hui. Augmentez les réglages des radiateurs si nécessaire et veillez à ce que les fenêtres soient fermées pour maintenir la chaleur."
+extremely_low_temperature_advice: "Températures extrêmement basses ! Réglez les radiateurs au maximum pour assurer la chaleur dans la salle de classe. Minimisez l'ouverture des fenêtres pour conserver la chaleur."
+
+heavy_rainfall_advice: "De fortes précipitations sont attendues. Assurez-vous que les fenêtres sont bien fermées pour éviter l'humidité. Utilisez les portes pour ventiler si nécessaire."
+moderate_rainfall_advice: "Pluies modérées attendues. Gardez les fenêtres fermées et utilisez les portes pour ventiler la salle tout en évitant une humidité excessive."
+light_rainfall_advice: "De faibles précipitations sont attendues. Ventilez la salle en ouvrant brièvement les fenêtres ou les portes pour rafraîchir l'air sans permettre une humidité excessive."
+
+wet_conditions_advice: "Des conditions humides sont prévues. Assurez une ventilation adéquate pour éviter l'accumulation d'humidité en utilisant les portes si l'ouverture des fenêtres n'est pas idéale."
+clear_weather_advice: "Temps clair ou partiellement nuageux. Profitez de l'occasion pour ventiler la salle en ouvrant les fenêtres (ou les portes s'il fait trop froid dehors) pendant les moments les plus frais de la journée."
+good_ventilation_conditions_advice: "Bonnes conditions pour la ventilation. Ouvrez les fenêtres ou les portes pendant les pauses pour rafraîchir l'air sans perturber l'environnement de la salle."
+
+# No Advice
+actionable_advice: "Conseils d'action"
+no_specific_advice: "Aucun conseil spécifique pour aujourd'hui."
+
+
+# translations/messages.fr.yaml
+
+# Threshold Configuration
+period: "Période"
+nov_apr: "Novembre-Avril"
+may_oct: "Mai-Octobre"
+temperature_thresholds: "Seuils de température"
+humidity_thresholds: "Seuils d'humidité"
+recommended_heating_period: "Plages de température recommandées pour la période de chauffe (Novembre à Avril)"
+recommended_non_heating_period: "Plages de température recommandées pour la période hors-chauffe (Mai à Octobre)"
+recommended_humidity_ranges: "Plages d'humidité recommandées pour un confort optimal et une bonne qualité de l'air"
+recommended_values_heating: "Valeurs recommandées (période de chauffe)"
+recommended_values_non_heating: "Valeurs recommandées (période hors-chauffe)"
+recommended_humidity_values: "Valeurs d'humidité recommandées"
+critical_min: "Min Critique"
+warning_min: "Min Avertissement"
+warning_max: "Max Avertissement"
+critical_max: "Max Critique"
+
+# Descriptions for Heating Period
+critical_min_heating_desc: "16°C - Trop froid, risque d'inconfort et de problèmes de santé"
+warning_min_heating_desc: "18°C - Température minimale confortable pour la saison de chauffe"
+warning_max_heating_desc: "22°C - Température maximale recommandée pour la saison de chauffe"
+critical_max_heating_desc: "24°C - Trop chaud, consommation énergétique excessive"
+
+# Descriptions for Non-Heating Period
+critical_min_non_heating_desc: "20°C - Trop froid pour le confort en été"
+warning_min_non_heating_desc: "22°C - Limite inférieure de la zone de confort estivale"
+warning_max_non_heating_desc: "26°C - Limite supérieure de la zone de confort estivale"
+critical_max_non_heating_desc: "28°C - Trop chaud, risque d'inconfort"
+
+# Descriptions for Humidity
+critical_min_humidity_desc: "20% - Très sec, risque de problèmes respiratoires et d'électricité statique"
+warning_min_humidity_desc: "30% - Minimum pour le confort et la santé"
+warning_max_humidity_desc: "60% - Maximum pour le confort et la prévention des moisissures"
+critical_max_humidity_desc: "70% - Risque élevé de formation de moisissures et d'inconfort"
+
+# Buttons
+save_changes: "Enregistrer les modifications"
+reset_to_default: "Réinitialiser par défaut"
+reset_confirmation: "Êtes-vous sûr de vouloir réinitialiser tous les seuils à leurs valeurs par défaut ?"

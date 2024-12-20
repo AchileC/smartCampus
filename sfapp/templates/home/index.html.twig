@@ -71,7 +71,7 @@
                     {% if is_granted('ROLE_TECHNICIAN') %}
                         <div class="mt-4">
                             <a href="{{ path('app_home_threshold') }}" class="btn btn-primary">
-                                <i class="bi bi-sliders"></i> Configure Thresholds
+                                <i class="bi bi-sliders"></i> {{ 'configure_thresholds' | trans }}
                             </a>
                         </div>
                     {% endif %}
