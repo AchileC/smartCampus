@@ -36,6 +36,9 @@ class AcquisitionSystem
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $state = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $captureName = null;
+
 
     public function getId(): ?int
     {
@@ -120,6 +123,17 @@ class AcquisitionSystem
     {
         $this->name = $name;
 
+        return $this;
+    }
+
+    public function getCaptureName(): ?string
+    {
+        return $this->captureName;
+    }
+
+    public function setCaptureName(?string $captureName): static
+    {
+        $this->captureName = $captureName;
         return $this;
     }
 

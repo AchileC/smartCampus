@@ -1,0 +1,29 @@
+[
+    {
+        "id": 13562,
+        "nom": "temp",
+        "valeur": "25",
+        "dateCapture": "2024-20-12 15:09:20",
+        "localisation": "C004",
+        "description": "temperature",
+        "nomsa": "AS-021"
+    },
+    {
+        "id": 13563,
+        "nom": "hum",
+        "valeur": "50",
+        "dateCapture": "2024-20-12 15:09:20",
+        "localisation": "C004",
+        "description": "humidity",
+        "nomsa": "AS-021"
+    },
+    {
+        "id": 13564,
+        "nom": "co2",
+        "valeur": "440",
+        "dateCapture": "2024-20-12 15:09:20",
+        "localisation": "C004",
+        "description": "co2",
+        "nomsa": "AS-021"
+    }
+]

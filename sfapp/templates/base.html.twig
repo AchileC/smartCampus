@@ -382,7 +382,6 @@
                 display: block;
                 margin: 0 auto;
                 width: 80%; /* Ajustez la largeur selon vos préférences */
-                border-bottom: 1px solid #555;
                 padding-bottom: 5px; /* Optionnel, si vous voulez un peu d'espace */
             }
 
@@ -783,12 +782,16 @@
                     .catch(error => console.error("Erreur AJAX :", error));
             });
 
-
-
-// Appelle la fonction lors du chargement de la page
             document.addEventListener('DOMContentLoaded', handleFormValidationErrors);
         });
-    </script>
 
+        /**
+         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 900,000 milliseconds (15 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 900000);
+    </script>
     {% endblock %}
 </html>

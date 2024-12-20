@@ -193,6 +193,8 @@ class RoomController extends AbstractController
             throw new AccessDeniedHttpException('This room is not yet equipped.');
         }
 
+        $roomRepository->updateJsonFromApi($room);
+
         $roomRepository->updateAcquisitionSystemFromJson($room);
         $roomRepository->updateRoomState($room);
 
@@ -204,7 +206,7 @@ class RoomController extends AbstractController
         } catch (\RuntimeException $e) {
             // Gérer les erreurs de l'API météo en affichant un message d'avertissement
             $todayForecast = $forecast[0] ?? null;
-            $this->addFlash('warning', 'Impossible de récupérer les prévisions météo.');
+            $this->addFlash('warning', 'Unable to retrieve weather forecasts.');
         }
 
         return $this->render('rooms/detail.html.twig', [

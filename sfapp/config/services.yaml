@@ -6,7 +6,8 @@
 parameters:
     weather_api_shared_secret: '%env(WEATHER_API_SHARED_SECRET)%'
     weather_api_base_url: '%env(WEATHER_API_BASE_URL)%'
-    sensor_data_path: '%kernel.project_dir%/assets/json'
+    app.json_directory: '%kernel.project_dir%/assets/json'
+    app.json_history_directory: '%kernel.project_dir%/assets/json/history'
     locale: 'en'
 
 services:
@@ -44,5 +45,10 @@ services:
             # Removed the session argument
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 20 }
+
+    App\Repository\RoomRepository:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+            $jsonDirectory: '%app.json_directory%'
 
     # ... other services

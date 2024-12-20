@@ -9,6 +9,7 @@ use App\Utils\ActionStateEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 
@@ -17,12 +18,18 @@ use Doctrine\ORM\QueryBuilder;
  */
 class RoomRepository extends ServiceEntityRepository
 {
-    private ThresholdRepository $thresholdRepository;
-
-    public function __construct(ManagerRegistry $registry, ThresholdRepository $thresholdRepository)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        ThresholdRepository $thresholdRepository,
+        HttpClientInterface $httpClient,
+        string $projectDir,
+        string $jsonDirectory
+    ) {
         parent::__construct($registry, Room::class);
         $this->thresholdRepository = $thresholdRepository;
+        $this->httpClient = $httpClient;
+        $this->projectDir = $projectDir;
+        $this->jsonDirectory = $jsonDirectory;
     }
 
     public function findByCriteria(array $criteria): array
@@ -54,13 +61,106 @@ class RoomRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function loadSensorData(Room $room): array
+    public function updateJsonFromApi(): void
     {
-        // Vérifie s'il y a un système d'acquisition associé
-        if (!$room->getAcquisitionSystem()) {
-            return []; // Aucun système d'acquisition, donc pas de données à charger
+        $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
+        $sensorNames = ['temp', 'hum', 'co2'];
+        $data = [];
+
+        foreach ($sensorNames as $sensorName) {
+            $response = $this->httpClient->request('GET', $url, [
+                'headers' => [
+                    'dbname' => 'sae34bdm1eq2',
+                    'username' => 'm1eq2',
+                    'userpass' => 'kabxaq-4qopra-quXvit',
+                ],
+                'query' => [
+                    'nom' => $sensorName,
+                ]
+            ]);
+
+            if (200 !== $response->getStatusCode()) {
+                throw new \RuntimeException("Impossible de récupérer les données du capteur $sensorName.");
+            }
+
+            $responseData = $response->toArray();
+            // responseData est un tableau de captures. Normalement c'est déjà un tableau comme [ {...}, {...} ].
+            // On fusionne les données pour avoir un seul tableau global
+            $data = array_merge($data, $responseData);
         }
 
+        if (empty($data)) {
+            throw new \RuntimeException('Aucune donnée récupérée depuis l’API.');
+        }
+
+        // Récupérer la localisation depuis la première entrée du tableau $data
+        $localisation = $data[0]['localisation'] ?? 'unknown';
+
+        // Chemin du fichier "live" en se basant sur la localisation
+        $liveFilePath = $this->jsonDirectory . '/' . $localisation . '.json';
+
+        // Chemin du fichier "history" en se basant sur la localisation
+        $historyFilePath = $this->jsonDirectory . '/history/' . $localisation . '_history.json';
+
+        // Écriture du fichier "live"
+        file_put_contents($liveFilePath, json_encode($data, JSON_PRETTY_PRINT));
+
+        // Mise à jour du fichier "history"
+        $this->appendToHistory($historyFilePath, $data);
+    }
+
+    private function appendToHistory(string $filePath, array $newData): void
+    {
+        // Charger l'historique existant
+        if (file_exists($filePath)) {
+            $json = file_get_contents($filePath);
+            $historyData = json_decode($json, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                // En cas de problème de décodage, on réinitialise
+                $historyData = [];
+            }
+        } else {
+            $historyData = [];
+        }
+
+        // S'assurer que $historyData est un tableau indexé d'entrées
+        if (!is_array($historyData)) {
+            $historyData = [];
+        }
+
+        // S'assurer que $newData est un tableau d'objets
+        // Si c'est un seul objet, le transformer en tableau
+        if (isset($newData['id'])) {
+            // $newData semble être un objet unique, on le met dans un tableau
+            $newData = [$newData];
+        }
+
+        // Extraire les IDs déjà présents dans l'historique
+        // On suppose que chaque entrée a un champ 'id'
+        $existingIds = array_column($historyData, 'id');
+
+        // Filtrer les nouvelles données pour ne garder que celles dont l'ID n'est pas déjà dans l'historique
+        $filteredNewData = array_filter($newData, function($entry) use ($existingIds) {
+            return isset($entry['id']) && !in_array($entry['id'], $existingIds, true);
+        });
+
+        // Fusionner les données filtrées dans l'historique
+        $historyData = array_merge($historyData, $filteredNewData);
+
+        // Limiter l'historique à 2016 entrées maximum
+        $maxEntries = 2016;
+        if (count($historyData) > $maxEntries) {
+            // On retire les entrées du début (les plus anciennes)
+            $historyData = array_slice($historyData, count($historyData) - $maxEntries);
+        }
+
+        // Réécrire le fichier avec l'historique mis à jour
+        file_put_contents($filePath, json_encode($historyData, JSON_PRETTY_PRINT));
+    }
+
+
+    public function loadSensorData(Room $room): array
+    {
         // Chemin du fichier JSON basé sur le nom de la salle
         $filePath = __DIR__ . '/../../assets/json/' . $room->getName() . '.json';
 
@@ -110,12 +210,14 @@ class RoomRepository extends ServiceEntityRepository
 
         // Update sensor values from JSON data
         foreach ($data as $entry) {
-            if ($entry['nom'] === 'temp') {
-                $acquisitionSystem->setTemperature((float) $entry['valeur']);
-            } elseif ($entry['nom'] === 'hum') {
-                $acquisitionSystem->setHumidity((int) $entry['valeur']);
-            } elseif ($entry['nom'] === 'co2') {
-                $acquisitionSystem->setCo2((int) $entry['valeur']);
+            if (isset($entry['nom']) && isset($entry['valeur'])) {
+                if ($entry['nom'] === 'temp') {
+                    $acquisitionSystem->setTemperature((float) $entry['valeur']);
+                } elseif ($entry['nom'] === 'hum') {
+                    $acquisitionSystem->setHumidity((int) $entry['valeur']);
+                } elseif ($entry['nom'] === 'co2') {
+                    $acquisitionSystem->setCo2((int) $entry['valeur']);
+                }
             }
         }
 
