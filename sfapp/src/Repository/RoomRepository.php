@@ -10,6 +10,11 @@ use App\Utils\ActionStateEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
@@ -113,13 +118,20 @@ class RoomRepository extends ServiceEntityRepository
         file_put_contents($filePath, json_encode($historyData, JSON_PRETTY_PRINT));
     }
 
-    public function updateJsonFromApiForRoom(Room $room): void
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function updateJsonFromApiForAS(AcquisitionSystem $acquisitionSystem): void
     {
         $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
-        $sensorNames = ['temp', 'hum', 'co2'];
+        $noms = ['temp', 'hum', 'co2'];
         $data = [];
 
-        foreach ($sensorNames as $sensorName) {
+        foreach ($noms as $nom) {
             $response = $this->httpClient->request('GET', $url, [
                 'headers' => [
                     'dbname' => 'sae34bdm1eq2',
@@ -127,7 +139,8 @@ class RoomRepository extends ServiceEntityRepository
                     'userpass' => 'kabxaq-4qopra-quXvit',
                 ],
                 'query' => [
-                    'nom' => $sensorName,
+                    'nom' => $nom,
+                    'nomsa' => $acquisitionSystem->getName(),
                 ]
             ]);
 
@@ -160,9 +173,18 @@ class RoomRepository extends ServiceEntityRepository
     }
 
 
-    public function loadSensorData(Room $room): array
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function loadSensorData(AcquisitionSystem $acquisitionSystem): array
     {
-        $this->updateRoomState($room);
+        $this->updateJsonFromApiForAS($acquisitionSystem);
+
+        $room = $acquisitionSystem->getRoom();
 
         // Chemin du fichier JSON basé sur le nom de la salle
         $filePath = __DIR__ . '/../../assets/json/' . $room->getName() . '.json';
@@ -195,12 +217,14 @@ class RoomRepository extends ServiceEntityRepository
      *   {"nom": "co2", "valeur": "800"}
      * ]
      */
-    public function updateAcquisitionSystemFromJson(Room $room): void
+    public function updateAcquisitionSystemFromJson(AcquisitionSystem $acquisitionSystem): void
     {
         // Load data from JSON file
-        $this->updateJsonFromApiForRoom($room);
-        $data = $this->loadSensorData($room);
-        $acquisitionSystem = $room->getAcquisitionSystem();
+        try {
+            $data = $this->loadSensorData($acquisitionSystem);
+        } catch (ClientExceptionInterface|DecodingExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
+
+        }
 
         if (empty($data)) {
             return;
@@ -239,8 +263,11 @@ class RoomRepository extends ServiceEntityRepository
      */
     public function updateRoomState(Room $room): void
     {
-        // Check if room has an acquisition system
         $acquisitionSystem = $room->getAcquisitionSystem();
+
+        $this->updateAcquisitionSystemFromJson($acquisitionSystem);
+
+        // Check if room has an acquisition system
 
         if (!$acquisitionSystem) {
             $room->setState(RoomStateEnum::NONE);

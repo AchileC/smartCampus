@@ -71,16 +71,11 @@ class RoomController extends AbstractController
         $stateParam = $request->query->get('state');
         $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
 
+        // Formulaire de filtre
         $filterForm = $this->createForm(FilterRoomType::class, null, [
             'state' => $stateEnum,
         ]);
         $filterForm->handleRequest($request);
-
-        $rooms = $roomRepository->findByCriteria([]);
-
-        foreach ($rooms as $r) {
-            $roomRepository->updateAcquisitionSystemFromJson($r);
-        }
 
         $criteria = [];
 
@@ -89,17 +84,17 @@ class RoomController extends AbstractController
             $criteria['sensorStatus'] = ['linked'];
         }
 
-        // Applique le filtre initial basé sur l'URL
+        // Applique le filtre initial basé sur l’URL
         if ($stateParam) {
             $criteria['state'] = $stateParam;
         }
 
+        // Reset du formulaire
         if ($filterForm->get('reset')->isClicked()) {
-            // Redirige vers la même page sans les filtres
             return $this->redirectToRoute('app_rooms');
         }
 
-        // Applique les critères du formulaire s'il est soumis
+        // Applique les critères du formulaire
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {
             /** @var Room $data */
             $data = $filterForm->getData();
@@ -117,7 +112,45 @@ class RoomController extends AbstractController
             }
         }
 
+        // Récupère la liste des salles selon les critères
         $rooms = $roomRepository->findByCriteria($criteria);
+
+        // --------------------------------------
+        // Vérification de l'ancienneté du JSON
+        // --------------------------------------
+        $now = new \DateTime();
+        // On retire 15 minutes de l'heure actuelle
+        $cutoffDate = (clone $now)->sub(new \DateInterval('PT15M'));
+
+        foreach ($rooms as $room) {
+            // On ne traite que les salles LINKED ayant un système d'acquisition
+            if ($room->getSensorState() === SensorStateEnum::LINKED && $room->getAcquisitionSystem()) {
+                try {
+                    $data = $roomRepository->loadSensorData($room->getAcquisitionSystem());
+                } catch (\Exception $e) {
+                    // En cas d'erreur (HTTP, JSON invalide, etc.), on peut logguer ou ignorer
+                    continue;
+                }
+
+                if (!empty($data[0]['dateCapture'])) {
+                    $dateString = $data[0]['dateCapture'];
+
+                    // On parse la date selon le format "année-jour-mois heure:minute:seconde"
+                    $dateCapture = \DateTime::createFromFormat('Y-d-m H:i:s', $dateString);
+                    $errors = \DateTime::getLastErrors();
+
+                    if ($dateCapture !== false && empty($errors['warning_count']) && empty($errors['error_count'])) {
+                        // Si la date de capture est antérieure à la date courante - 15 min, on met à jour la salle
+                        if ($dateCapture < $cutoffDate) {
+                            $roomRepository->updateRoomState($room);
+                        }
+                    } else {
+                        // La date n'a pas pu être parsée. On peut ignorer ou logguer l'erreur.
+                    }
+                }
+            }
+        }
+
 
         return $this->render('rooms/index.html.twig', [
             'rooms' => $rooms,
@@ -193,7 +226,7 @@ class RoomController extends AbstractController
         }
 
         // Puis on met à jour le système depuis le JSON et l'état.
-        $roomRepository->loadSensorData($room);
+        $roomRepository->updateRoomState($room);
 
         try {
             // Appeler le service pour obtenir les prévisions météo
