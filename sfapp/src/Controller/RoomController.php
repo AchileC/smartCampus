@@ -144,8 +144,6 @@ class RoomController extends AbstractController
                         if ($dateCapture < $cutoffDate) {
                             $roomRepository->updateRoomState($room);
                         }
-                    } else {
-                        // La date n'a pas pu être parsée. On peut ignorer ou logguer l'erreur.
                     }
                 }
             }

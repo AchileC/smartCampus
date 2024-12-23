@@ -130,6 +130,7 @@ class RoomRepository extends ServiceEntityRepository
         $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
         $noms = ['temp', 'hum', 'co2'];
         $data = [];
+        $sensorName = $acquisitionSystem->getName();
 
         foreach ($noms as $nom) {
             $response = $this->httpClient->request('GET', $url, [
@@ -140,7 +141,7 @@ class RoomRepository extends ServiceEntityRepository
                 ],
                 'query' => [
                     'nom' => $nom,
-                    'nomsa' => $acquisitionSystem->getName(),
+                    'nomsa' => $sensorName,
                 ]
             ]);
 
@@ -298,7 +299,10 @@ class RoomRepository extends ServiceEntityRepository
             $thresholds->isHumidityAberrant($humidity) ||
             $thresholds->isCo2Aberrant($co2)) {
             $sensorState = SensorStateEnum::NOT_WORKING;
-            // Don't return here, continue evaluating other conditions
+        }
+
+        else {
+            $sensorState = SensorStateEnum::LINKED;
         }
 
         // Temperature evaluation

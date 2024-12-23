@@ -10,7 +10,7 @@ class LocaleListener
     private string $defaultLocale;
     private RequestStack $requestStack;
 
-    public function __construct(string $defaultLocale, RequestStack $requestStack)
+    public function __construct(string $defaultLocale = 'en', RequestStack $requestStack)
     {
         $this->defaultLocale = $defaultLocale;
         $this->requestStack = $requestStack;
@@ -34,9 +34,6 @@ class LocaleListener
             $locale = $session->get('_locale', $this->defaultLocale);
             $request->setLocale($locale);
         }
-
-        $request = $event->getRequest();
-        $session = $this->requestStack->getSession();
 
         // Assurez-vous que la locale est initialisée
         if (!$request->attributes->get('_locale')) {

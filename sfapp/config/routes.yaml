@@ -1,3 +1,4 @@
+#routes.yaml
 controllers:
     resource:
         path: ../src/Controller/
@@ -12,8 +13,14 @@ app:
         _locale: 'en|fr'
 
 app_rooms:
-    path: '/{_locale}/rooms'
+    path: '/rooms'
     controller: App\Controller\RoomController::index
+    requirements:
+        _locale: 'en|fr'
+
+app_rooms_details:
+    path: '/rooms/{name}'
+    controller: App\Controller\RoomController::details
     requirements:
         _locale: 'en|fr'
 
@@ -23,7 +30,7 @@ redirect_root_to_locale_rooms:
     defaults:
         route: app_rooms
         permanent: false
-        _locale: 'fr'
+        _locale: 'en'
 
 redirect_locale_to_rooms:
     path: '/{_locale}'
@@ -33,3 +40,21 @@ redirect_locale_to_rooms:
         permanent: false
     requirements:
         _locale: 'en|fr'
+
+rooms_redirect:
+    path: /rooms
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+    defaults:
+        route: app_rooms
+        permanent: false
+        _locale: 'en'
+
+rooms_details_redirect:
+    path: /rooms/{name}
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+    defaults:
+        route: app_rooms_details
+        permanent: false
+        _locale: 'en'
+
+
