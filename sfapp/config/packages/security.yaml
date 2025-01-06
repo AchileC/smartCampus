@@ -24,7 +24,7 @@ security:
             custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
-                target: /{_locale}/app_rooms
+                target: /rooms
                 csrf_token_generator: security.csrf.token_manager
 
             remember_me:

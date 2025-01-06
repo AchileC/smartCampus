@@ -190,7 +190,7 @@
                 </div>
                 <div class="modal-footer d-flex flex-column align-items-stretch">
                     <form id="deleteRoomForm" method="post" class="mb-2">
-                        <input type="hidden" name="_token" value="{{ csrf_token('_delete_room') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
                         <button type="submit" class="btn btn-danger w-100">{{ '_delete_room.modal.delete_button'|trans }}</button>
                     </form>
                     <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">{{ '_delete_room.modal.cancel_button'|trans }}</button>

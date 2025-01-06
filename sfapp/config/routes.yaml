@@ -18,6 +18,10 @@ app_rooms:
     requirements:
         _locale: 'en|fr'
 
+app_rooms_no_locale:
+    path: '/rooms'
+    controller: App\Controller\RoomController::index
+
 app_rooms_details:
     path: '/rooms/{name}'
     controller: App\Controller\RoomController::details
@@ -56,5 +60,10 @@ rooms_details_redirect:
         route: app_rooms_details
         permanent: false
         _locale: 'en'
+
+app_unauthorized_no_locale:
+    path: /unauthorized
+    controller: App\Controller\SecurityController::unauthorized
+
 
 

@@ -22,15 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\ThresholdRepository;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
-/**
- * Class RoomController
- *
- * Controller to handle operations related to Room entities.
- */
 class RoomController extends AbstractController
 {
-
     private WeatherApiService $weatherApiService;
 
     public function __construct(WeatherApiService $weatherApiService)
@@ -38,35 +33,22 @@ class RoomController extends AbstractController
         $this->weatherApiService = $weatherApiService;
     }
 
-    /**
-     * Creates a delete form for a specific room.
-     *
-     * This form is used to confirm the deletion of a room.
-     *
-     * @param string $name The name of the room to delete.
-     * @return FormInterface The form used to delete a room.
-     */
-    private function createDeleteForm(string $name) : FormInterface
+    private function createDeleteForm(string $name): FormInterface
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('app_rooms_delete', ['name' => $name]))
             ->setMethod('POST')
+            ->add('_token', HiddenType::class, [
+                'data' => $this->get('csrf_token_manager')->getToken('delete_room')->getValue(),
+            ])
             ->getForm();
     }
 
-    /**
-     * Displays a list of rooms.
-     *
-     * The method includes filtering options based on criteria.
-     * Users can filter by name, floor, or state. If no room matches the criteria, a message is displayed.
-     *
-     * @param RoomRepository $roomRepository The repository to retrieve room data.
-     * @param Request $request The HTTP request object.
-     *
-     * @return Response The response rendering the room list page.
-     */
     #[Route('/rooms', name: 'app_rooms')]
-    public function index(RoomRepository $roomRepository, Request $request): Response
+    public function index(
+        RoomRepository $roomRepository,
+        Request $request
+    ): Response
     {
         $stateParam = $request->query->get('state');
         $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
@@ -156,20 +138,11 @@ class RoomController extends AbstractController
         ]);
     }
 
-
-    /**
-     * Adds a new room to the database.
-     *
-     * This method allows users to add a new room. It includes form validation
-     * and persists the new room entity if the form is successfully submitted.
-     *
-     * @param Request $request The HTTP request object.
-     * @param EntityManagerInterface $entityManager The entity manager to persist room data.
-     *
-     * @return Response The response rendering the add room form or redirecting to the room list page.
-     */
     #[Route('/rooms/add', name: 'app_rooms_add')]
-    public function add(Request $request, EntityManagerInterface $entityManager): Response
+    public function add(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response
     {
 
         $this->denyAccessUnlessGranted('ROLE_MANAGER');
@@ -196,22 +169,12 @@ class RoomController extends AbstractController
         ]);
     }
 
-    /**
-     * Displays the details of a specific room.
-     *
-     * This method retrieves the room information based on its name
-     * and renders the detail view with its properties.
-     *
-     * @param RoomRepository $roomRepository The repository to fetch room data.
-     * @param ThresholdRepository $thresholdRepository The repository to fetch threshold data.
-     * @param string $name The name of the room to display.
-     *
-     * @return Response The response rendering the room details page.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
     #[Route('/rooms/{name}', name: 'app_rooms_details')]
-    public function details(RoomRepository $roomRepository, ThresholdRepository $thresholdRepository, string $name): Response
+    public function details(
+        RoomRepository $roomRepository,
+        ThresholdRepository $thresholdRepository,
+        string $name
+    ): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
@@ -244,26 +207,13 @@ class RoomController extends AbstractController
         ]);
     }
 
-
-    /**
-     * Updates an existing room based on the provided name.
-     *
-     * This function retrieves a room entity by its name, creates a form to edit it, and handles
-     * the form submission. If the form is valid, it persists the changes in the database.
-     * If the room is not found, a 404 error is thrown.
-     *
-     * @param string $name The name of the room to update.
-     * @param RoomRepository $roomRepository The repository to fetch the room data from the database.
-     * @param Request $request The HTTP request object that contains the form data.
-     * @param EntityManagerInterface $entityManager The entity manager to handle database transactions.
-     *
-     * @return Response A redirect to the 'app_rooms' route if the form is successfully submitted,
-     *                  or renders the update form view if the form is not submitted or invalid.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found in the database.
-     */
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
-    public function update(string $name, RoomRepository $roomRepository, Request $request, EntityManagerInterface $entityManager): Response
+    public function update(
+        string $name,
+        RoomRepository $roomRepository,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
@@ -290,24 +240,13 @@ class RoomController extends AbstractController
         ]);
     }
 
-    /**
-     * Deletes a specific room from the database.
-     *
-     * The method checks if the CSRF token is valid before deleting the room.
-     * If the room does not exist, it throws a 404 error.
-     *
-     * @param string $name The name of the room to delete.
-     * @param RoomRepository $roomRepository The repository to fetch room data.
-     * @param EntityManagerInterface $entityManager The entity manager to remove the room.
-     * @param Request $request The HTTP request object.
-     *
-     * @return Response Redirects to the list of rooms after successful deletion.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException If the CSRF token is invalid.
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
     #[Route('/rooms/{name}/delete', name: 'app_rooms_delete', methods: ['POST'])]
-    public function delete(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager, Request $request): Response
+    public function delete(
+        string $name,
+        RoomRepository $roomRepository,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): Response
     {
         $submittedToken = $request->request->get('_token');
 
@@ -336,20 +275,6 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_rooms');
     }
 
-    /**
-     * Initiates the request for an assignment of an acquisition system to a room.
-     *
-     * This method sets the state of the specified room to "PENDING_ASSIGNMENT",
-     * indicating that the room is awaiting the assignment of an acquisition system.
-     *
-     * @param string $name The name of the room to assign an acquisition system.
-     * @param RoomRepository $roomRepository The repository used to fetch room data.
-     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
-     *
-     * @return Response A response that redirects to the room list page.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
     #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
     public function requesAssignment(
         string $name,
@@ -392,23 +317,12 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_rooms');
     }
 
-
-    /**
-     * Initiates the request to unassign an acquisition system from a room.
-     *
-     * This method sets the state of the specified room to "PENDING_UNASSIGNMENT",
-     * and saves the current state as "previousState" to allow restoration if needed.
-     *
-     * @param string $name The name of the room from which to unassign the acquisition system.
-     * @param RoomRepository $roomRepository The repository used to fetch room data.
-     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
-     *
-     * @return Response A response that redirects to the room list page.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
     #[Route('/rooms/{name}/request-unassignment', name: 'app_rooms_request_unassignment', methods: ['POST'])]
-    public function requestUnassignment(string $name, RoomRepository $roomRepository, EntityManagerInterface $entityManager): Response
+    public function requestUnassignment(
+        string $name,
+        RoomRepository $roomRepository,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
 
@@ -436,20 +350,6 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_rooms');
     }
 
-    /**
-     * Cancels the assignment or unassignment of an acquisition system to/from a room.
-     *
-     * This method restores the room state to the previous state if it was in "PENDING_UNASSIGNMENT".
-     * If the room was in "PENDING_ASSIGNMENT", it changes the state to "NOT_LINKED".
-     *
-     * @param string $name The name of the room for which the installation request is being canceled.
-     * @param RoomRepository $roomRepository The repository used to fetch room data.
-     * @param EntityManagerInterface $entityManager The entity manager used to persist data.
-     *
-     * @return Response A response that redirects to the room list page.
-     *
-     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException If the room is not found.
-     */
     #[Route('/rooms/{name}/cancel-installation', name: 'app_rooms_cancel_installation', methods: ['POST'])]
     public function cancelInstallation(
         string $name,
