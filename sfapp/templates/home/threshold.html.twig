@@ -202,7 +202,7 @@
         }
         
         .aberrant-values-accordion .accordion-button {
-            background-color: var(--bs-body-bg);
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
         }
         
         .aberrant-values-accordion .accordion-button:not(.collapsed) {
@@ -419,7 +419,7 @@
                 </h2>
                 <div id="aberrantValuesInfo" class="accordion-collapse collapse" data-bs-parent="#aberrantValuesAccordion">
                     <div class="accordion-body">
-                        <p class="mb-2">The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as "NOT WORKING" and a maintenance task will be created:</p>
+                        <p class="mb-2">The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as "Probably" and a maintenance task will be created:</p>
                         <ul class="mb-0">
                             <li><strong>Temperature:</strong> Below 10°C or above 40°C</li>
                             <li><strong>Humidity:</strong> Below 20% or above 100%</li>
