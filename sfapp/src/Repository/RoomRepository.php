@@ -20,10 +20,52 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 
 /**
+ * @brief Repository for managing Room entities.
+ *
+ * The RoomRepository provides methods to query and manipulate Room entities,
+ * including updating room states based on sensor data and handling related acquisition systems.
+ *
  * @extends ServiceEntityRepository<Room>
  */
 class RoomRepository extends ServiceEntityRepository
 {
+    /**
+     * @brief Repository for managing Threshold entities.
+     *
+     * @var ThresholdRepository
+     */
+    private ThresholdRepository $thresholdRepository;
+
+    /**
+     * @brief HTTP client for making API requests.
+     *
+     * @var HttpClientInterface
+     */
+    private HttpClientInterface $httpClient;
+
+    /**
+     * @brief Project directory path.
+     *
+     * @var string
+     */
+    private string $projectDir;
+
+    /**
+     * @brief Directory path for JSON files.
+     *
+     * @var string
+     */
+    private string $jsonDirectory;
+
+    /**
+     * @brief Constructs the repository with the given dependencies.
+     *
+     * @param ManagerRegistry       $registry            The manager registry.
+     * @param ThresholdRepository   $thresholdRepository Repository to manage Threshold entities.
+     * @param HttpClientInterface   $httpClient          HTTP client for API interactions.
+     * @param string                $projectDir          The project directory path.
+     * @param string                $jsonDirectory       The directory path for JSON files.
+     */
     public function __construct(
         ManagerRegistry $registry,
         ThresholdRepository $thresholdRepository,
@@ -38,6 +80,19 @@ class RoomRepository extends ServiceEntityRepository
         $this->jsonDirectory = $jsonDirectory;
     }
 
+    /**
+     * @brief Finds rooms based on specified criteria.
+     *
+     * Supports filtering by name (partial match), floor, state, and sensor status.
+     *
+     * @param array $criteria The criteria for filtering, which can include:
+     *                        - 'name': string (partial match)
+     *                        - 'floor': string or integer (exact match)
+     *                        - 'state': string (exact match)
+     *                        - 'sensorStatus': array of strings (IN clause)
+     *
+     * @return Room[] An array of Room entities matching the criteria.
+     */
     public function findByCriteria(array $criteria): array
     {
         $queryBuilder = $this->createQueryBuilder('r');
@@ -69,61 +124,73 @@ class RoomRepository extends ServiceEntityRepository
 
 
 
+    /**
+     * @brief Appends new data to a history JSON file, ensuring no duplicates and limiting to 2016 entries.
+     *
+     * @param string $filePath The path to the history JSON file.
+     * @param array  $newData  The new data to append.
+     *
+     * @return void
+     */
     private function appendToHistory(string $filePath, array $newData): void
     {
-        // Charger l'historique existant
+        // Load existing history
         if (file_exists($filePath)) {
             $json = file_get_contents($filePath);
             $historyData = json_decode($json, true);
             if (json_last_error() !== JSON_ERROR_NONE) {
-                // En cas de problème de décodage, on réinitialise
+                // If decoding fails, reset history
                 $historyData = [];
             }
         } else {
             $historyData = [];
         }
 
-        // S'assurer que $historyData est un tableau indexé d'entrées
+        // Ensure $historyData is an indexed array of entries
         if (!is_array($historyData)) {
             $historyData = [];
         }
 
-        // S'assurer que $newData est un tableau d'objets
-        // Si c'est un seul objet, le transformer en tableau
+        // Ensure $newData is an array of objects
+        // If it's a single object, transform it into an array
         if (isset($newData['id'])) {
-            // $newData semble être un objet unique, on le met dans un tableau
+            // $newData appears to be a single object, wrap it in an array
             $newData = [$newData];
         }
 
-        // Extraire les IDs déjà présents dans l'historique
-        // On suppose que chaque entrée a un champ 'id'
+        // Extract existing IDs from history
+        // Assuming each entry has an 'id' field
         $existingIds = array_column($historyData, 'id');
 
-        // Filtrer les nouvelles données pour ne garder que celles dont l'ID n'est pas déjà dans l'historique
+        // Filter new data to exclude duplicates
         $filteredNewData = array_filter($newData, function($entry) use ($existingIds) {
             return isset($entry['id']) && !in_array($entry['id'], $existingIds, true);
         });
 
-        // Fusionner les données filtrées dans l'historique
+        // Merge filtered new data into history
         $historyData = array_merge($historyData, $filteredNewData);
 
-        // Limiter l'historique à 2016 entrées maximum
+        // Limit history to 2016 entries
         $maxEntries = 2016;
         if (count($historyData) > $maxEntries) {
-            // On retire les entrées du début (les plus anciennes)
+            // Remove oldest entries
             $historyData = array_slice($historyData, count($historyData) - $maxEntries);
         }
 
-        // Réécrire le fichier avec l'historique mis à jour
+        // Rewrite the history file with updated data
         file_put_contents($filePath, json_encode($historyData, JSON_PRETTY_PRINT));
     }
 
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
+     * @brief Updates JSON data from an API for a given AcquisitionSystem.
+     *
+     * Fetches data from the external API, updates the live JSON file, and appends to history.
+     *
+     * @param AcquisitionSystem $acquisitionSystem The AcquisitionSystem entity to update.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If data cannot be retrieved from the API or no data is retrieved.
      */
     public function updateJsonFromApiForAS(AcquisitionSystem $acquisitionSystem): void
     {
@@ -157,29 +224,32 @@ class RoomRepository extends ServiceEntityRepository
             throw new \RuntimeException('Aucune donnée récupérée depuis l’API.');
         }
 
-        // Récupérer la localisation depuis la première entrée du tableau $data$
+        // Get location from the first entry of $data
         $localisation = $data[0]['localisation'] ?? 'unknown';
 
-        // Chemin du fichier "live" en se basant sur la localisation
+        // Path for the "live" JSON file based on location
         $liveFilePath = $this->jsonDirectory . '/' . $localisation . '.json';
 
-        // Chemin du fichier "history" en se basant sur la localisation
+        // Path for the "history" JSON file based on location
         $historyFilePath = $this->jsonDirectory . '/history/' . $localisation . '_history.json';
 
-        // Écriture du fichier "live"
+        // Write the "live" JSON file
         file_put_contents($liveFilePath, json_encode($data, JSON_PRETTY_PRINT));
 
-        // Mise à jour du fichier "history"
+        // Update the "history" JSON file
         $this->appendToHistory($historyFilePath, $data);
     }
 
-
     /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
+     * @brief Loads sensor data for a given AcquisitionSystem.
+     *
+     * Updates JSON data from the API and reads the live JSON file associated with the room.
+     *
+     * @param AcquisitionSystem $acquisitionSystem The AcquisitionSystem entity to load data for.
+     *
+     * @return array The sensor data decoded from the JSON file.
+     *
+     * @throws \RuntimeException If the JSON file is invalid or not found.
      */
     public function loadSensorData(AcquisitionSystem $acquisitionSystem): array
     {
@@ -187,14 +257,14 @@ class RoomRepository extends ServiceEntityRepository
 
         $room = $acquisitionSystem->getRoom();
 
-        // Chemin du fichier JSON basé sur le nom de la salle
+        // Path to the JSON file based on the room's name
         $filePath = __DIR__ . '/../../assets/json/' . $room->getName() . '.json';
 
         if (!file_exists($filePath)) {
-            return []; // Fichier non trouvé
+            return []; // File not found
         }
 
-        // Lecture et décodage du JSON
+        // Read and decode JSON
         $json = file_get_contents($filePath);
         $data = json_decode($json, true);
 
@@ -206,17 +276,15 @@ class RoomRepository extends ServiceEntityRepository
     }
 
     /**
-     * Updates the acquisition system data from a JSON file
+     * @brief Updates the AcquisitionSystem entity with data from a JSON file.
      *
-     * The JSON file should be located in assets/json/ directory
-     * and named after the room (e.g., "room1.json")
+     * Reads sensor values from a JSON file and updates the AcquisitionSystem's temperature, humidity, and CO2 levels.
      *
-     * Expected JSON format:
-     * [
-     *   {"nom": "temp", "valeur": "23.5"},
-     *   {"nom": "hum", "valeur": "45"},
-     *   {"nom": "co2", "valeur": "800"}
-     * ]
+     * @param AcquisitionSystem $acquisitionSystem The AcquisitionSystem entity to update.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If data cannot be retrieved or JSON is invalid.
      */
     public function updateAcquisitionSystemFromJson(AcquisitionSystem $acquisitionSystem): void
     {
@@ -224,7 +292,7 @@ class RoomRepository extends ServiceEntityRepository
         try {
             $data = $this->loadSensorData($acquisitionSystem);
         } catch (ClientExceptionInterface|DecodingExceptionInterface|RedirectionExceptionInterface|TransportExceptionInterface|ServerExceptionInterface $e) {
-
+            // Handle exceptions silently or log
         }
 
         if (empty($data)) {
@@ -251,7 +319,11 @@ class RoomRepository extends ServiceEntityRepository
     }
 
     /**
-     * Updates the room's state based on sensor data (temperature, humidity, CO2)
+     * @brief Updates the state of a room based on sensor data.
+     *
+     * Evaluates temperature, humidity, and CO2 levels to determine the room's state.
+     * Considers whether it's a heating period or not.
+     * Also handles creating maintenance tasks if sensor data is not working.
      *
      * Room State Levels (in order of priority):
      * - CRITICAL (highest priority)
@@ -261,6 +333,10 @@ class RoomRepository extends ServiceEntityRepository
      *
      * Heating Period: November to April (months 11, 12, 1, 2, 3, 4)
      * Non-Heating Period: May to October (months 5, 6, 7, 8, 9, 10)
+     *
+     * @param Room $room The Room entity to update.
+     *
+     * @return void
      */
     public function updateRoomState(Room $room): void
     {
@@ -269,7 +345,6 @@ class RoomRepository extends ServiceEntityRepository
         $this->updateAcquisitionSystemFromJson($acquisitionSystem);
 
         // Check if room has an acquisition system
-
         if (!$acquisitionSystem) {
             $room->setState(RoomStateEnum::NONE);
             return;
@@ -355,24 +430,33 @@ class RoomRepository extends ServiceEntityRepository
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @brief Creates a maintenance task for a technician for a specific room.
+     *
+     * Checks if a maintenance task already exists for the room; if not, creates a new one.
+     *
+     * @param Room $room The Room entity to create a maintenance task for.
+     *
+     * @return void
+     */
     private function createTaskForTechnician(Room $room): void
     {
         $entityManager = $this->getEntityManager();
 
         $existingTask = $entityManager->getRepository(Action::class)->findOneBy([
             'room' => $room,
-            'info' => ActionInfoEnum::MAINTENANCE, // Vérifie uniquement les tâches de maintenance
-            'state' => ActionStateEnum::TO_DO, // Vérifie les tâches qui ne sont pas encore terminées
+            'info' => ActionInfoEnum::MAINTENANCE, // Check only maintenance tasks
+            'state' => ActionStateEnum::TO_DO, // Check tasks that are not yet completed
         ]);
 
         if ($existingTask) {
-            return; // Une tâche existe déjà, donc on ne fait rien
+            return; // Task already exists, do nothing
         }
 
-        // Crée une nouvelle tâche si aucune n'existe
+        // Create a new maintenance task if none exists
         $action = new Action();
         $action->setRoom($room);
-        $action->setInfo(ActionInfoEnum::MAINTENANCE); // Type d'action spécifique
+        $action->setInfo(ActionInfoEnum::MAINTENANCE); // Specific action type
         $action->setState(ActionStateEnum::TO_DO);
         $action->setCreatedAt(new \DateTime());
 
@@ -381,41 +465,46 @@ class RoomRepository extends ServiceEntityRepository
     }
 
 
+    /**
+     * @brief Counts the number of actions in a specific state.
+     *
+     * @param string $state The state to count actions for.
+     *
+     * @return int The number of actions in the specified state.
+     */
     public function countByState(string $state): int
     {
         return $this->createQueryBuilder('a')
-            ->select('COUNT(a.id)') // Sélectionne uniquement le nombre d'ID
-            ->where('a.state = :state') // Ajoute un filtre par état
-            ->setParameter('state', $state) // Définit la valeur du paramètre
+            ->select('COUNT(a.id)') // Select only the count of IDs
+            ->where('a.state = :state') // Filter by state
+            ->setParameter('state', $state) // Set the state parameter
             ->getQuery()
-            ->getSingleScalarResult(); // Récupère le résultat unique (le nombre)
+            ->getSingleScalarResult(); // Get the single scalar result (count)
     }
 
-
-
     /**
-     * Récupère les salles sans système d'acquisition lié.
+     * @brief Finds rooms that do not have an associated AcquisitionSystem.
      *
-     * @return Room[]
+     * @return Room[] An array of Room entities without an associated AcquisitionSystem.
      */
     public function findRoomsWithoutAS(): array
     {
         return $this->createQueryBuilder('r')
-            ->leftJoin('r.acquisitionSystem', 'acq') // Changement de l'alias de 'as' à 'acq'
+            ->leftJoin('r.acquisitionSystem', 'acq') // Change alias from 'as' to 'acq'
             ->where('acq.id IS NULL')
             ->getQuery()
             ->getResult();
     }
 
     /**
-     * Récupère les salles avec un système d'acquisition lié.
+     * @brief Finds rooms that have an associated AcquisitionSystem.
      *
-     * @return Room[]
+     * @return Room[] An array of Room entities with an associated AcquisitionSystem.
      */
     public function findRoomsWithAS(): array
     {
         return $this->createQueryBuilder('r')
-            ->innerJoin('r.acquisitionSystem', 'acq') // Changement de l'alias de 'as' à 'acq'
+            ->innerJoin('r.acquisitionSystem', 'acq') // Change alias from 'as' to 'acq'
             ->getQuery()
             ->getResult();
     }
