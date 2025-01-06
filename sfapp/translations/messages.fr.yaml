@@ -140,7 +140,7 @@ filter:
 awaiting_tasks: "tâches en attente"
 view_completed_tasks: "Voir les tâches terminées"
 
-# done.html.twig
+# history.html.twig
 completed_tasks_history: "Historique des tâches terminées"
 back_to_todolist: "Retour à la liste des tâches"
 no_completed_tasks: "Aucune tâche terminée à afficher."
