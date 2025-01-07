@@ -52,5 +52,32 @@
         "localisation": "C004",
         "description": "Capture de co2",
         "nomsa": "AS-021"
+    },
+    {
+        "id": 24223,
+        "nom": "temp",
+        "valeur": "23.5",
+        "dateCapture": "2025-01-07 09:17:31",
+        "localisation": "C004",
+        "description": "ESP32",
+        "nomsa": "ESP-021"
+    },
+    {
+        "id": 24224,
+        "nom": "hum",
+        "valeur": "45.2",
+        "dateCapture": "2025-01-07 09:17:31",
+        "localisation": "C004",
+        "description": "ESP32",
+        "nomsa": "ESP-021"
+    },
+    {
+        "id": 24225,
+        "nom": "co2",
+        "valeur": "0",
+        "dateCapture": "2025-01-07 09:17:31",
+        "localisation": "C004",
+        "description": "ESP32",
+        "nomsa": "ESP-021"
     }
 ]

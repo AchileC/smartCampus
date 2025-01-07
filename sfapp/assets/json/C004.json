@@ -1,29 +1,29 @@
 [
     {
-        "id": 24206,
+        "id": 24223,
         "nom": "temp",
-        "valeur": "14.2",
-        "dateCapture": "2025-01-05 23:45:00",
+        "valeur": "23.5",
+        "dateCapture": "2025-01-07 09:17:31",
         "localisation": "C004",
-        "description": "Capture de temp",
-        "nomsa": "AS-021"
+        "description": "ESP32",
+        "nomsa": "ESP-021"
     },
     {
-        "id": 24207,
+        "id": 24224,
         "nom": "hum",
-        "valeur": "67",
-        "dateCapture": "2025-01-05 23:45:00",
+        "valeur": "45.2",
+        "dateCapture": "2025-01-07 09:17:31",
         "localisation": "C004",
-        "description": "Capture de hum",
-        "nomsa": "AS-021"
+        "description": "ESP32",
+        "nomsa": "ESP-021"
     },
     {
-        "id": 24208,
+        "id": 24225,
         "nom": "co2",
-        "valeur": "424",
-        "dateCapture": "2025-01-05 23:45:00",
+        "valeur": "0",
+        "dateCapture": "2025-01-07 09:17:31",
         "localisation": "C004",
-        "description": "Capture de co2",
-        "nomsa": "AS-021"
+        "description": "ESP32",
+        "nomsa": "ESP-021"
     }
 ]
