@@ -1,5 +1,5 @@
 <?php
-
+//ActionRepository.php
 namespace App\Repository;
 
 use App\Entity\Action;
@@ -8,20 +8,17 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * Class ActionRepository
+ * @brief Repository for managing Action entities.
  *
- * Repository class for managing Action entities.
+ * The ActionRepository provides methods to query and manipulate Action entities.
  *
  * @extends ServiceEntityRepository<Action>
- *
- * @package App\Repository
  */
 class ActionRepository extends ServiceEntityRepository
 {
+
     /**
-     * ActionRepository constructor.
-     *
-     * Initializes the repository with the Action entity class.
+     * @brief Constructs the repository with the given registry.
      *
      * @param ManagerRegistry $registry The manager registry.
      */
@@ -30,12 +27,11 @@ class ActionRepository extends ServiceEntityRepository
         parent::__construct($registry, Action::class);
     }
 
+
     /**
-     * Retrieves all Action entities except those with a state of DONE.
+     * @brief Finds all actions except those marked as done.
      *
-     * This method fetches all actions that are not marked as done, ordered by their creation date in ascending order.
-     *
-     * @return Action[] An array of Action entities excluding those with state DONE.
+     * @return Action[] An array of Action entities not in the DONE state.
      */
     public function findAllExceptDone(): array
     {
@@ -48,11 +44,12 @@ class ActionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Find actions by room and state.
+     * @brief Finds tasks associated with a room that are pending or in progress and of type 'assignment'.
      *
-     * @param int $roomId The ID of the room.
-     * @param array $states The list of states to filter by.
-     * @return Action[] The actions to delete.
+     * @param int   $roomId The ID of the room.
+     * @param array $states The states to filter by, defaulting to ['to do', 'doing'].
+     *
+     * @return Action[] An array of Action entities matching the criteria.
      */
     public function findTasksForRoomToDelete(int $roomId, array $states = ['to do', 'doing']): array
     {
@@ -67,12 +64,11 @@ class ActionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+
     /**
-     * Retrieves the five most recent Action entities excluding those with a state of DONE.
+     * @brief Finds the latest five actions that are not marked as done.
      *
-     * This method fetches the five latest actions that are not marked as done, ordered by their creation date in descending order.
-     *
-     * @return Action[] An array of the five most recent Action entities excluding those with state DONE.
+     * @return Action[] An array of the latest five Action entities not in the DONE state.
      */
     public function findLatestFive(): array
     {
@@ -86,10 +82,11 @@ class ActionRepository extends ServiceEntityRepository
     }
 
     /**
-     * Récupère les actions en fonction des critères.
+     * @brief Finds actions based on arbitrary criteria.
      *
-     * @param array $criteria
-     * @return Action[]
+     * @param array $criteria The criteria for filtering actions.
+     *
+     * @return Action[] An array of Action entities matching the criteria.
      */
     public function findByCriteria(array $criteria): array
     {

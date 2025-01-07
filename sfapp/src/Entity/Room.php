@@ -50,10 +50,14 @@ class Room
     #[ORM\OneToMany(mappedBy: 'room', targetEntity: Action::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $actions;
 
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Notification::class, cascade: ['persist', 'remove'])]
+    private Collection $notifications;
+
     public function __construct()
     {
         $this->actions = new ArrayCollection();
         $this->previousActions = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -249,6 +253,39 @@ class Room
             // Set the owning side to null (unless already changed)
             if ($action->getRoom() === $this) {
                 $action->setRoom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    /**
+     * Add a notification to the user.
+     */
+    public function addNotification(Notification $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setRecipient($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove a notification from the user.
+     */
+    public function removeNotification(Notification $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // Unset the owning side if necessary
+            if ($notification->getRecipient() === $this) {
+                $notification->setRecipient(null);
             }
         }
 

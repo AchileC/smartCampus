@@ -46,14 +46,14 @@
 
         <!-- Title and Update Indicator -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-            <h1 class="h2">Rooms List</h1>
+            <h1 class="h2">{{ 'rooms_list.list' | trans }}</h1>
             <div class="d-flex align-items-center">
-                <small class="text-muted me-3">
-                    Last updated: <span id="lastUpdateTime">Just now</span>
-                </small>
+{#                <small class="text-muted me-3">#}
+{#                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>#}
+{#                </small>#}
                 {% if is_granted('ROLE_MANAGER') %}
                     <a href="{{ path('app_rooms_add') }}" class="btn btn-success">
-                        <i class="bi bi-plus-lg"></i> Add a Room
+                        <i class="bi bi-plus-lg"></i> {{ '_add_room' | trans }}
                     </a>
                 {% endif %}
             </div>
@@ -108,9 +108,9 @@
                 <div class="col-12 text-center">
                     <p id="no-match-message" data-add-room-link="{{ path('app_rooms_add') }}">
                         {% if is_granted('ROLE_MANAGER') %}
-                            No matches found. Please check the spelling or <a href="{{ path('app_rooms_add') }}">create a new room</a>.
+                            {{ 'no_match_create_room' | trans }}
                         {% else %}
-                            No matches found. Please check the spelling or adjust the filters.
+                            {{ 'no_match_adjust_filters' | trans }}
                         {% endif %}
                     </p>
                 </div>
@@ -121,26 +121,27 @@
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
                                     <h5 class="card-title">{{ room.name }}</h5>
-                                    <p class="card-text mb-1"><strong>Floor:</strong> {{ room.floor.value | capitalize }}</p>
-                                    <p class="card-text mb-1"><strong>State:</strong>
+                                    <p class="card-text mb-1"><strong>{{ 'floor' | trans }}:</strong> {{ ('filter.floor.' ~ room.floor.value) | trans }}</p>
+                                    <p class="card-text mb-1"><strong>{{ 'state' | trans }}:</strong>
                                         <span class="badge-custom-size
-                                        {% if room.state.value == 'none' %}bg-secondary
-                                        {% elseif room.state.value == 'waiting' %}bg-primary
-                                        {% elseif room.state.value == 'stable' %}bg-success
-                                        {% elseif room.state.value == 'at risk' %}bg-warning
-                                        {% else %}bg-danger{% endif %}">
-                                        {{ room.state.value | upper }}
-                                        </span>
+                                    {% if room.state.value == 'none' %}bg-secondary
+                                    {% elseif room.state.value == 'waiting' %}bg-primary
+                                    {% elseif room.state.value == 'stable' %}bg-success
+                                    {% elseif room.state.value == 'at risk' %}bg-warning
+                                    {% else %}bg-danger{% endif %}">
+                                    {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
+                                    </span>
                                     </p>
                                     {% if is_granted('ROLE_TECHNICIAN') %}
-                                        <p class="card-text"><strong>Sensor:</strong>
+                                        <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
                                             <span class="badge-custom-size
                                             {% if room.sensorState.value == 'linked' %}bg-success
-                                            {% elseif room.sensorState.value == 'probably broken' %}bg-warning
+                                            {% elseif room.sensorState.value == 'not working' %}bg-warning
                                             {% elseif room.sensorState.value == 'not linked' %}bg-secondary
                                             {% else %}bg-danger{% endif %}">
-                                            {{ room.sensorState.value | upper }}
+                                            {{('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
                                             </span>
+                                       </span>
                                         </p>
                                     {% endif %}
                                 </div>
@@ -148,19 +149,19 @@
                                 <div class="mt-3">
                                     <div class="d-flex justify-content-end gap-2">
                                         <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">
-                                            <i class="bi bi-info-circle"></i> Details
+                                            <i class="bi bi-info-circle"></i> {{ 'details' | trans }}
                                         </a>
                                         {% if is_granted('ROLE_MANAGER') %}
                                             <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">
-                                                <i class="bi bi-pencil-square"></i> Edit
+                                                <i class="bi bi-pencil-square"></i> {{ 'edit' | trans }}
                                             </a>
                                             <button type="button" class="btn btn-outline-danger delete-room-button"
                                                     data-room-name="{{ room.name }}"
                                                     data-delete-url="{{ path('app_rooms_delete', {'name': room.name}) }}"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteRoomModal"
-                                                    aria-label="Delete room {{ room.name }}">
-                                                <i class="bi bi-trash"></i> Delete
+                                                    aria-label="{{ '_delete_room' | trans }}">
+                                                <i class="bi bi-trash"></i> {{ 'delete' | trans }}
                                             </button>
                                         {% endif %}
                                     </div>
@@ -171,29 +172,32 @@
                 {% endfor %}
             {% endif %}
         </div>
+    </div>
 
-        <!-- Delete Modal -->
-        <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteRoomModalLabel">Delete Confirmation</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete the room <strong><span id="roomNameToDelete"></span></strong>?
-                        <p class="text-danger mt-2">⚠️ <strong>If an acquisition system is assigned, it will be automatically unassigned.</strong></p>
-                    </div>
-                    <div class="modal-footer d-flex flex-column align-items-stretch">
-                        <form id="deleteRoomForm" method="post" class="mb-2">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
-                            <button type="submit" class="btn btn-danger w-100">Delete</button>
-                        </form>
-                        <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cancel</button>
-                    </div>
+    <!-- Modale de Suppression -->
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">{{ '_delete_room.modal.title'|trans }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ '_delete_room.modal.close'|trans }}"></button>
+                </div>
+                <div class="modal-body">
+                    {{ '_delete_room.modal.confirmation'|trans({
+                        '%room%': '<strong><span id="roomNameToDelete"></span></strong>'
+                    })|raw }}
+                    <p class="text-danger mt-2">⚠️ <strong>{{ '_delete_room.modal.warning'|trans }}</strong></p>
+                </div>
+                <div class="modal-footer d-flex flex-column align-items-stretch">
+                    <form id="deleteRoomForm" method="post" class="mb-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_room') }}">
+                        <button type="submit" class="btn btn-danger w-100">{{ '_delete_room.modal.delete_button'|trans }}</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">{{ '_delete_room.modal.cancel_button'|trans }}</button>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}
 
@@ -280,13 +284,5 @@
                 });
             }
         });
-
-        /**
-         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
-         *
-         * Sets an interval that triggers a page reload after 1,800,000 milliseconds (30 minutes).
-         * This helps in keeping the displayed data fresh without requiring manual intervention.
-         */
-        setInterval(() => { location.reload(); }, 1800000);
     </script>
 {% endblock %}

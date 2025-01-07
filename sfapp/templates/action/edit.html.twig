@@ -1,0 +1,102 @@
+{% extends 'base.html.twig' %}
+{# home/edit.html.twig #}
+{% block title %}Edit Task{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">
+            {{ action.state.value == 'to do' ? 'begin_task'|trans : 'validate_task'|trans }}
+        </h1>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                {% if action.state.value == 'to do' %}
+                    {# Begin Action Template #}
+                    <div class="alert alert-warning text-center">
+                        <h2 class="fw-bold">{{ action.info.value | capitalize }} of an acquisition system on {{ action.room.name }}</h2>
+                        <h2 class="fw-bold">
+                            {{ 'installation'|trans }} {{ 'on_room'|trans }} {{ action.room.name }}
+                        </h2>
+                        <ul class="list-unstyled mt-3">
+                            <li><strong>{{ 'created_at'|trans }}:</strong> {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y HH:m:s')}}</li>
+                        </ul>
+                    </div>
+                    <p class="text-info text-center">
+                        <i class="bi bi-info-circle"></i>
+                        {{ 'begin_task_confirmation'|trans }}
+                    </p>
+                    <div class="text-center">
+                        {% if action.info.value == 'assignment' and noAsAvailable %}
+                            {# Display message and link to add AS if none are available #}
+                            <div class="alert alert-danger">
+                                <p>No Acquisition Systems are available to assign.</p>
+                                <a href="{{ path('app_acquisition_system_add', {'from_action': action.id}) }}" class="btn btn-primary">
+                                    Add an Acquisition System
+                                </a>
+                            </div>
+                        {% else %}
+                            <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
+                                <button type="submit" class="btn btn-success">{{ 'begin'|trans }}</button>
+                                <a href="{{ path('app_todolist') }}" class="btn btn-secondary">{{ 'not_now'|trans }}</a>
+                            </form>
+                        {% endif %}
+                {% elseif action.state.value == 'doing' %}
+                    {# Validate Action Template #}
+                    <div class="alert alert-info text-center">
+                        <h2 class="fw-bold">
+                            {{ ('uninstallation' | trans) }} {{ 'on_room'|trans }} {{ action.room.name }}
+                        </h2>
+                        <ul class="list-unstyled mt-3">
+                            <li><strong>{{ 'created_at'|trans }}:</strong> {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y HH:m:s') }}</li>
+                            <li><strong>{{ 'started_on'|trans }}:</strong> {{ action.startedAt|format_datetime(pattern='EEEE d MMMM Y HH:m:s')}}</li>
+                        </ul>
+                    </div>
+                    <p class="text-info text-center">
+                        <i class="bi bi-info-circle"></i>
+                        {{ 'validate_task_confirmation'|trans }}
+                    </p>
+
+                <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
+                    {% if action.info.value == 'assignment' %}
+                            <div class="form-group mt-3 text-center">
+                                <label for="acquisitionSystem">{{ 'choose_acquisition_system'|trans }}</label>
+                                <div class="d-flex justify-content-center mt-4">
+                                    <div class="dropdown custom-dropdown" style="width: 200px;">
+                                        <select id="acquisitionSystem" name="acquisitionSystem" class="form-select text-center">
+                                            <option value="">{{ 'choose_placeholder'|trans }}</option>
+                                            {% for system in acquisitionSystems %}
+                                                <option value="{{ system.id }}">{{ system.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                    {% elseif action.info.value == 'maintenance' %}
+                        <div class="form-group mt-3 text-center">
+                            <label for="maintenanceStatus">{{ 'repaired?' | trans }}</label>
+                            <div class="d-flex justify-content-center mt-4">
+                                <div class="dropdown custom-dropdown" style="width: 200px;">
+                                    <select id="maintenanceStatus" name="maintenanceStatus" class="form-select text-center">
+                                        <option value="">{{ 'choose_placeholder' | trans }}</option>
+                                        <option value="yes">{{ 'yes_repaired' | trans }}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-info text-center mt-3">
+                            <i class="bi bi-info-circle"></i> {{ 'indicate_as' | trans }}
+                        </p>
+
+                        {% else %}
+                            <p class="text-warning text-center">{{ 'no_acquisition_system_required'|trans }}</p>
+                        {% endif %}
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success">{{ 'confirm'|trans }}</button>
+                            <a href="{{ path('app_todolist') }}" class="btn btn-secondary">{{ 'cancel'|trans }}</a>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

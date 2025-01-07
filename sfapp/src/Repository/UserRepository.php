@@ -1,5 +1,5 @@
 <?php
-
+//UserRepository.php
 namespace App\Repository;
 
 use App\Entity\User;
@@ -10,17 +10,36 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
+ * @brief Repository for managing User entities.
+ *
+ * The UserRepository provides methods to query and manipulate User entities, including password upgrades and role-based searches.
+ *
  * @extends ServiceEntityRepository<User>
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
+    /**
+     * @brief Constructs the repository with the given registry.
+     *
+     * @param ManagerRegistry $registry The manager registry.
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
+
     /**
-     * Used to upgrade (rehash) the user's password automatically over time.
+     * @brief Upgrades the user's password.
+     *
+     * This method is used to rehash the user's password automatically over time.
+     *
+     * @param PasswordAuthenticatedUserInterface $user           The user entity to upgrade.
+     * @param string                             $newHashedPassword The new hashed password.
+     *
+     * @return void
+     *
+     * @throws UnsupportedUserException If the user is not an instance of User.
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
@@ -33,28 +52,25 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @brief Finds a user with an exact role.
+     *
+     * Searches for a single user who possesses the specified role.
+     *
+     * @param string $role The role to search for (e.g., 'ROLE_MANAGER').
+     *
+     * @return User|null The User entity if found, or null otherwise.
+     */
+    public function findOneByExactRole(string $role): ?User
+    {
+        $users = $this->findAll();
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        foreach ($users as $user) {
+            if (in_array($role, $user->getRoles(), true)) {
+                return $user;
+            }
+        }
+
+        return null;
+    }
 }

@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 {# rooms/add.html.twig #}
-{% block title %}Add a Room{% endblock %}
+{% block title %}{{ '_add_room'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="mb-4 text-center">Add a New Room</h1>
+        <h1 class="mb-4 text-center">{{ '_add_room'|trans }}</h1>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -15,9 +15,9 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row mb-3">
-                                    <!-- Room Name -->
+                                    <!-- Nom de la salle -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.name, 'room_name' |trans, {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.name, {
                                             'attr': {
                                                 'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -30,9 +30,9 @@
                                         {% endif %}
                                     </div>
 
-                                    <!-- Floor -->
+                                    <!-- Étage -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.floor, 'floor'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.floor, {
                                             'attr': {
                                                 'class': 'form-select' ~ (form.floor.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -49,14 +49,13 @@
                             </div>
                         </div>
 
-                        <!-- Physical Characteristics -->
+                        <!-- Caractéristiques physiques -->
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row mb-3">
-                                    <!-- Number of Windows -->
-                                    <!-- Number of Windows -->
+                                    <!-- Nombre de fenêtres -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.nbWindows, 'Number of Windows', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.nbWindows, 'number_of_windows'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.nbWindows, {
                                             'attr': {
                                                 'class': 'form-control' ~ (form.nbWindows.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -69,9 +68,9 @@
                                         {% endif %}
                                     </div>
 
-                                    <!-- Number of Heaters -->
+                                    <!-- Nombre de radiateurs -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.nbHeaters, 'Number of Heaters', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.nbHeaters, 'number_of_heaters'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.nbHeaters, {
                                             'attr': {
                                                 'class': 'form-control' ~ (form.nbHeaters.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -83,18 +82,17 @@
                                             </div>
                                         {% endif %}
                                     </div>
-
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Dimensions and Orientation -->
+                        <!-- Dimensions et orientation -->
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row mb-3">
                                     <!-- Surface -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.surface, 'surface'|trans ~ ' (m²)', {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.surface, {
                                             'attr': {
                                                 'class': 'form-control' ~ (form.surface.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -107,10 +105,9 @@
                                         {% endif %}
                                     </div>
 
-
-                                    <!-- Cardinal Direction -->
+                                    <!-- Orientation cardinale -->
                                     <div class="col-md-6">
-                                        {{ form_label(form.cardinalDirection, 'Cardinal Orientation', {'label_attr': {'class': 'form-label'}}) }}
+                                        {{ form_label(form.cardinalDirection, 'cardinal_direction'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                         {{ form_widget(form.cardinalDirection, {
                                             'attr': {
                                                 'class': 'form-select' ~ (form.cardinalDirection.vars.errors|length > 0 ? ' is-invalid shake' : '')
@@ -127,11 +124,10 @@
                             </div>
                         </div>
 
-
-                        <!-- Boutons Submit et Cancel -->
+                        <!-- Boutons Submit et Annuler -->
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary me-3">Add Room</button>
-                            <a href="{{ path('app_rooms') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary me-3">{{ 'add'|trans }}</button>
+                            <a href="{{ path('app_rooms') }}" class="btn btn-secondary">{{ 'cancel'|trans }}</a>
                         </div>
 
                         {{ form_end(form) }}

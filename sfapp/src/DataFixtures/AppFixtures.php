@@ -25,104 +25,80 @@ class AppFixtures extends Fixture
     {
         $this->passwordHasher = $passwordHasher;
     }
+
     public function load(ObjectManager $manager): void
     {
+        $rooms = [
+            ['nomsa' => 'ESP-004', 'localisation' => 'D205'],
+            ['nomsa' => 'ESP-008', 'localisation' => 'D206'],
+            ['nomsa' => 'ESP-006', 'localisation' => 'D207'],
+            ['nomsa' => 'ESP-014', 'localisation' => 'D204'],
+            ['nomsa' => 'ESP-012', 'localisation' => 'D203'],
+            ['nomsa' => 'ESP-005', 'localisation' => 'D303'],
+            ['nomsa' => 'ESP-011', 'localisation' => 'D304'],
+            ['nomsa' => 'ESP-007', 'localisation' => 'C101'],
+            ['nomsa' => 'ESP-024', 'localisation' => 'D109'],
+            ['nomsa' => 'ESP-026', 'localisation' => 'Secretariat'],
+            ['nomsa' => 'ESP-030', 'localisation' => 'D001'],
+            ['nomsa' => 'ESP-028', 'localisation' => 'D002'],
+            ['nomsa' => 'ESP-020', 'localisation' => 'D004'],
+            ['nomsa' => 'ESP-021', 'localisation' => 'C004'],
+            ['nomsa' => 'ESP-022', 'localisation' => 'C007'],
+        ];
 
-        // linked room, stable
-        $room1 = new Room();
-        $room1->setName("D201");
-        $room1->setFloor(FloorEnum::SECOND);
-        $room1->setNbHeaters(2);
-        $room1->setNbWindows(3);
-        $room1->setSurface(20);
-        $room1->setSensorState(SensorStateEnum::LINKED);
-        $room1->setCardinalDirection(CardinalEnum::EAST);
-        $room1->setState(RoomStateEnum::STABLE);
-        $manager->persist($room1);
+        $roomEntities = [];
 
-        // linked room, critical problem
-        $room2 = new Room();
-        $room2->setName("D202");
-        $room2->setFloor(FloorEnum::SECOND);
-        $room2->setNbHeaters(3);
-        $room2->setNbWindows(3);
-        $room2->setSurface(30);
-        $room2->setSensorState(SensorStateEnum::LINKED);
-        $room2->setCardinalDirection(CardinalEnum::WEST);
-        $room2->setState(RoomStateEnum::CRITICAL);
-        $manager->persist($room2);
+        $cardinalDirections = [
+            CardinalEnum::NORTH,
+            CardinalEnum::EAST,
+            CardinalEnum::SOUTH,
+            CardinalEnum::WEST
+        ];
 
-        // linked room, at risk
-        $room3 = new Room();
-        $room3->setName("D204");
-        $room3->setFloor(FloorEnum::SECOND);
-        $room3->setNbHeaters(4);
-        $room3->setNbWindows(4);
-        $room3->setSurface(30);
-        $room3->setSensorState(SensorStateEnum::LINKED);
-        $room3->setCardinalDirection(CardinalEnum::WEST);
-        $room3->setState(RoomStateEnum::AT_RISK);
-        $manager->persist($room3);
+        // First loop: Create and persist Room entities
+        foreach ($rooms as $data) {
+            $room = new Room();
+            $room->setName($data['localisation']);
 
-        // linked room, waiting for data
-        $room4 = new Room();
-        $room4->setName("D301");
-        $room4->setFloor(FloorEnum::THIRD);
-        $room4->setNbHeaters(4);
-        $room4->setNbWindows(3);
-        $room4->setSurface(40);
-        $room4->setSensorState(SensorStateEnum::LINKED);
-        $room4->setCardinalDirection(CardinalEnum::WEST);
-        $room4->setState(RoomStateEnum::WAITING);
-        $manager->persist($room4);
+            // Setting floor dynamically based on room name
+            if (str_starts_with($data['localisation'], 'D0') || str_starts_with($data['localisation'], 'C0')) {
+                $room->setFloor(FloorEnum::GROUND);
+            } elseif (str_starts_with($data['localisation'], 'D2') || str_starts_with($data['localisation'], 'C2')) {
+                $room->setFloor(FloorEnum::SECOND);
+            } elseif (str_starts_with($data['localisation'], 'D3') || str_starts_with($data['localisation'], 'C3')) {
+                $room->setFloor(FloorEnum::THIRD); // Assuming C corresponds to the first floor
+            } else {
+                $room->setFloor(FloorEnum::FIRST); // Default for unknown patterns
+            }
 
-        // not linked room
-        $room5 = new Room();
-        $room5->setName("D302");
-        $room5->setFloor(FloorEnum::THIRD);
-        $room5->setNbHeaters(5);
-        $room5->setNbWindows(4);
-        $room5->setSurface(60);
-        $room5->setSensorState(SensorStateEnum::NOT_LINKED);
-        $room5->setCardinalDirection(CardinalEnum::SOUTH);
-        $room5->setState(RoomStateEnum::NONE);
-        $manager->persist($room5);
+            $room->setNbHeaters(2); // Default value, adjust as needed
+            $room->setNbWindows(3); // Default value, adjust as needed
+            $room->setSurface(20); // Default value, adjust as needed
+            $room->setSensorState(SensorStateEnum::ASSIGNMENT); // Default value, adjust as needed
+            $room->setCardinalDirection($cardinalDirections[array_rand($cardinalDirections)]);
+            $room->setState(RoomStateEnum::WAITING); // Default value, adjust as needed
 
-        // linked Acquisition System with room 1, stable
-        $as1 = new AcquisitionSystem();
-        $as1->setName("AS-001");
-        $as1->setState(SensorStateEnum::LINKED);
-        $as1->setRoom($room1);
-        $manager->persist($as1);
+            $manager->persist($room);
+            $roomEntities[$data['nomsa']] = $room;
+        }
 
-        // linked Acquisition System with room 2, critical problem
-        $as2 = new AcquisitionSystem();
-        $as2->setName("AS-002");
-        $as2->setState(SensorStateEnum::LINKED);
-        $as2->setRoom($room2);
-        $manager->persist($as2);
+        // Second loop: Create and persist AcquisitionSystem entities
+        foreach ($rooms as $data) {
+            $acquisitionSystem = new AcquisitionSystem();
+            $acquisitionSystem->setName($data['nomsa']);
+            $acquisitionSystem->setState(SensorStateEnum::LINKED); // Default value
 
-        // linked Acquisition System with room 3, at risk
-        $as3 = new AcquisitionSystem();
-        $as3->setName("AS-003");
-        $as3->setState(SensorStateEnum::LINKED);
-        $as3->setRoom($room3);
-        $manager->persist($as3);
+            // Correctly associate the AcquisitionSystem with its corresponding Room
+            $room = $roomEntities[$data['nomsa']];
+            $acquisitionSystem->setRoom($room);
+            $room->setAcquisitionSystem($acquisitionSystem);
 
-        // linked Acquisition System with room 4, no data
-        $as4 = new AcquisitionSystem();
-        $as4->setName("AS-004");
-        $as4->setState(SensorStateEnum::LINKED);
-        $as4->setRoom($room4);
-        $manager->persist($as4);
+            $manager->persist($acquisitionSystem);
+        }
 
-        // not linked
-        $as5 = new AcquisitionSystem();
-        $as5->setName("AS-005");
-        $as5->setState(SensorStateEnum::NOT_LINKED);
-        $manager->persist($as5);
+        // Create and persist User entities
 
-        // manager user
+        // Manager user
         $user1 = new User();
         $user1->setUsername('manager');
         $hashedPassword = $this->passwordHasher->hashPassword($user1, 'manager');
@@ -130,7 +106,7 @@ class AppFixtures extends Fixture
         $user1->setRoles([UserRoleEnum::ROLE_MANAGER]);
         $manager->persist($user1);
 
-        // technician user
+        // Technician user
         $user2 = new User();
         $user2->setUsername('technician');
         $hashedPassword = $this->passwordHasher->hashPassword($user2, 'technician');
