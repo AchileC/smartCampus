@@ -48,9 +48,9 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <h1 class="h2">{{ 'rooms_list.list' | trans }}</h1>
             <div class="d-flex align-items-center">
-{#                <small class="text-muted me-3">#}
-{#                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>#}
-{#                </small>#}
+                <small class="text-muted me-3">
+                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
+                </small>
                 {% if is_granted('ROLE_MANAGER') %}
                     <a href="{{ path('app_rooms_add') }}" class="btn btn-success">
                         <i class="bi bi-plus-lg"></i> {{ '_add_room' | trans }}

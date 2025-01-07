@@ -503,10 +503,13 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
                                 <!-- Bouton Logout -->
-                                <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
+                                <form method="post" action="{{ path('app_logout', { '_locale': app.request.locale }) }}">
                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                    <button type="submit" class="btn btn-outline-danger">{{ 'logout' | trans }}</button>
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        {{ 'logout'|trans }}
+                                    </button>
                                 </form>
+
                             </li>
                         </ul>
                     </div>
@@ -695,25 +698,48 @@
             /**
              * Handle Language Selection in Modal
              */
+                // Sélecteur de langue
             const languageSelect = document.getElementById("language-select");
 
             if (languageSelect) {
-                const savedLanguage = localStorage.getItem("language");
-                if (savedLanguage) {
-                    languageSelect.value = savedLanguage;
+                // 1) On regarde dans l'URL
+                const pathParts = window.location.pathname.split('/').filter(Boolean);
+                let urlLocale = null;
+
+                // pathParts[0] sera 'en' ou 'fr' si l'URL est du type /en/... ou /fr/...
+                if (pathParts[0] === 'en' || pathParts[0] === 'fr') {
+                    urlLocale = pathParts[0];
                 }
 
+                // 2) On regarde dans le localStorage
+                const savedLanguage = localStorage.getItem("language");
+
+                // 3) On décide de la locale "effective"
+                //    Priorité : locale dans l'URL => ensuite localStorage => fallback 'en'
+                let effectiveLocale = urlLocale || savedLanguage || 'en';
+
+                // 4) On affecte la locale "effective" au sélecteur de langue
+                languageSelect.value = effectiveLocale;
+
+                // 5) On écoute le changement de la value du sélecteur
                 languageSelect.addEventListener("change", function () {
                     const selectedLanguage = languageSelect.value;
+                    // On mémorise la nouvelle valeur dans le localStorage
                     localStorage.setItem("language", selectedLanguage);
 
-                    // On récupère le chemin actuel
-                    const pathParts = window.location.pathname.split('/').filter(Boolean);
-                    // pathParts[0] contient la langue actuelle, on la remplace par la nouvelle
-                    pathParts[0] = selectedLanguage;
+                    // On met à jour l’URL en conservant les segments restants
+                    const currentPathParts = window.location.pathname.split('/').filter(Boolean);
 
-                    // Reconstruction de l'URL
-                    const newPath = `/${pathParts.join('/')}`;
+                    // Si le premier segment est déjà 'en' ou 'fr', on le remplace
+                    if (currentPathParts[0] === 'en' || currentPathParts[0] === 'fr') {
+                        currentPathParts[0] = selectedLanguage;
+                    } else {
+                        // Sinon, on l'insère
+                        currentPathParts.unshift(selectedLanguage);
+                    }
+
+                    // Redirection vers la nouvelle URL
+                    const newPath = `/${currentPathParts.join('/')}`;
                     window.location.href = newPath;
                 });
             }

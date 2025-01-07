@@ -78,10 +78,11 @@ class RoomController extends AbstractController
      *
      * Retrieves rooms based on filter criteria and updates room states based on sensor data.
      *
-     * @param RoomRepository  $roomRepository     Repository to manage Room entities.
-     * @param Request         $request            The current HTTP request.
+     * @param RoomRepository $roomRepository Repository to manage Room entities.
+     * @param Request $request The current HTTP request.
      *
      * @return Response The rendered rooms listing page.
+     * @throws \DateInvalidOperationException
      */
     #[Route('/rooms', name: 'app_rooms')]
     public function index(
@@ -89,6 +90,48 @@ class RoomController extends AbstractController
         Request         $request
     ): Response
     {
+        $rooms = $roomRepository->findRoomsWithAS();
+        // --------------------------------------
+        // Check the freshness of the JSON data
+        // --------------------------------------
+        $now = new \DateTime();
+        // Subtract 15 minutes from the current time
+        $cutoffDate = (clone $now)->sub(new \DateInterval('PT15M'));
+
+        foreach ($rooms as $room) {
+            // On ne traite que les salles LINKED ou en ASSIGNMENT
+            if ($room->getSensorState() === SensorStateEnum::LINKED
+                || $room->getSensorState() === SensorStateEnum::ASSIGNMENT
+            ) {
+                // On récupère la date de dernière mise à jour si elle existe
+                $lastUpdatedAt = $room->getLastUpdatedAt();
+
+                if ($lastUpdatedAt instanceof \DateTimeInterface) {
+                    // Vérifie si la dernière mise à jour est plus ancienne que le cutoff
+                    if ($lastUpdatedAt < $cutoffDate) {
+                        // Si plus de 15 minutes => on relance la mise à jour de l'état
+                        try {
+                            $roomRepository->updateRoomState($room);
+                        } catch (\Exception $e) {
+                            // Logger / ignorer
+                            continue;
+                        }
+                    } else {
+                        // Sinon, si on veut juste recharger les données du capteur
+                        $roomRepository->loadSensorData($room->getAcquisitionSystem());
+                    }
+                } else {
+                    // lastUpdatedAt est null => on décide quoi faire (ex: forcer updateRoomState)
+                    try {
+                        $roomRepository->updateRoomState($room);
+                    } catch (\Exception $e) {
+                        // Logger / ignorer
+                        continue;
+                    }
+                }
+            }
+        }
+
         $stateParam = $request->query->get('state');
         $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
 
@@ -135,41 +178,6 @@ class RoomController extends AbstractController
 
         // Retrieve rooms based on criteria
         $rooms = $roomRepository->findByCriteria($criteria);
-
-        // --------------------------------------
-        // Check the freshness of the JSON data
-        // --------------------------------------
-        $now = new \DateTime();
-        // Subtract 15 minutes from the current time
-        $cutoffDate = (clone $now)->sub(new \DateInterval('PT15M'));
-
-        foreach ($rooms as $room) {
-            // Only process rooms that are LINKED and have an acquisition system
-            if ($room->getSensorState() === SensorStateEnum::LINKED && $room->getAcquisitionSystem()) {
-                try {
-                    $data = $roomRepository->loadSensorData($room->getAcquisitionSystem());
-                } catch (\Exception $e) {
-                    // In case of error (HTTP, invalid JSON, etc.), log or ignore
-                    continue;
-                }
-
-                if (!empty($data[0]['dateCapture'])) {
-                    $dateString = $data[0]['dateCapture'];
-
-                    // Parse the date with the format "year-day-month hour:minute:second"
-                    $dateCapture = \DateTime::createFromFormat('Y-d-m H:i:s', $dateString);
-                    $errors = \DateTime::getLastErrors();
-
-                    if ($dateCapture !== false && empty($errors['warning_count']) && empty($errors['error_count'])) {
-                        // If the capture date is older than current time minus 15 minutes, update the room
-                        if ($dateCapture < $cutoffDate) {
-                            $roomRepository->updateRoomState($room);
-                        }
-                    }
-                }
-            }
-        }
-
 
         return $this->render('rooms/index.html.twig', [
             'rooms' => $rooms,

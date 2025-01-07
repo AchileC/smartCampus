@@ -253,8 +253,6 @@ class RoomRepository extends ServiceEntityRepository
      */
     public function loadSensorData(AcquisitionSystem $acquisitionSystem): array
     {
-        $this->updateJsonFromApiForAS($acquisitionSystem);
-
         $room = $acquisitionSystem->getRoom();
 
         // Path to the JSON file based on the room's name
@@ -288,6 +286,7 @@ class RoomRepository extends ServiceEntityRepository
      */
     public function updateAcquisitionSystemFromJson(AcquisitionSystem $acquisitionSystem): void
     {
+        $this->updateJsonFromApiForAS($acquisitionSystem);
         // Load data from JSON file
         try {
             $data = $this->loadSensorData($acquisitionSystem);
@@ -337,6 +336,7 @@ class RoomRepository extends ServiceEntityRepository
      * @param Room $room The Room entity to update.
      *
      * @return void
+     * @throws \DateMalformedStringException
      */
     public function updateRoomState(Room $room): void
     {
@@ -362,9 +362,6 @@ class RoomRepository extends ServiceEntityRepository
         $state = RoomStateEnum::WAITING; // Default state
         $sensorState = $room->getSensorState();
 
-        if ($temperature == null && $humidity == null && $co2 == null) {
-            $state = RoomStateEnum::WAITING;
-        }
 
         // Get thresholds
         $thresholds = $this->thresholdRepository->getDefaultThresholds();
@@ -374,6 +371,11 @@ class RoomRepository extends ServiceEntityRepository
             $thresholds->isHumidityAberrant($humidity) ||
             $thresholds->isCo2Aberrant($co2)) {
             $sensorState = SensorStateEnum::NOT_WORKING;
+        }
+
+        else if ($temperature == null && $humidity == null && $co2 == null){
+            $state = RoomStateEnum::WAITING;
+            $sensorState = SensorStateEnum::ASSIGNMENT;
         }
 
         else {
@@ -423,6 +425,8 @@ class RoomRepository extends ServiceEntityRepository
         }
 
         // Update room state and persist changes
+        $utcDateTime = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
+        $room->setLastUpdatedAt($utcDateTime);
         $room->setSensorState($sensorState);
         $acquisitionSystem->setState($sensorState);
         $room->setState($state);

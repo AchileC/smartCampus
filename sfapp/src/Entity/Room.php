@@ -42,6 +42,8 @@ class Room
     private ?int $nbWindows;
     #[ORM\Column]
     private ?float $surface;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lastUpdatedAt = null;
     #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;
 
@@ -177,6 +179,17 @@ class Room
     {
         $this->surface = $surface;
 
+        return $this;
+    }
+
+    public function getLastUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->lastUpdatedAt;
+    }
+
+    public function setLastUpdatedAt(?\DateTimeInterface $dateTime): self
+    {
+        $this->lastUpdatedAt = $dateTime;
         return $this;
     }
 
