@@ -96,115 +96,41 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script>
         const historicalData = {{ historicalData|json_encode|raw }};
         console.log('Historical Data:', historicalData);
-        
-        // Function to normalize date (remove time component)
-        function normalizeDate(date) {
-            const d = new Date(date);
-            d.setHours(0, 0, 0, 0);
-            return d;
-        }
 
         // Function to format dates
         function formatDate(date) {
             const d = new Date(date);
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
             return d.toLocaleDateString(undefined, options);
         }
 
-        // Function to get min and max values with padding
-        function getMinMaxWithPadding(data, paddingPercent = 100) {
-            if (!data || data.length === 0) return { min: 0, max: 0 };
-            
-            const values = data.map(item => item.value);
-            const min = Math.min(...values);
-            const max = Math.max(...values);
-            const range = max - min;
-            const padding = (range * paddingPercent) / 100;
-            
-            return {
-                min: Math.max(0, min - padding),
-                max: max + padding
-            };
-        }
-
-        // Function to generate complete date range
-        function generateDateRange(startDate, endDate) {
-            const dates = [];
-            const current = normalizeDate(startDate);
-            const end = normalizeDate(endDate);
-            
-            while (current <= end) {
-                dates.push(new Date(current));
-                current.setDate(current.getDate() + 1);
-            }
-            
-            return dates;
-        }
-
-        // Function to filter data based on time range
-        function filterData(data, range) {
-            if (!Array.isArray(data) || data.length === 0) {
+        // Function to transform data for Chart.js
+        function transformData(data, key) {
+            if (!data || !data[key]) {
                 return [];
             }
 
-            // Sort data by date
-            const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            // Get the current date and time
-            const now = new Date();
-            const threshold = new Date();
-
-            // Adjust dates based on range
-            if (range === 'week') {
-                threshold.setDate(now.getDate() - 7);
-            } else if (range === 'month') {
-                threshold.setDate(now.getDate() - 30);
-            } else if (range === 'year') {
-                threshold.setFullYear(now.getFullYear() - 1);
-            }
-
-            // Normalize dates
-            const normalizedNow = normalizeDate(now);
-            const normalizedThreshold = normalizeDate(threshold);
-
-            // Create a map of existing data points using normalized dates
-            const dataMap = new Map();
-            sortedData.forEach(item => {
-                const itemDate = new Date(item.date);
-                const timeDiff = normalizedNow - normalizeDate(sortedData[sortedData.length - 1].date);
-                const adjustedDate = new Date(normalizeDate(itemDate).getTime() + timeDiff);
-                const dateKey = adjustedDate.toISOString().split('T')[0];
-                if (!dataMap.has(dateKey) || item.value !== null) {
-                    dataMap.set(dateKey, item.value);
-                }
-            });
-
-            // Generate complete date range
-            const dates = generateDateRange(normalizedThreshold, normalizedNow);
-            
-            // Map dates to values, using null for missing data
-            return dates.map(date => ({
-                date: date.toISOString(),
-                value: dataMap.get(date.toISOString().split('T')[0]) || null
+            return data[key].map(item => ({
+                x: item.dateCapture, // Use `dateCapture` for x-axis
+                y: parseFloat(item.valeur) // Use `valeur` for y-axis
             }));
         }
 
         // Function to create or update a chart
-        function updateChart(chartId, label, data, range, yAxisLabel, color) {
+        function updateChart(chartId, label, data, yAxisLabel, color) {
             const ctx = document.getElementById(chartId);
             const noDataDiv = document.getElementById(chartId.replace('Chart', 'NoData'));
-            
+
+            // Destroy existing chart instance if it exists
             if (ctx.chart) {
                 ctx.chart.destroy();
             }
 
-            const filteredData = filterData(data, range);
-            console.log(`Filtered ${label} Data:`, filteredData);
-
-            if (!filteredData || filteredData.length === 0) {
+            if (!data || data.length === 0) {
                 ctx.style.display = 'none';
                 noDataDiv.classList.remove('d-none');
                 return;
@@ -213,16 +139,12 @@
             ctx.style.display = 'block';
             noDataDiv.classList.add('d-none');
 
-            // Calculate y-axis range with padding
-            const { min, max } = getMinMaxWithPadding(filteredData.filter(item => item.value !== null));
-            
             ctx.chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: filteredData.map(item => formatDate(item.date)),
                     datasets: [{
                         label: label,
-                        data: filteredData.map(item => item.value),
+                        data: data, // Provide the transformed data
                         borderColor: color,
                         backgroundColor: color.replace(')', ', 0.1)').replace('rgb', 'rgba'),
                         borderWidth: 2,
@@ -248,16 +170,12 @@
                             mode: 'index',
                             intersect: false,
                             callbacks: {
-                                title: function(context) {
-                                    return formatDate(filteredData[context[0].dataIndex].date);
-                                },
                                 label: function(context) {
-                                    let value = context.raw;
-                                    if (value === null) return `${label}: No data`;
+                                    const value = context.raw.y;
                                     if (label === 'Temperature') {
-                                        return `${label}: ${value.toFixed(1)}°C`;
+                                        return `${label}: ${value}°C`;
                                     } else if (label === 'Humidity') {
-                                        return `${label}: ${value.toFixed(1)}%`;
+                                        return `${label}: ${value}%`;
                                     } else {
                                         return `${label}: ${value} ppm`;
                                     }
@@ -266,6 +184,30 @@
                         }
                     },
                     scales: {
+                        x: {
+                            type: 'time',
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                font: {
+                                    weight: 'bold'
+                                },
+                                color: '#6c757d'
+                            },
+                            time: {
+                                tooltipFormat: 'yyyy-MM-dd HH:mm',
+                                unit: 'minute',
+                                displayFormats: {
+                                    minute: 'HH:mm',
+                                    hour: 'MMM d, HH:mm',
+                                    day: 'MMM d',
+                                    month: 'MMM yyyy'
+                                }
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
                         y: {
                             title: {
                                 display: true,
@@ -275,93 +217,46 @@
                                 },
                                 color: '#6c757d'
                             },
-                            min: min,
-                            max: max,
                             ticks: {
-                                color: '#6c757d',
-                                callback: function(value) {
-                                    if (label === 'Temperature') {
-                                        return value.toFixed(1) + '°C';
-                                    } else if (label === 'Humidity') {
-                                        return value.toFixed(1) + '%';
-                                    } else {
-                                        return value + ' ppm';
-                                    }
-                                }
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date',
-                                font: {
-                                    weight: 'bold'
-                                },
                                 color: '#6c757d'
-                            },
-                            ticks: {
-                                color: '#6c757d',
-                                maxRotation: 45,
-                                minRotation: 45,
-                                autoSkip: true,
-                                maxTicksLimit: 12
                             }
                         }
-                    },
-                    interaction: {
-                        mode: 'nearest',
-                        axis: 'x',
-                        intersect: false
                     }
                 }
             });
         }
 
-        // Function to update all charts
-        function updateAllCharts(range) {
+        // Update all charts
+        function updateAllCharts(data) {
             updateChart(
-                'temperatureChart', 
-                'Temperature', 
-                historicalData.temperature, 
-                range, 
-                'Temperature (°C)', 
+                'temperatureChart',
+                'Temperature',
+                transformData(data, 'temp'),
+                'Temperature (°C)',
                 'rgb(255, 99, 132)'
             );
+
             updateChart(
-                'humidityChart', 
-                'Humidity', 
-                historicalData.humidity, 
-                range, 
-                'Humidity (%)', 
+                'humidityChart',
+                'Humidity',
+                transformData(data, 'hum'),
+                'Humidity (%)',
                 'rgb(54, 162, 235)'
             );
+
             updateChart(
-                'co2Chart', 
-                'CO₂', 
-                historicalData.co2, 
-                range, 
-                'CO₂ Concentration (ppm)', 
+                'co2Chart',
+                'CO₂ Concentration',
+                transformData(data, 'co2'),
+                'CO₂ Concentration (ppm)',
                 'rgb(75, 192, 192)'
             );
         }
 
-        // Initialize charts with monthly data
+        // Initialize charts
         document.addEventListener('DOMContentLoaded', function() {
-            updateAllCharts('month');
-
-            // Add click handlers for time range buttons
-            document.querySelectorAll('[data-range]').forEach(button => {
-                button.addEventListener('click', function() {
-                    // Update active state of buttons
-                    document.querySelectorAll('[data-range]').forEach(btn => {
-                        btn.classList.remove('active');
-                    });
-                    this.classList.add('active');
-
-                    // Update charts
-                    updateAllCharts(this.dataset.range);
-                });
-            });
+            updateAllCharts(historicalData);
         });
     </script>
+
 {% endblock %} 
