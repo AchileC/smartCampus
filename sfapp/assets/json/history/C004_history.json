@@ -54409,5 +54409,113 @@
             "description": "Capture de co2",
             "nomsa": "AS-021"
         }
-    ]
+    ],
+    "0": {
+        "id": 24350,
+        "nom": "temp",
+        "valeur": "24.10",
+        "dateCapture": "2025-01-07 17:15:00",
+        "localisation": "C004",
+        "description": "Capture de temp",
+        "nomsa": "AS-021"
+    },
+    "1": {
+        "id": 24351,
+        "nom": "hum",
+        "valeur": "57.50",
+        "dateCapture": "2025-01-07 17:15:00",
+        "localisation": "C004",
+        "description": "Capture de hum",
+        "nomsa": "AS-021"
+    },
+    "2": {
+        "id": 24352,
+        "nom": "co2",
+        "valeur": "499",
+        "dateCapture": "2025-01-07 17:15:00",
+        "localisation": "C004",
+        "description": "Capture de co2",
+        "nomsa": "AS-021"
+    },
+    "3": {
+        "id": 24206,
+        "nom": "temp",
+        "valeur": "14.2",
+        "dateCapture": "2025-01-05 23:45:00",
+        "localisation": "C004",
+        "description": "Capture de temp",
+        "nomsa": "AS-021"
+    },
+    "4": {
+        "id": 24207,
+        "nom": "hum",
+        "valeur": "67",
+        "dateCapture": "2025-01-05 23:45:00",
+        "localisation": "C004",
+        "description": "Capture de hum",
+        "nomsa": "AS-021"
+    },
+    "5": {
+        "id": 24208,
+        "nom": "co2",
+        "valeur": "424",
+        "dateCapture": "2025-01-05 23:45:00",
+        "localisation": "C004",
+        "description": "Capture de co2",
+        "nomsa": "AS-021"
+    },
+    "6": {
+        "id": 35696,
+        "nom": "temp",
+        "valeur": "13.8",
+        "dateCapture": "2025-01-07 06:30:00",
+        "localisation": "C004",
+        "description": "Capture de temp",
+        "nomsa": "AS-021"
+    },
+    "7": {
+        "id": 35697,
+        "nom": "hum",
+        "valeur": "67.8",
+        "dateCapture": "2025-01-07 06:30:00",
+        "localisation": "C004",
+        "description": "Capture de hum",
+        "nomsa": "AS-021"
+    },
+    "8": {
+        "id": 35698,
+        "nom": "co2",
+        "valeur": "479",
+        "dateCapture": "2025-01-07 06:30:00",
+        "localisation": "C004",
+        "description": "Capture de co2",
+        "nomsa": "AS-021"
+    },
+    "9": {
+        "id": 35860,
+        "nom": "temp",
+        "valeur": "13.5",
+        "dateCapture": "2025-01-07 16:45:00",
+        "localisation": "C004",
+        "description": "Capture de temp",
+        "nomsa": "AS-021"
+    },
+    "10": {
+        "id": 35861,
+        "nom": "hum",
+        "valeur": "67.1",
+        "dateCapture": "2025-01-07 16:45:00",
+        "localisation": "C004",
+        "description": "Capture de hum",
+        "nomsa": "AS-021"
+    },
+    "11": {
+        "id": 35862,
+        "nom": "co2",
+        "valeur": "514",
+        "dateCapture": "2025-01-07 16:45:00",
+        "localisation": "C004",
+        "description": "Capture de co2",
+        "nomsa": "AS-021"
+    }
 }
