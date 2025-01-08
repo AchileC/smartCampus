@@ -445,8 +445,11 @@
         </style>
     {% endblock %}
 </head>
-<body>
-<div id="sidebar">
+<div>
+{# Récupérer la route actuelle #}
+{% set current_route = app.request.attributes.get('_route') %}
+<div id="sidebar" class="{% if current_route == 'app_home' %}open{% endif %}">
+
     <div class="brand d-flex justify-content-center align-items-center">
         {% if is_granted('ROLE_TECHNICIAN') or is_granted('ROLE_MANAGER') %}
         <a href="{{ path('app_home') }}" class="d-flex align-items-center text-decoration-none text-white">
@@ -458,8 +461,7 @@
     </div>
     <hr>
         <nav class="nav flex-column">
-            {# Récupérer la route actuelle #}
-            {% set current_route = app.request.attributes.get('_route') %}
+
             <a href="{{ path('app_rooms') }}"
                class="nav-link {{ current_route starts with 'app_rooms' ? 'active' : '' }}">
                 <i class="bi bi-box"></i>
@@ -561,16 +563,17 @@
                 </div>
         </div>
     </div>
+</div>
 
-    <div id="main-content">
-        <button id="toggleSidebarButton" onclick="toggleSidebar()">
-            <i id="sidebarToggleIcon" class="bi bi-list"></i> <!-- Icône hamburger -->
-        </button>
+<div id="main-content">
+    <button id="toggleSidebarButton" onclick="toggleSidebar()">
+        <i id="sidebarToggleIcon" class="bi bi-list"></i> <!-- Icône hamburger -->
+    </button>
 
-        {% block body %}
-            <!-- Contenu spécifique à chaque page -->
-        {% endblock %}
-    </div>
+    {% block body %}
+        <!-- Contenu spécifique à chaque page -->
+    {% endblock %}
+</div>
 
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -624,7 +627,17 @@
             const toggleButton = document.getElementById('toggleSidebarButton');
             const toggleIcon = document.getElementById('sidebarToggleIcon');
             const mainContent = document.getElementById('main-content');
+            // Récupération de la route actuelle (déjà définie en haut de votre template, on la repasse en JS)
+            const currentRoute = "{{ current_route }}";
 
+            // Si on est sur app_home, on force la sidebar à être ouverte et on masque le bouton
+            if (currentRoute === "app_home") {
+                sidebar.classList.add("open");
+                mainContent.classList.add("with-sidebar");
+                toggleButton.classList.add("with-sidebar");
+                // On masque le bouton (plus propre de le faire en CSS, mais à titre d’exemple en JS :
+                toggleButton.style.display = "none";
+            }
 
             /**
              * @function toggleSidebar
