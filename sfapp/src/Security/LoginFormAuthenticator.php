@@ -7,6 +7,7 @@ use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -26,20 +27,24 @@ class LoginFormAuthenticator extends AbstractAuthenticator
     private RouterInterface $router;
 
     public function __construct(UserRepository $userRepository, RouterInterface $router)
-    {
-        $this->userRepository = $userRepository;
-        $this->router = $router;
-    }
+{
+    $this->userRepository = $userRepository;
+    $this->router = $router;
+}
 
     public function supports(Request $request): ?bool
     {
-        return (preg_match('#^/[a-z]{2}/login$#', $request->getPathInfo()) && $request->isMethod('POST'));
+        return ($request->getPathInfo() === '/login' || preg_match('#^/[a-z]{2}/login$#', $request->getPathInfo()) && $request->isMethod('POST'));
     }
 
     public function authenticate(Request $request): Passport
     {
         $username = $request->request->get('username');
         $password = $request->request->get('password');
+
+        if (empty($username) || empty($password)) {
+            throw new AuthenticationException('Invalid username or password.');
+        }
 
         return new Passport(
             new UserBadge($username, function($userIdentifier) {
@@ -75,7 +80,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
         $locale = $request->getSession()->get('_locale', 'en');
         $request->getSession()->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);
         return new RedirectResponse(
-            $this->router->generate('login', ['_locale' => $locale])
+            $this->router->generate('app_login', ['_locale' => $locale])
         );
     }
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+putenv('APP_ENV=test');
+
 if (!ini_get('date.timezone')) {
     ini_set('date.timezone', 'UTC');
 }

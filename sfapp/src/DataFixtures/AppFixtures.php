@@ -14,6 +14,7 @@ use App\Utils\ActionStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\UserRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 

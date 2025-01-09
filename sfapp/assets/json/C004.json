@@ -1,27 +1,27 @@
 [
     {
-        "id": 24206,
+        "id": 47793,
         "nom": "temp",
-        "valeur": "14.2",
-        "dateCapture": "2025-01-05 23:45:00",
+        "valeur": "20.00",
+        "dateCapture": "2025-01-09 08:16:03",
         "localisation": "C004",
         "description": "Capture de temp",
         "nomsa": "AS-021"
     },
     {
-        "id": 24207,
+        "id": 47794,
         "nom": "hum",
-        "valeur": "67",
-        "dateCapture": "2025-01-05 23:45:00",
+        "valeur": "72.20",
+        "dateCapture": "2025-01-09 08:16:03",
         "localisation": "C004",
         "description": "Capture de hum",
         "nomsa": "AS-021"
     },
     {
-        "id": 24208,
+        "id": 47795,
         "nom": "co2",
-        "valeur": "424",
-        "dateCapture": "2025-01-05 23:45:00",
+        "valeur": "664",
+        "dateCapture": "2025-01-09 08:16:03",
         "localisation": "C004",
         "description": "Capture de co2",
         "nomsa": "AS-021"

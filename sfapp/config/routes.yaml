@@ -7,13 +7,26 @@ controllers:
 
 app:
     resource: '../src/Controller/'
-    type: annotation
+    type: attribute
     prefix: '/{_locale}'
     requirements:
         _locale: 'en|fr'
 
+app_home:
+    path: '/{_locale}/home'
+    controller: App\Controller\HomeController::index
+    requirements:
+        _locale: 'en|fr'
+
+
+app_login:
+    path: '/{_locale}/login'
+    controller: App\Controller\SecurityController::login
+    requirements:
+        _locale: 'en|fr'
+
 app_rooms:
-    path: '/rooms'
+    path: '/{_locale}/rooms'
     controller: App\Controller\RoomController::index
     requirements:
         _locale: 'en|fr'
@@ -23,7 +36,7 @@ app_rooms_no_locale:
     controller: App\Controller\RoomController::index
 
 app_rooms_details:
-    path: '/rooms/{name}'
+    path: '/{_locale}/rooms/{name}'
     controller: App\Controller\RoomController::details
     requirements:
         _locale: 'en|fr'

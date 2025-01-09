@@ -20,5 +20,7 @@ framework:
 when@test:
     framework:
         test: true
+        error_controller: null # Désactive l'affichage des pages d'erreur
         session:
-            storage_factory_id: session.storage.factory.mock_file
+            storage_factory_id: session.storage.factory.mock_file # Empêche la session réelle
+        http_method_override: false # Empêche la réécriture des méthodes HTTP
