@@ -100,83 +100,68 @@
         const historicalData = {{ historicalData|json_encode|raw }};
         console.log('Historical Data:', historicalData);
 
-        /**
-         * Fonction qui filtre et formate les données pour Chart.js
-         * @param {Object} data - l'objet contenant toutes les clés (temp, hum, co2)
-         * @param {String} key - la clé ("temp", "hum", ou "co2")
-         * @param {String} range - "month" ou "week"
-         * @returns {Array} tableau de points { x: Date, y: Number }
-         */
         function transformData(data, key, range) {
             if (!data || !data[key]) {
                 return [];
             }
 
-            // Définition de la plage de jours (30 ou 7)
+            const specificHours = range === 'month' ? [0, 4, 8, 12, 16, 20] : Array.from({ length: 24 }, (_, i) => i);
             const daysToSubtract = range === 'month' ? 30 : 7;
+
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - daysToSubtract);
+            const endDate = new Date();
 
-            // On choisit un intervalle d'heures pour lisser la courbe (4h ou 1h)
-            const intervalHours = range === 'month' ? 4 : 1;
-
-            const result = [];
-            let lastDateInResult = null;
-
+            const dataMap = new Map();
             data[key].forEach(item => {
                 const currentDate = new Date(item.dateCapture);
-
-                // Ne garder que les données dans la fourchette [startDate, maintenant]
-                if (currentDate >= startDate && currentDate <= new Date()) {
-                    // Regrouper par paquets de X heures
-                    if (
-                        !lastDateInResult ||
-                        (currentDate - lastDateInResult) >= intervalHours * 60 * 60 * 1000
-                    ) {
-                        result.push({
-                            x: currentDate,
-                            y: parseFloat(item.valeur)
-                        });
-                        lastDateInResult = currentDate;
-                    }
+                const hour = currentDate.getHours();
+                if (specificHours.includes(hour) && currentDate >= startDate && currentDate <= endDate) {
+                    const key = currentDate.toISOString();
+                    dataMap.set(key, parseFloat(item.valeur));
                 }
             });
+
+            const result = [];
+            const current = new Date(startDate);
+            while (current <= endDate) {
+                specificHours.forEach(hour => {
+                    const date = new Date(current);
+                    date.setHours(hour, 0, 0, 0);
+                    const isoString = date.toISOString();
+                    if (date >= startDate && date <= endDate) {
+                        if (dataMap.has(isoString)) {
+                            result.push({ x: date, y: dataMap.get(isoString) });
+                        } else {
+                            result.push({ x: date, y: null });
+                        }
+                    }
+                });
+                current.setDate(current.getDate() + 1);
+            }
+
+            result.sort((a, b) => new Date(a.x) - new Date(b.x));
 
             return result;
         }
 
-        /**
-         * Création ou mise à jour d'un graphique
-         * @param {String} chartId - l'id du canvas
-         * @param {String} label - légende de la courbe
-         * @param {Array} data - données sous forme { x: Date, y: Number }
-         * @param {String} yAxisLabel - label axe Y
-         * @param {String} color - couleur de la courbe
-         * @param {Number} min - min de l'axe Y
-         * @param {Number} max - max de l'axe Y
-         * @param {String} range - "month" ou "week"
-         */
         function updateChart(chartId, label, data, yAxisLabel, color, min, max, range) {
             const ctx = document.getElementById(chartId);
             const noDataDiv = document.getElementById(chartId.replace('Chart', 'NoData'));
 
-            // On détruit l'éventuel ancien chart
             if (ctx.chart) {
                 ctx.chart.destroy();
             }
 
-            // Si pas de données, on masque le canvas et on affiche le message "No data"
             if (!data || data.length === 0) {
                 ctx.style.display = 'none';
                 noDataDiv.classList.remove('d-none');
                 return;
             }
 
-            // Sinon on affiche le canvas et on masque le message "No data"
             ctx.style.display = 'block';
             noDataDiv.classList.add('d-none');
 
-            // Définition de la plage d’affichage en X (force l’affichage complet)
             const endDate = new Date();
             const daysToSubtract = range === 'month' ? 30 : 7;
             const startDate = new Date();
@@ -194,9 +179,9 @@
                             borderWidth: 2,
                             tension: 0.2,
                             fill: true,
-                            pointRadius: 0,         
-                            pointHoverRadius: 1,   
-                            spanGaps: true
+                            pointRadius: 0,
+                            pointHoverRadius: 1,
+                            spanGaps: false
                         }
                     ]
                 },
@@ -216,25 +201,25 @@
                         }
                     },
                     scales: {
-  x: {
-    type: 'time',
-    time: {
-      unit: 'day',
-      displayFormats: {
-        day: 'MMM d'
-      }
-    },
-    min: startDate, // 30 jours en arrière
-    max: endDate,   // aujourd'hui
-    title: {
-      display: true,
-      text: 'Date',
-      color: '#6c757d'
-    },
-    ticks: {
-      color: '#6c757d'
-    }
-  },
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MMM d'
+                                }
+                            },
+                            min: startDate,
+                            max: endDate,
+                            title: {
+                                display: true,
+                                text: 'Date',
+                                color: '#6c757d'
+                            },
+                            ticks: {
+                                color: '#6c757d'
+                            }
+                        },
                         y: {
                             min: min,
                             max: max,
@@ -252,13 +237,7 @@
             });
         }
 
-        /**
-         * Met à jour les trois graphiques (temp, hum, co2) selon la plage "month" ou "week"
-         * @param {Object} data
-         * @param {String} range
-         */
         function updateAllCharts(data, range) {
-            // Données transformées
             const tempData = transformData(data, 'temp', range);
             const humData  = transformData(data, 'hum', range);
             const co2Data  = transformData(data, 'co2', range);
@@ -297,7 +276,6 @@
             );
         }
 
-        // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             const timeRangeButtons = document.querySelectorAll('.time-range-selector button');
 
@@ -309,7 +287,7 @@
                 });
             });
 
-            // Par défaut : affichage "Last 30 Days"
+            // Default display: "Last 30 Days"
             updateAllCharts(historicalData, 'month');
         });
     </script>
