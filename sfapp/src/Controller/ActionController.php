@@ -252,19 +252,36 @@ class ActionController extends AbstractController
         $manager = $userRepository->findOneByExactRole('ROLE_MANAGER');
 
         if ($manager) {
-            $notification = new Notification();
-            $notification->setRead(false);
-            $notification->setMessage(sprintf(
-                "Task '%s' completed in '%s'.",
-                $action->getInfo()->value,
-                $action->getRoom()->getName()
-            ));
-            $notification->setCreateAt(new \DateTimeImmutable());
-            $notification->setRecipient($manager);
-            $notification->setRoom($action->getRoom());
+            // Vérifiez si une notification similaire existe déjà
+            $existingNotification = $entityManager->getRepository(Notification::class)->findOneBy([
+                'recipient' => $manager,
+                'room' => $action->getRoom(),
+                'message' => sprintf(
+                    "Task '%s' completed in '%s'.",
+                    $action->getInfo()->value,
+                    $action->getRoom()->getName()
+                )
+            ]);
 
-            $entityManager->persist($notification);
-            $entityManager->flush();
+            if (!$existingNotification) {
+                // Créez une nouvelle notification si elle n'existe pas
+                $notification = new Notification();
+                $notification->setRead(false);
+                $notification->setMessage(sprintf(
+                    "Task '%s' completed in '%s'.",
+                    $action->getInfo()->value,
+                    $action->getRoom()->getName()
+                ));
+                $notification->setCreateAt(new \DateTimeImmutable());
+                $notification->setRecipient($manager);
+                $notification->setRoom($action->getRoom());
+
+                $entityManager->persist($notification);
+                $entityManager->flush();
+            } else {
+                // Optionnel : Ajoutez une logique pour gérer les notifications existantes si nécessaire
+                $this->addFlash('info', 'Notification already exists and was not duplicated.');
+            }
         }
 
         $this->addFlash('success', 'Action has been validated.');
