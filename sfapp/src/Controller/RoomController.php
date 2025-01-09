@@ -233,14 +233,15 @@ class RoomController extends AbstractController
      *
      * Shows room information, weather forecast, and thresholds.
      *
-     * @param RoomRepository      $roomRepository      Repository to manage Room entities.
+     * @param RoomRepository $roomRepository Repository to manage Room entities.
      * @param ThresholdRepository $thresholdRepository Repository to manage Threshold entities.
-     * @param string              $name                The name of the room.
+     * @param string $name The name of the room.
      *
      * @return Response The rendered room details page.
      *
      * @throws NotFoundException If the room is not found.
      * @throws AccessDeniedHttpException If access is denied based on sensor state.
+     * @throws \DateMalformedStringException
      */
     #[Route('/rooms/{name}', name: 'app_rooms_details')]
     public function details(

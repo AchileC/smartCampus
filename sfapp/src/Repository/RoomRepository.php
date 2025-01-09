@@ -298,6 +298,9 @@ class RoomRepository extends ServiceEntityRepository
             return;
         }
 
+        // Initialiser une variable pour stocker la dernière date de capture
+        $lastCapturedAt = null;
+
         // Update sensor values from JSON data
         foreach ($data as $entry) {
             if (isset($entry['nom']) && isset($entry['valeur'])) {
@@ -309,6 +312,25 @@ class RoomRepository extends ServiceEntityRepository
                     $acquisitionSystem->setCo2((int) $entry['valeur']);
                 }
             }
+
+            // Vérifier et assigner la date de capture
+            if (isset($entry['dateCapture'])) {
+                try {
+                    $captureDate = new \DateTime($entry['dateCapture']);
+                    // Comparer pour obtenir la date la plus récente
+                    if ($lastCapturedAt === null || $captureDate > $lastCapturedAt) {
+                        $lastCapturedAt = $captureDate;
+                    }
+                } catch (\Exception $e) {
+                    // Gérer les erreurs de conversion de date si nécessaire
+                    // Par exemple, logger l'erreur
+                }
+            }
+        }
+
+        // Assigner la dernière date de capture si disponible
+        if ($lastCapturedAt !== null) {
+            $acquisitionSystem->setLastCapturedAt($lastCapturedAt);
         }
 
         // Persist changes to database
@@ -360,7 +382,6 @@ class RoomRepository extends ServiceEntityRepository
         $isHeatingPeriod = $currentMonth >= 11 || $currentMonth <= 4;
 
         $state = RoomStateEnum::WAITING; // Default state
-        $sensorState = $room->getSensorState();
 
 
         // Get thresholds
@@ -374,8 +395,7 @@ class RoomRepository extends ServiceEntityRepository
         }
 
         else if ($temperature == null && $humidity == null && $co2 == null){
-            $state = RoomStateEnum::WAITING;
-            $sensorState = SensorStateEnum::ASSIGNMENT;
+            $sensorState = SensorStateEnum::NOT_WORKING;
         }
 
         else {

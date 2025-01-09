@@ -36,6 +36,9 @@ class AcquisitionSystem
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $state = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lastCapturedAt = null;
+
 
     public function getId(): ?int
     {
@@ -123,14 +126,14 @@ class AcquisitionSystem
         return $this;
     }
 
-    public function getCaptureName(): ?string
+    public function getLastCapturedAt(): ?\DateTimeInterface
     {
-        return $this->captureName;
+        return $this->lastCapturedAt;
     }
 
-    public function setCaptureName(?string $captureName): static
+    public function setLastCapturedAt(?\DateTimeInterface $dateTime): self
     {
-        $this->captureName = $captureName;
+        $this->lastCapturedAt = $dateTime;
         return $this;
     }
 
