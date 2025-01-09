@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+{# action/index.html.twig #}
+{% block title %}To-Do-List{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center">{{ 'todolist_technician' | trans }}</h1>
+
+        <h2 class="text-center">{{ awaitingTasksCount }} {{ 'awaiting_tasks' | trans }}</h2>
+
+        <div class="text-start mb-3">
+            <a href="{{ path('app_todolist_done') }}" class="btn btn-outline-success btn-sm">
+                {{ 'view_completed_tasks' | trans }}
+            </a>
+        </div>
+
+        <!-- Flash messages block -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible fade show flash-message shadow-lg" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <!-- Conteneur des Actions -->
+        <div class="card">
+            <div class="card-body">
+                {% if actions is not empty %}
+                    {% for action in actions %}
+                        <div class="d-flex align-items-center justify-content-between border rounded p-3 mb-2">
+                            <div>
+                                <p class="mb-1"><strong>{{ ('_action_info_state.' ~action.info.value | upper) | trans }} {{ action.room.name }}</strong></p>
+                                <p class="mb-0 text-muted">
+                                    {% if action.state.value == 'to do' %}
+                                        {{ 'created_at' | trans }} {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y H:m') }}
+                                    {% elseif action.state.value == 'doing' %}
+                                        {{ 'started_on' | trans }} {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y H:m') }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <!-- Badge État -->
+                                <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-dark{% else %}bg-success{% endif %} me-2">
+                                {{ ('_action_state.' ~ action.state.value | upper) | trans | upper }}
+                            </span>
+
+                                <!-- Boutons d'Action -->
+                                <a href="{{ path('app_todolist_edit', {id: action.id}) }}" class="btn btn-outline-warning btn-sm me-2">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <strong>{{ 'no_pending' | trans }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Dernière Mise à Jour -->
+        <p class="text-end text-muted mt-3">{{ 'last_updated' | trans }}: {{ "now"|date("d/m/Y - H:i") }}</p>
+    </div>
+{% endblock %}

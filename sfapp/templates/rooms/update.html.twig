@@ -8,218 +8,216 @@
             <div class="col-md-8">
                 <h1 class="text-center mb-4">Update Room: {{ room.name }}</h1>
 
-                <div class="card shadow-sm">
+                <div class="card mb-4">
                     <div class="card-body">
-                        {{ form_start(form) }}
-
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <!-- Room Name -->
-                                    <div class="col-md-6">
-                                        {{ form_label(form.name, 'Room Name', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.name, {
-                                            'attr': {
-                                                'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                            }
-                                        }) }}
-                                        {% if form.name.vars.errors|length > 0 %}
-                                            <div class="invalid-feedback">
-                                                {{ form_errors(form.name) }}
-                                            </div>
-                                        {% endif %}
+                        <div class="row mb-3">
+                            <!-- Nom de la salle -->
+                            <div class="col-md-6">
+                                {{ form_label(form.name, 'add_room.name.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.name, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.name.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                    }
+                                }) }}
+                                {% if form.name.vars.errors|length > 0 %}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.name) }}
                                     </div>
+                                {% endif %}
+                            </div>
 
-                                    <!-- Floor -->
-                                    <div class="col-md-6">
-                                        {{ form_label(form.floor, 'Floor', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.floor, {
-                                            'attr': {
-                                                'class': 'form-select' ~ (form.floor.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                            }
-                                        }) }}
-                                        {% if form.floor.vars.errors|length > 0 %}
-                                            <div class="invalid-feedback">
-                                                {{ form_errors(form.floor) }}
-                                            </div>
-                                        {% endif %}
+                            <!-- Étage -->
+                            <div class="col-md-6">
+                                {{ form_label(form.floor, 'add_room.floor.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.floor, {
+                                    'attr': {
+                                        'class': 'form-select' ~ (form.floor.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                    },
+                                    'placeholder': 'add_room.floor.placeholder'|trans
+                                }) }}
+                                {% if form.floor.vars.errors|length > 0 %}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.floor) }}
                                     </div>
-
-                                </div>
+                                {% endif %}
                             </div>
                         </div>
-
-                        <!-- Physical Characteristics -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <!-- Number of Windows -->
-                                    <!-- Number of Windows -->
-                                    <div class="col-md-6">
-                                        {{ form_label(form.nbWindows, 'Number of Windows', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.nbWindows, {
-                                            'attr': {
-                                                'class': 'form-control' ~ (form.nbWindows.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                            }
-                                        }) }}
-                                        {% if form.nbWindows.vars.errors|length > 0 %}
-                                            <div class="invalid-feedback">
-                                                {{ form_errors(form.nbWindows) }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-
-                                    <!-- Number of Heaters -->
-                                    <div class="col-md-6">
-                                        {{ form_label(form.nbHeaters, 'Number of Heaters', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.nbHeaters, {
-                                            'attr': {
-                                                'class': 'form-control' ~ (form.nbHeaters.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                            }
-                                        }) }}
-                                        {% if form.nbHeaters.vars.errors|length > 0 %}
-                                            <div class="invalid-feedback">
-                                                {{ form_errors(form.nbHeaters) }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Dimensions and Orientation -->
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <!-- Surface -->
-                                    <div class="col-md-6">
-                                        {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.surface, {
-                                            'attr': {
-                                                'class': 'form-control' ~ (form.surface.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                            }
-                                        }) }}
-                                        {% if form.surface.vars.errors|length > 0 %}
-                                            <div class="invalid-feedback">
-                                                {{ form_errors(form.surface) }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-
-
-                                    <!-- Cardinal Direction -->
-                                    <div class="col-md-6">
-                                        {{ form_label(form.cardinalDirection, 'Cardinal Orientation', {'label_attr': {'class': 'form-label'}}) }}
-                                        {{ form_widget(form.cardinalDirection, {
-                                            'attr': {
-                                                'class': 'form-select' ~ (form.cardinalDirection.vars.errors|length > 0 ? ' is-invalid shake' : '')
-                                            }
-                                        }) }}
-                                        {% if form.cardinalDirection.vars.errors|length > 0 %}
-                                            <div class="invalid-feedback">
-                                                {{ form_errors(form.cardinalDirection) }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!-- Boutons Submit et Cancel -->
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary me-3">Add Room</button>
-                            <a href="{{ path('app_rooms') }}" class="btn btn-secondary">Cancel</a>
-                        </div>
-
-                        {{ form_end(form) }}
                     </div>
                 </div>
 
+                <!-- Caractéristiques physiques -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <!-- Nombre de fenêtres -->
+                            <div class="col-md-6">
+                                {{ form_label(form.nbWindows, 'add_room.nb_windows.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nbWindows, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.nbWindows.vars.errors|length > 0 ? ' is-invalid shake' : ''),
+                                        'placeholder': 'add_room.nb_windows.placeholder'|trans
+                                    }
+                                }) }}
+                                {% if form.nbWindows.vars.errors|length > 0 %}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.nbWindows) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Nombre de radiateurs -->
+                            <div class="col-md-6">
+                                {{ form_label(form.nbHeaters, 'add_room.nb_heaters.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nbHeaters, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.nbHeaters.vars.errors|length > 0 ? ' is-invalid shake' : ''),
+                                        'placeholder': 'add_room.nb_heaters.placeholder'|trans
+                                    }
+                                }) }}
+                                {% if form.nbHeaters.vars.errors|length > 0 %}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.nbHeaters) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dimensions et orientation -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <!-- Surface -->
+                            <div class="col-md-6">
+                                {{ form_label(form.surface, 'add_room.surface.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.surface, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.surface.vars.errors|length > 0 ? ' is-invalid shake' : ''),
+                                        'placeholder': 'add_room.surface.placeholder'|trans
+                                    }
+                                }) }}
+                                {% if form.surface.vars.errors|length > 0 %}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.surface) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Orientation cardinale -->
+                            <div class="col-md-6">
+                                {{ form_label(form.cardinalDirection, 'add_room.cardinal.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.cardinalDirection, {
+                                    'attr': {
+                                        'class': 'form-select' ~ (form.cardinalDirection.vars.errors|length > 0 ? ' is-invalid shake' : '')
+                                    },
+                                    'placeholder': 'add_room.cardinal.placeholder'|trans
+                                }) }}
+                                {% if form.cardinalDirection.vars.errors|length > 0 %}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.cardinalDirection) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# installations #}
+
                 <div class="card mt-4 shadow-sm">
                     <div class="card-body text-center">
-                        <h5>Acquisition System</h5>
+                        <h5>{{ 'acquisition_system'|trans }}</h5>
 
                         {% set sensorState = room.sensorState.value %}
                         {% set roomState = room.state.value %}
 
                         {% if sensorState in ['assignment', 'unassignment'] %}
-                            <!-- Case: Assignment/Unassignment Pending -->
+                            <!-- Cas : Assignation/Désassignation en attente -->
                             <p class="mb-3">
-                                An assignment/unassignment request for the acquisition system is pending.
-                                You can cancel the request.
+                                {{ 'sensor_state.assignment_pending'|trans }}
                             </p>
                             <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="_token" value="{{ csrf_token('cancel_installation') }}">
                                 <button type="submit" class="btn btn-warning">
-                                    <i class="bi bi-x-circle"></i> Cancel Installation
+                                    <i class="bi bi-x-circle"></i> {{ 'cancel_installation'|trans }}
                                 </button>
                             </form>
-
                         {% elseif sensorState == 'linked' %}
-                            <!-- Case: Acquisition System Already Assigned -->
+                            <!-- Cas : Système d'acquisition déjà assigné -->
                             <p class="mb-3">
-                                An acquisition system is assigned to this room.
-                                You can request to unassign the linked acquisition system.
+                                {{ 'sensor_state.linked'|trans }}
                             </p>
                             <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="_token" value="{{ csrf_token('request_unassignment') }}">
                                 <button type="submit" class="btn btn-warning">
-                                    <i class="bi bi-arrow-left-circle"></i> Request Unassignment
+                                    <i class="bi bi-arrow-left-circle"></i> {{ 'request_unassignment'|trans }}
                                 </button>
                             </form>
-
                         {% elseif sensorState == 'not linked' %}
-                            <!-- Case: No Acquisition System Assigned -->
+                            <!-- Cas : Aucun système d'acquisition assigné -->
                             <p class="mb-3">
-                                You can request the installation of an acquisition system in this room.
+                                {{ 'sensor_state.not_linked'|trans }}
                             </p>
                             <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="_token" value="{{ csrf_token('request_assignment') }}">
                                 <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-plus-circle"></i> Request Assignment
+                                    <i class="bi bi-plus-circle"></i> {{ 'request_assignment'|trans }}
                                 </button>
                             </form>
 
                         {% elseif sensorState == 'not working' %}
                             <!-- Case: Sensors Not Working -->
                             <p class="mb-3">
-                                The sensor system appears to be broken and requires maintenance.
+                                {{ 'sensor_state.probably_broken'|trans }}
                             </p>
+                            <form method="post" action="{{ path('app_rooms_request_maintenance', { name: room.name }) }}">
+                                <!-- CSRF Token -->
+                                <input type="hidden" name="_token" value="{{ csrf_token('request_maintenance') }}">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="bi bi-tools"></i> {{ 'request_maintenance'|trans }}
+                                </button>
+                            </form>
                         {% else %}
-                            <!-- Default Case: Unspecified Acquisition System State -->
-                            <p class="mb-3">Acquisition system state is unspecified.</p>
+                            <!-- Cas par défaut : État non spécifié -->
+                            <p class="mb-3">{{ 'sensor_state.unspecified'|trans }}</p>
                         {% endif %}
 
-                        <!-- Displaying the General State of the Room -->
+                        <!-- Affichage de l'état général de la salle -->
                         <div class="mt-4">
-                            <strong>Room State:</strong>
+                            <strong>{{ 'room_state_text'|trans }}:</strong>
                             {% if roomState == 'stable' %}
                                 <span class="badge bg-success">
-                    <i class="bi bi-check-circle"></i> Stable
+                    <i class="bi bi-check-circle"></i> {{ 'room_state.stable'|trans }}
                 </span>
                             {% elseif roomState == 'at risk' %}
                                 <span class="badge bg-warning text-dark">
-                    <i class="bi bi-exclamation-triangle"></i> At Risk
+                    <i class="bi bi-exclamation-triangle"></i> {{ 'room_state.at_risk'|trans }}
                 </span>
                             {% elseif roomState == 'critical' %}
                                 <span class="badge bg-danger">
-                    <i class="bi bi-fire"></i> Critical
+                    <i class="bi bi-fire"></i> {{ 'room_state.critical'|trans }}
                 </span>
                             {% else %}
                                 <span class="badge bg-primary">
-                    <i class="bi bi-question-circle"></i> {{ roomState | capitalize }}
+                    <i class="bi bi-question-circle"></i> {{ roomState|capitalize }}
                 </span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
+                {# installations #}
+
+            </div>
+
+            <div class="card w-75 mx-auto mt-4 text-center">
+                <div class="card-body">
+                    <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'back_to_room_list' | trans }}</a>
+                </div>
             </div>
         </div>
     </div>

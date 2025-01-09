@@ -1,12 +1,346 @@
-# translations/messages.en.yaml
-room:
-  add_success: "Room added successfully."
-  delete_success: "Room deleted successfully."
-  name_label: "Room Name"
-  floor_label: "Floor"
-  description_label: "Description"
-  submit_button: "Add Room"
-  cancel_button: "Cancel"
-  validation:
-    name_not_blank: "Room name cannot be empty."
-    name_regex: "The name must start with a letter followed by at least three numbers."
+# General
+hello: "Hello"
+room: "Room"
+rooms: "Rooms"
+login: "Login"
+logout: "Logout"
+
+dashboard: "Dashboard"
+infos: "Information"
+
+# Action Enum Info
+_action_state:
+  TO DO: "To do"
+  DOING: "In progress"
+  DONE: "Completed"
+
+# Room State Enum
+_room_state:
+  CRITICAL: "Critical"
+  AT RISK: "At risk"
+  STABLE: "Stable"
+  WAITING: "Waiting"
+  NONE: "None"
+
+# Sensor State Enum
+_sensor_state:
+  NOT LINKED: "Not linked"
+  LINKED: "Linked"
+  NOT WORKING: "Not working"
+  ASSIGNMENT: "Assignment"
+  UNASSIGNMENT: "Unassignment"
+
+_action_info_state:
+  ASSIGNMENT: "Assignment"
+  UNASSIGNMENT: "Unassignment"
+  MAINTENANCE: "Maintenance"
+
+temperature: "Temperature"
+humidity: "Humidity"
+
+# Dashboard
+as_list: "Acquisition systems list"
+my_to_do_list: "My To-Do List"
+configure_thresholds: "Configure thresholds"
+
+# Orientation
+_cardinal_direction:
+  east: "East"
+  west: "West"
+  north: "North"
+  south: "South"
+
+# Weather
+weather: "Weather"
+today: "Today"
+no_data: "No weather data available."
+
+# Todolist
+todolist: "Task list"
+todolist_technician: "Technician's task list"
+
+#
+on_room: "on"
+created_at: "Created on"
+started_on: "Started on"
+not_started: "Not started yet"
+no_pending: "No tasks pending."
+access: "Access"
+last_updated: "Last updated"
+add: "Add"
+
+# Buttons
+update: "Update"
+back_to_room_list: "Back to the room list"
+
+# Home index.html.twig
+systems: "Acquisition systems"
+at_risk: "At risk"
+critical: "Critical"
+
+# Details.twig.html
+room_constants: "Room constants"
+ambient_room_state: "Ambient room state"
+general_information: "General information"
+number_of_windows: "Number of windows"
+number_of_heaters: "Number of heaters"
+surface: "Surface"
+cardinal_direction: "Orientation"
+room_monitoring: "Heating periods"
+heating: "Heating"
+non_heating: "Non-heating"
+optimal_temp: "Optimal temperature"
+as_assigned_to_room: "An acquisition system is assigned to this room."
+no_as_assigned_to_room: "No acquisition system assigned to this room."
+
+# Aslist.html.twig
+no_linked_as: "No linked acquisition system"
+access_to_linked_room: "Access the room"
+_add_as: "Add an acquisition system"
+
+rooms_list:
+  list: "Room list"
+no_match_create_room: "No results found. Check the spelling or <a href=\"{{ path('app_rooms_add') }}\">create a new room</a>."
+no_match_adjust_filters: "No results found. Check the spelling or adjust the filters."
+_add_room: "Add a room"
+floor: "Floor"
+state: "State"
+sensor: "Sensor"
+details: "Details"
+edit: "Edit"
+delete: "Delete"
+delete_room: "Delete the room"
+just_now: "Just now"
+dark_mode: "Dark mode"
+
+# Rooms : index.html.twig
+filter:
+  name:
+    placeholder: "Search for a room by name"
+  floor:
+    ground: "Ground floor"
+    first: "First floor"
+    second: "Second floor"
+    third: "Third floor"
+    placeholder: "Select a floor"
+  state:
+    stable: "Stable"
+    at_risk: "At risk"
+    critical: "Critical"
+    placeholder: "Select a state"
+  buttons:
+    search: "Search"
+    reset: "Reset"
+
+awaiting_tasks: "Pending tasks"
+view_completed_tasks: "View completed tasks"
+
+# Done.html.twig
+completed_tasks_history: "Completed tasks history"
+back_to_todolist: "Back to the task list"
+no_completed_tasks: "No completed tasks to display."
+completed_at: "Completed on"
+acquisition_system: "Acquisition system"
+no_acquisition_system: "No acquisition system linked to this task."
+
+# Addas.html.twig
+add_acquisition_system: "Add an acquisition system"
+cancel: "Cancel"
+number: "Number"
+add_as:
+  number:
+    required: "The number is required."
+    invalid: "The number must contain exactly three digits."
+    placeholder: "Enter a number between 000 and 999"
+
+# Add.html.twig
+room_name: "Room name"
+add_room:
+  name:
+    label: "Room name"
+    required: "The room name is required."
+    length: "The room name must contain exactly {{ limit }} characters."
+    pattern: "The name must start with a letter followed by three digits."
+  floor:
+    label: "Floor"
+    placeholder: "Select a floor"
+    required: "A floor is required."
+  nb_windows:
+    label: "Number of windows"
+    positive: "The number of windows cannot be negative."
+    placeholder: "E.g.: 2"
+  nb_heaters:
+    label: "Number of heaters"
+    positive: "The number of heaters cannot be negative."
+    placeholder: "E.g.: 2"
+  surface:
+    label: "Surface (m²)"
+    positive: "The surface must be greater than zero."
+    range: "The surface must be between {{ min }} m² and {{ max }} m²."
+    placeholder: "E.g.: 25.5"
+  cardinal:
+    label: "Cardinal orientation"
+    placeholder: "Select an orientation"
+    required: "An orientation is required."
+
+_delete_room:
+  modal:
+    title: "Delete Confirmation"
+    close: "Close"
+    confirmation: "Are you sure you want to delete the room %room%?"
+    warning: "If an acquisition system is assigned, it will be automatically unassigned."
+    delete_button: "Delete"
+    cancel_button: "Cancel"
+
+# Translations/messages.en.yaml
+sensor_state:
+  assignment_pending: "An assignment or unassignment request for the acquisition system is pending."
+  linked: "An acquisition system is assigned to this room. You can request its unassignment."
+  not_linked: "You can request the installation of an acquisition system in this room."
+  probably_broken: "The sensor system seems broken and requires maintenance."
+  unspecified: "The acquisition system state is unspecified."
+cancel_installation: "Cancel installation"
+request_unassignment: "Request unassignment"
+request_assignment: "Request assignment"
+request_maintenance: "Request maintenance"
+room_state_text: "Room state"
+room_state:
+  stable: "Stable"
+  at_risk: "At risk"
+  critical: "Critical"
+
+begin_task: "Begin task"
+validate_task: "Validate task"
+begin_task_confirmation: "By confirming, the manager will see that you have started the task."
+validate_task_confirmation: "By confirming, you certify that the task is completed. The manager will be informed."
+begin: "Begin"
+not_now: "Not now"
+choose_acquisition_system: "Choose the acquisition system now assigned to this room:"
+choose_placeholder: "Choose..."
+no_acquisition_system_required: "This task does not require an acquisition system."
+confirm: "Confirm"
+installation: "Installation"
+uninstallation: "Uninstallation"
+
+# Advices
+# General
+no_value_measured: "No value measured"
+
+# Temperature
+critical_error_verify_sensor: "Verify sensor functionality."
+heating_period_check_heating: "Check the heating system and adjust to reach 19°C."
+heating_period_reduce_heating: "Reduce heating to avoid overconsumption."
+non_heating_adjust_ac: "Adjust the AC to reach 26°C if available."
+non_heating_activate_ac: "Activate AC/ventilation (max 26°C) and ventilate."
+optimal_temperature_maintained: "Optimal temperature maintained."
+
+# Humidity
+urgently_ventilate: "Urgently ventilate; consider using a dehumidifier."
+monitor_and_ventilate_if_needed: "Monitor and ventilate if needed."
+optimal_humidity_level: "Optimal humidity level."
+
+# CO₂
+co2: "CO₂"
+check_sensor_status: "Check sensor status."
+ventilate_immediately: "Ventilate immediately."
+consider_ventilation_soon: "Consider ventilation soon."
+good_air_quality: "Good air quality."
+
+# Tooltip for Progress Bars
+temperature_ranges:
+  heating_period:
+    low: "10-17°C"
+    warning_low: "17-19°C"
+    optimal: "19-21°C"
+    warning_high: "21-23°C"
+    high: "23-35°C"
+  non_heating_period:
+    low: "10-22°C"
+    warning_low: "22-24°C"
+    optimal: "24-28°C"
+    warning_high: "28-30°C"
+    high: "30-35°C"
+
+humidity_ranges:
+  low: "0-20%"
+  warning_low: "20-30%"
+  optimal: "30-60%"
+  warning_high: "60-70%"
+  high: "> 70%"
+
+co2_ranges:
+  low: "< 440 ppm"
+  optimal: "440-1000 ppm"
+  warning: "1000-1500 ppm"
+  high: "> 1500 ppm"
+
+indicate_as: "Please indicate if the acquisition system is operational after maintenance."
+yes_repaired: "Yes, it is repaired"
+repaired?: "Is the acquisition system repaired?"
+
+# Weather
+today_weather_forecast: "Today's Weather Forecast"
+min_temperature: "Min Temperature"
+max_temperature: "Max Temperature"
+precipitation: "Precipitation"
+
+# Advice
+extreme_heat_advice: "Extreme heat expected! Lower radiator settings and open windows or doors to ventilate the classroom. Monitor the temperature closely to ensure comfort."
+very_hot_advice: "Very hot today. Consider lowering the radiator settings and ventilate the classroom by opening windows or doors to maintain a comfortable environment."
+comfortable_temperature_advice: "Comfortable temperatures. Adjust radiator settings to maintain a pleasant classroom environment. Ventilate as needed to keep the air fresh."
+freezing_temperature_advice: "Freezing temperatures. Ensure radiators are set to a higher temperature to keep the classroom warm. Keep windows closed to conserve heat."
+cold_temperature_advice: "Cold today. Increase radiator settings as necessary and ensure windows are closed to maintain warmth."
+extremely_low_temperature_advice: "Extremely low temperatures! Set radiators to maximum to ensure the classroom stays warm. Minimize window openings to retain heat."
+
+heavy_rainfall_advice: "Heavy rainfall expected. Ensure windows are tightly closed to prevent humidity ingress. Use doors to ventilate if necessary."
+moderate_rainfall_advice: "Moderate rainfall expected. Keep windows closed and use doors to ventilate the classroom as needed while avoiding excess humidity."
+light_rainfall_advice: "Light rain expected. Ventilate the classroom by opening windows or doors briefly to refresh the air without allowing excessive humidity."
+
+wet_conditions_advice: "Wet conditions anticipated. Ensure proper ventilation to avoid humidity buildup by using doors if opening windows is not ideal."
+clear_weather_advice: "Clear or partly cloudy weather. Take the opportunity to ventilate the classroom by opening windows (or doors if it's too cold outside) during cooler parts of the day."
+good_ventilation_conditions_advice: "Good conditions for ventilation. Open windows or doors during breaks to refresh the air without disrupting the classroom environment."
+
+# No Advice
+actionable_advice: "Actionable Advice"
+no_specific_advice: "No specific advice for today."
+weather_unavailable: "Weather forecasts are currently unavailable."
+
+# Threshold Configuration
+period: "Period"
+nov_apr: "November-April"
+may_oct: "May-October"
+temperature_thresholds: "Temperature Thresholds"
+humidity_thresholds: "Humidity Thresholds"
+recommended_heating_period: "Recommended temperature ranges for the heating period (November to April)"
+recommended_non_heating_period: "Recommended temperature ranges for the non-heating period (May to October)"
+recommended_humidity_ranges: "Recommended humidity ranges for optimal comfort and air quality"
+recommended_values_heating: "Recommended Values (Heating Period)"
+recommended_values_non_heating: "Recommended Values (Non-Heating Period)"
+recommended_humidity_values: "Recommended Humidity Values"
+critical_min: "Critical Min"
+warning_min: "Warning Min"
+warning_max: "Warning Max"
+critical_max: "Critical Max"
+
+# Descriptions for Heating Period
+critical_min_heating_desc: "16°C - Too cold, risk of discomfort and health issues"
+warning_min_heating_desc: "18°C - Minimum comfortable temperature for the heating season"
+warning_max_heating_desc: "22°C - Maximum recommended temperature for the heating season"
+critical_max_heating_desc: "24°C - Too warm, excessive energy consumption"
+
+# Descriptions for Non-Heating Period
+critical_min_non_heating_desc: "20°C - Too cold for comfort in summer"
+warning_min_non_heating_desc: "22°C - Lower bound of summer comfort zone"
+warning_max_non_heating_desc: "26°C - Upper bound of summer comfort zone"
+critical_max_non_heating_desc: "28°C - Too warm, risk of discomfort"
+
+# Descriptions for Humidity
+critical_min_humidity_desc: "20% - Very dry, risk of respiratory issues and static electricity"
+warning_min_humidity_desc: "30% - Minimum for comfort and health"
+warning_max_humidity_desc: "60% - Maximum for comfort and mold prevention"
+critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
+
+# Buttons
+save_changes: "Save Changes"
+reset_to_default: "Reset to Default"
+reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"

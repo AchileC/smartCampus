@@ -194,12 +194,31 @@
             font-weight: 500;
             color: var(--bs-primary);
         }
+
+        /* Style for the aberrant values accordion */
+        .aberrant-values-accordion {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .aberrant-values-accordion .accordion-button {
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+        }
+        
+        .aberrant-values-accordion .accordion-button:not(.collapsed) {
+            color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+        }
+        
+        .aberrant-values-accordion .accordion-body {
+            background-color: var(--bs-body-bg);
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container mt-4">
-        <h1 class="mb-4">Configure Thresholds</h1>
+        <h1 class="mb-4">{{ 'configure_thresholds'|trans }}</h1>
 
         {% for label, messages in app.flashes %}
             {% for message in messages %}
@@ -212,13 +231,13 @@
 
         {{ form_start(form) }}
         <div class="period-switch d-flex align-items-center">
-            <span class="me-2">Period:</span>
+            <span class="me-2">{{ 'period'|trans }}:</span>
             <div class="btn-group" role="group">
                 <input type="radio" class="btn-check" name="period" id="heating" value="heating" checked>
-                <label class="btn btn-outline-primary" for="heating">Heating (Nov-Apr)</label>
+                <label class="btn btn-outline-primary" for="heating">{{ 'heating'|trans }} ({{ 'nov_apr'|trans }})</label>
 
                 <input type="radio" class="btn-check" name="period" id="nonHeating" value="nonHeating">
-                <label class="btn btn-outline-primary" for="nonHeating">Non-Heating (May-Oct)</label>
+                <label class="btn btn-outline-primary" for="nonHeating">{{ 'non_heating'|trans }} ({{ 'may_oct'|trans }})</label>
             </div>
         </div>
 
@@ -226,11 +245,11 @@
         <div class="threshold-section heating-period">
             <h3>
                 <i class="bi bi-thermometer-half"></i>
-                Temperature Thresholds (Heating Period)
-                <i class="bi bi-info-circle info-icon" data-tooltip="Recommended temperature ranges for the heating period (November to April)"></i>
+                {{ 'temperature_thresholds'|trans }} ({{ 'heating'|trans }})
+                <i class="bi bi-info-circle info-icon" data-tooltip="{{ 'recommended_heating_period'|trans }}"></i>
             </h3>
             <div class="threshold-visualization">
-                <div class="slider-container" id="heating-temp-slider" 
+                <div class="slider-container" id="heating-temp-slider"
                      data-min="10" data-max="35" data-step="1"
                      data-critical-min="{{ form.heatingTempCriticalMin.vars.value }}"
                      data-warning-min="{{ form.heatingTempWarningMin.vars.value }}"
@@ -243,30 +262,30 @@
                         <div class="zone-warning-high"></div>
                         <div class="zone-critical-high"></div>
                     </div>
-                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">Critical Min</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">Warning Min</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">{{ 'critical_min'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">{{ 'warning_min'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">{{ 'warning_max'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">{{ 'critical_max'|trans }}</div><div class="slider-value"></div></div>
                 </div>
             </div>
             <div class="recommended-values">
-                <h5>Recommended Values (Heating Period)</h5>
+                <h5>{{ 'recommended_values_heating'|trans }}</h5>
                 <table class="table table-sm">
                     <tr>
-                        <td>Critical Min:</td>
-                        <td>16°C - Too cold, risk of discomfort and health issues</td>
+                        <td>{{ 'critical_min'|trans }}:</td>
+                        <td>{{ 'critical_min_heating_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Warning Min:</td>
-                        <td>18°C - Minimum comfortable temperature for heating season</td>
+                        <td>{{ 'warning_min'|trans }}:</td>
+                        <td>{{ 'warning_min_heating_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Warning Max:</td>
-                        <td>22°C - Maximum recommended temperature for heating season</td>
+                        <td>{{ 'warning_max'|trans }}:</td>
+                        <td>{{ 'warning_max_heating_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Critical Max:</td>
-                        <td>24°C - Too warm, excessive energy consumption</td>
+                        <td>{{ 'critical_max'|trans }}:</td>
+                        <td>{{ 'critical_max_heating_desc'|trans }}</td>
                     </tr>
                 </table>
             </div>
@@ -282,11 +301,11 @@
         <div class="threshold-section non-heating-period" style="display: none;">
             <h3>
                 <i class="bi bi-thermometer-sun"></i>
-                Temperature Thresholds (Non-Heating Period)
-                <i class="bi bi-info-circle info-icon" data-tooltip="Recommended temperature ranges for the non-heating period (May to October)"></i>
+                {{ 'temperature_thresholds'|trans }} ({{ 'non_heating'|trans }})
+                <i class="bi bi-info-circle info-icon" data-tooltip="{{ 'recommended_non_heating_period'|trans }}"></i>
             </h3>
             <div class="threshold-visualization">
-                <div class="slider-container" id="non-heating-temp-slider" 
+                <div class="slider-container" id="non-heating-temp-slider"
                      data-min="10" data-max="35" data-step="1"
                      data-critical-min="{{ form.nonHeatingTempCriticalMin.vars.value }}"
                      data-warning-min="{{ form.nonHeatingTempWarningMin.vars.value }}"
@@ -299,30 +318,30 @@
                         <div class="zone-warning-high"></div>
                         <div class="zone-critical-high"></div>
                     </div>
-                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">Critical Min</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">Warning Min</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">{{ 'critical_min'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">{{ 'warning_min'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">{{ 'warning_max'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">{{ 'critical_max'|trans }}</div><div class="slider-value"></div></div>
                 </div>
             </div>
             <div class="recommended-values">
-                <h5>Recommended Values (Non-Heating Period)</h5>
+                <h5>{{ 'recommended_values_non_heating'|trans }}</h5>
                 <table class="table table-sm">
                     <tr>
-                        <td>Critical Min:</td>
-                        <td>20°C - Too cold for comfort in summer</td>
+                        <td>{{ 'critical_min'|trans }}:</td>
+                        <td>{{ 'critical_min_non_heating_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Warning Min:</td>
-                        <td>22°C - Lower bound of summer comfort zone</td>
+                        <td>{{ 'warning_min'|trans }}:</td>
+                        <td>{{ 'warning_min_non_heating_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Warning Max:</td>
-                        <td>26°C - Upper bound of summer comfort zone</td>
+                        <td>{{ 'warning_max'|trans }}:</td>
+                        <td>{{ 'warning_max_non_heating_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Critical Max:</td>
-                        <td>28°C - Too warm, risk of discomfort</td>
+                        <td>{{ 'critical_max'|trans }}:</td>
+                        <td>{{ 'critical_max_non_heating_desc'|trans }}</td>
                     </tr>
                 </table>
             </div>
@@ -338,11 +357,11 @@
         <div class="threshold-section">
             <h3>
                 <i class="bi bi-droplet-half"></i>
-                Humidity Thresholds
-                <i class="bi bi-info-circle info-icon" data-tooltip="Recommended humidity ranges for optimal comfort and air quality"></i>
+                {{ 'humidity_thresholds'|trans }}
+                <i class="bi bi-info-circle info-icon" data-tooltip="{{ 'recommended_humidity_ranges'|trans }}"></i>
             </h3>
             <div class="threshold-visualization">
-                <div class="slider-container" id="humidity-slider" 
+                <div class="slider-container" id="humidity-slider"
                      data-min="0" data-max="100" data-step="1"
                      data-critical-min="{{ form.humCriticalMin.vars.value }}"
                      data-warning-min="{{ form.humWarningMin.vars.value }}"
@@ -355,30 +374,30 @@
                         <div class="zone-warning-high"></div>
                         <div class="zone-critical-high"></div>
                     </div>
-                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">Critical Min</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">Warning Min</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">Warning Max</div><div class="slider-value"></div></div>
-                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">Critical Max</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-min"><div class="slider-label">{{ 'critical_min'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-min"><div class="slider-label">{{ 'warning_min'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="warning-max"><div class="slider-label">{{ 'warning_max'|trans }}</div><div class="slider-value"></div></div>
+                    <div class="slider-thumb" data-type="critical-max"><div class="slider-label">{{ 'critical_max'|trans }}</div><div class="slider-value"></div></div>
                 </div>
             </div>
             <div class="recommended-values">
-                <h5>Recommended Humidity Values</h5>
+                <h5>{{ 'recommended_humidity_values'|trans }}</h5>
                 <table class="table table-sm">
                     <tr>
-                        <td>Critical Min:</td>
-                        <td>20% - Very dry, risk of respiratory issues and static electricity</td>
+                        <td>{{ 'critical_min'|trans }}:</td>
+                        <td>{{ 'critical_min_humidity_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Warning Min:</td>
-                        <td>30% - Minimum for comfort and health</td>
+                        <td>{{ 'warning_min'|trans }}:</td>
+                        <td>{{ 'warning_min_humidity_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Warning Max:</td>
-                        <td>60% - Maximum for comfort and mold prevention</td>
+                        <td>{{ 'warning_max'|trans }}:</td>
+                        <td>{{ 'warning_max_humidity_desc'|trans }}</td>
                     </tr>
                     <tr>
-                        <td>Critical Max:</td>
-                        <td>70% - High risk of mold growth and discomfort</td>
+                        <td>{{ 'critical_max'|trans }}:</td>
+                        <td>{{ 'critical_max_humidity_desc'|trans }}</td>
                     </tr>
                 </table>
             </div>
@@ -390,23 +409,51 @@
             </div>
         </div>
 
-        <div class="btn-toolbar">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-save"></i> Save Changes
-            </button>
-            <a href="{{ path('app_home_threshold_reset') }}" class="btn btn-secondary" 
-               onclick="return confirm('Are you sure you want to reset all thresholds to their default values?')">
-                <i class="bi bi-arrow-counterclockwise"></i> Reset to Default
-            </a>
-            <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-x-lg"></i> Cancel
-            </a>
+        {# Aberrant Values Information in Accordion #}
+        <div class="accordion aberrant-values-accordion" id="aberrantValuesAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#aberrantValuesInfo" aria-expanded="false" aria-controls="aberrantValuesInfo">
+                        <i class="bi bi-info-circle me-2"></i> Fixed Aberrant Value Thresholds Information
+                    </button>
+                </h2>
+                <div id="aberrantValuesInfo" class="accordion-collapse collapse" data-bs-parent="#aberrantValuesAccordion">
+                    <div class="accordion-body">
+                        <p class="mb-2">The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as "NOT WORKING" and a maintenance task will be created:</p>
+                        <ul class="mb-0">
+                            <li><strong>Temperature:</strong> Below 10°C or above 40°C</li>
+                            <li><strong>Humidity:</strong> Below 20% or above 100%</li>
+                            <li><strong>CO₂:</strong> Below 400ppm or above 2000ppm</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        {{ form_end(form) }}
-    </div>
+    
 
     <div class="threshold-tooltip"></div>
+
+
+        
+
+        <div class="btn-toolbar">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> {{ 'save_changes'|trans }}
+            </button>
+            <a href="{{ path('app_home_threshold_reset') }}" class="btn btn-secondary"
+               onclick="return confirm('{{ 'reset_confirmation'|trans }}')">
+                <i class="bi bi-arrow-counterclockwise"></i> {{ 'reset_to_default'|trans }}
+            </a>
+            <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-lg"></i> {{ 'cancel'|trans }}
+            </a>
+        </div>
+        </div>
+        
+
+        {{ form_end(form) }}
+
+        
 {% endblock %}
 
 {% block javascripts %}

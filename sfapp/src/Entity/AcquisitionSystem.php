@@ -17,6 +17,9 @@ class AcquisitionSystem
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $name = null;
+
     #[ORM\Column(nullable: true)]
     private ?float $temperature = null;
 
@@ -29,9 +32,6 @@ class AcquisitionSystem
     #[ORM\OneToOne(inversedBy: 'acquisitionSystem', targetEntity: Room::class, cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: true)]
     private ?Room $room = null;
-
-    #[ORM\Column(length: 255, unique: true)]
-    private ?string $name = null;
 
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $state = null;
@@ -120,6 +120,17 @@ class AcquisitionSystem
     {
         $this->name = $name;
 
+        return $this;
+    }
+
+    public function getCaptureName(): ?string
+    {
+        return $this->captureName;
+    }
+
+    public function setCaptureName(?string $captureName): static
+    {
+        $this->captureName = $captureName;
         return $this;
     }
 

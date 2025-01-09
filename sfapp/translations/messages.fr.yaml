@@ -1,12 +1,358 @@
+# traduction française
+
+# mainstream words
+hello: "Bonjour"
+room: "Salle"
+rooms: "Salles"
+login: "Connexion"
+logout: "Déconnexion"
+
+dashboard: "Tableau de bord"
+infos: "Informations"
+
+# action enum info
+_action_state:
+  TO DO: "À faire"
+  DOING: "En cours"
+  DONE: "Terminé"
+
+# room state enum
+_room_state:
+  CRITICAL: "Critique"
+  AT RISK: "À risque"
+  STABLE: "Stable"
+  WAITING: "En attente"
+  NONE: "Aucun"
+
+# sensor state enum
+_sensor_state:
+  NOT LINKED: "Non connecté"
+  LINKED: "Connecté"
+  NOT WORKING: "Non fonctionnel"
+  ASSIGNMENT: "Assignement"
+  UNASSIGNMENT: "Dé-assignement"
+
+
+_action_info_state:
+  ASSIGNMENT: "Assignement"
+  UNASSIGNMENT: "Dé-assignement"
+  MAINTENANCE: "Maintenance"
+
+temperature: "Température"
+humidity: "Humidité"
+
+# dashboard
+as_list: "Liste des SA"
+my_to_do_list: "Ma To-Do Liste"
+configure_thresholds: "Configurer les seuils"
+
+# orientation
+_cardinal_direction:
+  east: "Est"
+  west: "Ouest"
+  north: "Nord"
+  south: "Sud"
+
+# weather
+weather: "Météo"
+today: "Aujourd'hui"
+no_data: "Aucune donnée météo disponible."
+
+# todolist
+todolist: "Liste des tâches"
+todolist_technician: "Liste des tâches du technicien"
+
+#
+on_room: "en"
+created_at: "Créé le"
+started_on: "Commencé le"
+not_started: "Pas encore commencé"
+no_pending: "Aucune tâche en attente."
+access: "Accéder"
+last_updated: "Dernière mise à jour"
+add: "Ajouter"
+
+
+# buttons
+update: "Modifier"
+back_to_room_list: "Retour à la liste des salles"
+
+# home index.html.twig
+systems: "Systèmes d'acquisition"
+at_risk: "À risque"
+critical: "Critique"
+
+# details.twig.html
+room_constants: "Constantes de la salle"
+ambient_room_state: "Ambiance"
+general_information: "Informations générales"
+number_of_windows: "Nombre de fenêtres"
+number_of_heaters: "Nombre de radiateurs"
+surface: "Surface"
+cardinal_direction: "Orientation"
+room_monitoring: "Périodes de chauffe"
+heating: "Chauffe"
+non_heating: "Hors-chauffe"
+optimal_temp: "Température optimale"
+as_assigned_to_room: "Un système d'acquisition est assigné à cette salle."
+no_as_assigned_to_room: "Aucun système d'acquisition assigné à cette salle."
+
+# aslist.html.twig
+
+no_linked_as: "Aucun SA connecté"
+access_to_linked_room: "Accéder à la salle"
+_add_as: "Ajouter un SA"
+
+rooms_list:
+  list: "Liste des salles"
+no_match_create_room: "Aucun résultat trouvé. Vérifiez l'orthographe ou <a href=\"{{ path('app_rooms_add') }}\">créez une nouvelle salle</a>."
+no_match_adjust_filters: "Aucun résultat trouvé. Vérifiez l'orthographe ou ajustez les filtres."
+_add_room: "Ajouter une salle"
+floor: "Étage"
+state: "État"
+sensor: "Capteur"
+details: "Détails"
+edit: "Modifier"
+delete: "Supprimer"
+delete_room: "Supprimer la salle"
+just_now: "À l'instant"
+dark_mode: "Mode sombre"
+
+# rooms : index.html.twig
+filter:
+  name:
+    placeholder: "Rechercher une salle par nom"
+  floor:
+    ground: "Rez-de-chaussée"
+    first: "Premier"
+    second: "Deuxième"
+    third: "Troisième"
+    placeholder: "Sélectionner un étage"
+  state:
+    stable: "Stable"
+    at_risk: "À risque"
+    critical: "Critique"
+    placeholder: "Sélectionner un état"
+  buttons:
+    search: "Rechercher"
+    reset: "Reset"
+
+awaiting_tasks: "tâches en attente"
+view_completed_tasks: "Voir les tâches terminées"
+
+# history.html.twig
+completed_tasks_history: "Historique des tâches terminées"
+back_to_todolist: "Retour à la liste des tâches"
+no_completed_tasks: "Aucune tâche terminée à afficher."
+completed_at: "Terminé le"
+acquisition_system: "Système d'acquisition"
+no_acquisition_system: "Aucun système d'acquisition lié à cette tâche."
+
+# addas.html.twig
+
+add_acquisition_system: "Ajouter un système d'acquisition"
+cancel: "Annuler"
+number: "Numéro"
+add_as:
+  number:
+    required: "Le numéro est obligatoire."
+    invalid: "Le numéro doit comporter exactement trois chiffres."
+    placeholder: "Entrez un numéro entre 000 et 999"
+
+# add.html.twig
+room_name: "Nom de la salle"
+add_room:
+  name:
+    label: "Nom de la salle"
+    required: "Le nom de la salle est obligatoire."
+    length: "Le nom de la salle doit contenir exactement {{ limit }} caractères."
+    pattern: "Le nom doit commencer par une lettre suivie de trois chiffres."
+  floor:
+    label: "Étage"
+    placeholder: "Sélectionnez un étage"
+    required: "Un étage est obligatoire."
+  nb_windows:
+    label: "Nombre de fenêtres"
+    positive: "Le nombre de fenêtres ne peut pas être négatif."
+    placeholder: "Ex : 2"
+  nb_heaters:
+    label: "Nombre de radiateurs"
+    positive: "Le nombre de radiateurs ne peut pas être négatif."
+    placeholder: "Ex : 2"
+  surface:
+    label: "Surface (m²)"
+    positive: "La surface doit être supérieure à zéro."
+    range: "La surface doit être comprise entre {{ min }} m² et {{ max }} m²."
+    placeholder: "Ex : 25.5"
+  cardinal:
+    label: "Orientation cardinale"
+    placeholder: "Sélectionnez une orientation"
+    required: "Une orientation est obligatoire."
+
+_delete_room:
+  modal:
+    title: "Confirmation de Suppression"
+    close: "Fermer"
+    confirmation: "Êtes-vous sûr de vouloir supprimer la salle %room% ?"
+    warning: "Si un système d'acquisition est assigné, il sera automatiquement dé-assigné."
+    delete_button: "Supprimer"
+    cancel_button: "Annuler"
+
 # translations/messages.fr.yaml
-room:
-  add_success: "Salle ajoutée avec succès."
-  delete_success: "Salle supprimée avec succès."
-  name_label: "Nom de la Salle"
-  floor_label: "Étage"
-  description_label: "Description"
-  submit_button: "Ajouter la Salle"
-  cancel_button: "Annuler"
-  validation:
-    name_not_blank: "Le nom de la salle ne peut pas être vide."
-    name_regex: "Le nom doit commencer par une lettre suivie d'au moins trois chiffres."
+sensor_state:
+  assignment_pending: "Une demande d'assignation ou de dé-assignation du système d'acquisition est en attente."
+  linked: "Un système d'acquisition est assigné à cette salle. Vous pouvez demander sa dé-assignation."
+  not_linked: "Vous pouvez demander l'installation d'un système d'acquisition dans cette salle."
+  probably_broken: "Le système de capteurs semble cassé et nécessite une maintenance."
+  unspecified: "L'état du système d'acquisition n'est pas spécifié."
+cancel_installation: "Annuler l'installation"
+request_unassignment: "Demander la dé-assignation"
+request_assignment: "Demander l'assignation"
+request_maintenance: "Demander une maintenance"
+room_state_text: "État de la salle"
+room_state:
+  stable: "Stable"
+  at_risk: "À risque"
+  critical: "Critique"
+
+begin_task: "Commencer la tâche"
+validate_task: "Valider la tâche"
+begin_task_confirmation: "En confirmant, le chargé de mission verra que vous avez commencé la tâche."
+validate_task_confirmation: "En confirmant, vous certifiez que la tâche est terminée. Le chargé de mission sera informé."
+begin: "Commencer"
+not_now: "Pas maintenant"
+choose_acquisition_system: "Choisissez le système d'acquisition maintenant assigné à cette salle :"
+choose_placeholder: "Choisir..."
+no_acquisition_system_required: "Cette tâche ne nécessite pas de système d'acquisition."
+confirm: "Confirmer"
+installation: "Installation"
+uninstallation: "Désinstallation"
+
+# advices
+# Général
+no_value_measured: "Aucune valeur mesurée"
+
+# Température
+critical_error_verify_sensor: " Vérifiez l'état du capteur."
+heating_period_check_heating: "Vérifiez le système de chauffage et ajustez pour atteindre 19°C."
+heating_period_reduce_heating: "Réduisez le chauffage pour éviter la surconsommation."
+non_heating_adjust_ac: "Ajustez la climatisation pour atteindre 26°C si disponible."
+non_heating_activate_ac: "Activez la climatisation/ventilation (max 26°C) et aérez."
+optimal_temperature_maintained: "Température optimale maintenue."
+
+# Humidité
+urgently_ventilate: "Ventilez d'urgence; envisagez un déshumidificateur."
+monitor_and_ventilate_if_needed: "Surveillez et aérez si nécessaire."
+optimal_humidity_level: "Niveau d'humidité optimal."
+
+# CO₂
+co2: "CO₂"
+check_sensor_status: "Vérifiez l'état du capteur."
+ventilate_immediately: "Ventilez immédiatement."
+consider_ventilation_soon: "Pensez à aérer."
+good_air_quality: "Bonne qualité de l'air."
+
+# Tooltip pour les barres de progression
+temperature_ranges:
+  heating_period:
+    low: "10-17°C"
+    warning_low: "17-19°C"
+    optimal: "19-21°C"
+    warning_high: "21-23°C"
+    high: "23-35°C"
+  non_heating_period:
+    low: "10-22°C"
+    warning_low: "22-24°C"
+    optimal: "24-28°C"
+    warning_high: "28-30°C"
+    high: "30-35°C"
+
+humidity_ranges:
+  low: "0-20%"
+  warning_low: "20-30%"
+  optimal: "30-60%"
+  warning_high: "60-70%"
+  high: "> 70%"
+
+co2_ranges:
+  low: "< 440 ppm"
+  optimal: "440-1000 ppm"
+  warning: "1000-1500 ppm"
+  high: "> 1500 ppm"
+
+##
+
+# edit.html.twig
+
+indicate_as: " Veuillez indiquer si le système d'acquisition est opérationnel après la maintenance."
+yes_repaired: "Oui, c'est réparé"
+repaired?: "Le système d'acquisition est-il réparé ?"
+
+# Weather
+today_weather_forecast: "Prévisions météo d'aujourd'hui"
+min_temperature: "Température minimale"
+max_temperature: "Température maximale"
+precipitation: "Précipitations"
+
+# Advice
+extreme_heat_advice: "Chaleur extrême attendue ! Baissez les réglages des radiateurs et ouvrez les fenêtres ou les portes pour ventiler la salle de classe. Surveillez la température pour garantir le confort."
+very_hot_advice: "Il fait très chaud aujourd'hui. Pensez à réduire les réglages des radiateurs et ventilez la salle en ouvrant fenêtres ou portes pour maintenir un environnement confortable."
+comfortable_temperature_advice: "Températures confortables. Ajustez les réglages des radiateurs pour maintenir un environnement agréable. Ventilez si nécessaire pour garder l'air frais."
+freezing_temperature_advice: "Températures glaciales. Assurez-vous que les radiateurs sont réglés à une température élevée pour garder la salle de classe chaude. Gardez les fenêtres fermées pour conserver la chaleur."
+cold_temperature_advice: "Il fait froid aujourd'hui. Augmentez les réglages des radiateurs si nécessaire et veillez à ce que les fenêtres soient fermées pour maintenir la chaleur."
+extremely_low_temperature_advice: "Températures extrêmement basses ! Réglez les radiateurs au maximum pour assurer la chaleur dans la salle de classe. Minimisez l'ouverture des fenêtres pour conserver la chaleur."
+
+heavy_rainfall_advice: "De fortes précipitations sont attendues. Assurez-vous que les fenêtres sont bien fermées pour éviter l'humidité. Utilisez les portes pour ventiler si nécessaire."
+moderate_rainfall_advice: "Pluies modérées attendues. Gardez les fenêtres fermées et utilisez les portes pour ventiler la salle tout en évitant une humidité excessive."
+light_rainfall_advice: "De faibles précipitations sont attendues. Ventilez la salle en ouvrant brièvement les fenêtres ou les portes pour rafraîchir l'air sans permettre une humidité excessive."
+
+wet_conditions_advice: "Des conditions humides sont prévues. Assurez une ventilation adéquate pour éviter l'accumulation d'humidité en utilisant les portes si l'ouverture des fenêtres n'est pas idéale."
+clear_weather_advice: "Temps clair ou partiellement nuageux. Profitez de l'occasion pour ventiler la salle en ouvrant les fenêtres (ou les portes s'il fait trop froid dehors) pendant les moments les plus frais de la journée."
+good_ventilation_conditions_advice: "Bonnes conditions pour la ventilation. Ouvrez les fenêtres ou les portes pendant les pauses pour rafraîchir l'air sans perturber l'environnement de la salle."
+
+# No Advice
+actionable_advice: "Conseils d'action"
+no_specific_advice: "Aucun conseil spécifique pour aujourd'hui."
+
+
+# translations/messages.fr.yaml
+
+# Threshold Configuration
+period: "Période"
+nov_apr: "Novembre-Avril"
+may_oct: "Mai-Octobre"
+temperature_thresholds: "Seuils de température"
+humidity_thresholds: "Seuils d'humidité"
+recommended_heating_period: "Plages de température recommandées pour la période de chauffe (Novembre à Avril)"
+recommended_non_heating_period: "Plages de température recommandées pour la période hors-chauffe (Mai à Octobre)"
+recommended_humidity_ranges: "Plages d'humidité recommandées pour un confort optimal et une bonne qualité de l'air"
+recommended_values_heating: "Valeurs recommandées (période de chauffe)"
+recommended_values_non_heating: "Valeurs recommandées (période hors-chauffe)"
+recommended_humidity_values: "Valeurs d'humidité recommandées"
+critical_min: "Min Critique"
+warning_min: "Min Avertissement"
+warning_max: "Max Avertissement"
+critical_max: "Max Critique"
+
+# Descriptions for Heating Period
+critical_min_heating_desc: "16°C - Trop froid, risque d'inconfort et de problèmes de santé"
+warning_min_heating_desc: "18°C - Température minimale confortable pour la saison de chauffe"
+warning_max_heating_desc: "22°C - Température maximale recommandée pour la saison de chauffe"
+critical_max_heating_desc: "24°C - Trop chaud, consommation énergétique excessive"
+
+# Descriptions for Non-Heating Period
+critical_min_non_heating_desc: "20°C - Trop froid pour le confort en été"
+warning_min_non_heating_desc: "22°C - Limite inférieure de la zone de confort estivale"
+warning_max_non_heating_desc: "26°C - Limite supérieure de la zone de confort estivale"
+critical_max_non_heating_desc: "28°C - Trop chaud, risque d'inconfort"
+
+# Descriptions for Humidity
+critical_min_humidity_desc: "20% - Très sec, risque de problèmes respiratoires et d'électricité statique"
+warning_min_humidity_desc: "30% - Minimum pour le confort et la santé"
+warning_max_humidity_desc: "60% - Maximum pour le confort et la prévention des moisissures"
+critical_max_humidity_desc: "70% - Risque élevé de formation de moisissures et d'inconfort"
+
+# Buttons
+save_changes: "Enregistrer les modifications"
+reset_to_default: "Réinitialiser par défaut"
+reset_confirmation: "Êtes-vous sûr de vouloir réinitialiser tous les seuils à leurs valeurs par défaut ?"
