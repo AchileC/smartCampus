@@ -5,15 +5,20 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        /* Container for each chart */
         .chart-container {
             position: relative;
             height: 400px;
             width: 100%;
             margin-bottom: 2rem;
         }
+
+        /* Selector for time range buttons */
         .time-range-selector {
             margin-bottom: 1rem;
         }
+
+        /* Message displayed when no data is available */
         .no-data-message {
             position: absolute;
             top: 50%;
@@ -22,28 +27,37 @@
             text-align: center;
             color: #6c757d;
         }
+
+        /* Title styling for each chart */
         .chart-title {
             font-size: 1.2rem;
             font-weight: 500;
             margin-bottom: 1rem;
             color: #495057;
         }
+
+        /* Text styling within charts */
         .chart-text {
             color: #6c757d;
         }
+
+        /* Additional styles can be added here */
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container-fluid">
+        <!-- Header Section -->
         <div class="row">
             <div class="col-md-10 offset-md-1 bg-info py-5 position-relative">
                 <h1 class="text-center text-white mb-0">Analytics for Room {{ room.name }}</h1>
             </div>
         </div>
 
+        <!-- Main Analytics Card -->
         <div class="card w-75 mx-auto mt-4 shadow-lg">
             <div class="card-body">
+                <!-- Time Range Selection Buttons -->
                 <div class="time-range-selector text-center mb-4">
                     <div class="btn-group" role="group" aria-label="Time range selector">
                         <button type="button" class="btn btn-outline-primary active" data-range="month">Last 30 Days</button>
@@ -51,7 +65,7 @@
                     </div>
                 </div>
 
-                <!-- Temperature Chart -->
+                <!-- Temperature Evolution Chart -->
                 <div class="chart-container">
                     <h3 class="chart-title">Temperature Evolution</h3>
                     <canvas id="temperatureChart"></canvas>
@@ -61,7 +75,7 @@
                     </div>
                 </div>
 
-                <!-- Humidity Chart -->
+                <!-- Humidity Evolution Chart -->
                 <div class="chart-container">
                     <h3 class="chart-title">Humidity Evolution</h3>
                     <canvas id="humidityChart"></canvas>
@@ -71,19 +85,19 @@
                     </div>
                 </div>
 
-                <!-- CO2 Chart -->
+                <!-- CO2 Concentration Evolution Chart -->
                 <div class="chart-container">
                     <h3 class="chart-title">CO₂ Concentration Evolution</h3>
                     <canvas id="co2Chart"></canvas>
                     <div id="co2NoData" class="no-data-message d-none">
                         <i class="bi bi-exclamation-circle fs-1"></i>
-                        <p>No CO2 data available for this period</p>
+                        <p>No CO₂ data available for this period</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Back Button -->
+        <!-- Back to Room Details Button -->
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
                 <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-secondary">Back to Room Details</a>
@@ -94,34 +108,50 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Date Adapter for Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <!-- Zoom Plugin for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0/dist/chartjs-plugin-zoom.min.js"></script>
     <script>
+        // Parse historical data passed from the backend
         const historicalData = {{ historicalData|json_encode|raw }};
         console.log('Historical Data:', historicalData);
 
+        /**
+         * Transforms raw data into a format suitable for Chart.js
+         * @param {Object} data - Contains keys for temperature, humidity, and CO2
+         * @param {String} key - The specific data key ("temp", "hum", or "co2")
+         * @param {String} range - Time range ("month" or "week")
+         * @returns {Array} Array of data points with x (Date) and y (Number)
+         */
         function transformData(data, key, range) {
             if (!data || !data[key]) {
                 return [];
             }
 
+            // Define specific hours based on the selected time range
             const specificHours = range === 'month' ? [0, 4, 8, 12, 16, 20] : Array.from({ length: 24 }, (_, i) => i);
             const daysToSubtract = range === 'month' ? 30 : 7;
 
+            // Calculate the start and end dates
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - daysToSubtract);
             const endDate = new Date();
 
+            // Create a map for quick data lookup
             const dataMap = new Map();
             data[key].forEach(item => {
                 const currentDate = new Date(item.dateCapture);
                 const hour = currentDate.getHours();
                 if (specificHours.includes(hour) && currentDate >= startDate && currentDate <= endDate) {
-                    const key = currentDate.toISOString();
-                    dataMap.set(key, parseFloat(item.valeur));
+                    const keyStr = currentDate.toISOString();
+                    dataMap.set(keyStr, parseFloat(item.valeur));
                 }
             });
 
+            // Generate expected data points, inserting null for missing data
             const result = [];
             const current = new Date(startDate);
             while (current <= endDate) {
@@ -131,42 +161,74 @@
                     const isoString = date.toISOString();
                     if (date >= startDate && date <= endDate) {
                         if (dataMap.has(isoString)) {
-                            result.push({ x: date, y: dataMap.get(isoString) });
+                            result.push({ x: new Date(date), y: dataMap.get(isoString) });
                         } else {
-                            result.push({ x: date, y: null });
+                            result.push({ x: new Date(date), y: null });
                         }
                     }
                 });
                 current.setDate(current.getDate() + 1);
             }
 
+            // Sort the data points chronologically
             result.sort((a, b) => new Date(a.x) - new Date(b.x));
 
             return result;
         }
 
+        /**
+         * Calculates the average of valid y-values in the dataset
+         * @param {Array} data - Array of data points with y-values
+         * @returns {Number|null} The average value or null if no valid data
+         */
+        function calculateAverage(data) {
+            const validData = data.filter(point => point.y !== null && !isNaN(point.y));
+            if (validData.length === 0) return null;
+            const sum = validData.reduce((acc, point) => acc + point.y, 0);
+            return (sum / validData.length).toFixed(2);
+        }
+
+        /**
+         * Initializes or updates a Chart.js chart
+         * @param {String} chartId - The ID of the canvas element
+         * @param {String} label - The label for the dataset
+         * @param {Array} data - Array of data points
+         * @param {String} yAxisLabel - Label for the Y-axis
+         * @param {String} color - Color for the chart line
+         * @param {Number} min - Minimum value for the Y-axis
+         * @param {Number} max - Maximum value for the Y-axis
+         * @param {String} range - Time range ("month" or "week")
+         */
         function updateChart(chartId, label, data, yAxisLabel, color, min, max, range) {
             const ctx = document.getElementById(chartId);
             const noDataDiv = document.getElementById(chartId.replace('Chart', 'NoData'));
 
+            // Destroy existing chart instance if present
             if (ctx.chart) {
                 ctx.chart.destroy();
             }
 
+            // Handle cases with no data
             if (!data || data.length === 0) {
                 ctx.style.display = 'none';
                 noDataDiv.classList.remove('d-none');
                 return;
             }
 
+            // Display chart and hide "No data" message
             ctx.style.display = 'block';
             noDataDiv.classList.add('d-none');
 
+            // Calculate average value for the dataset
+            const average = calculateAverage(data);
+
+            // Define the date range for the X-axis
             const endDate = new Date();
             const daysToSubtract = range === 'month' ? 30 : 7;
             const startDate = new Date();
             startDate.setDate(startDate.getDate() - daysToSubtract);
 
+            // Initialize the Chart.js instance
             ctx.chart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -181,6 +243,16 @@
                             fill: true,
                             pointRadius: 0,
                             pointHoverRadius: 1,
+                            spanGaps: false
+                        },
+                        {
+                            label: 'Average',
+                            data: average !== null ? data.map(point => ({ x: point.x, y: average })) : [],
+                            borderColor: 'rgba(255, 182, 193, 1)', // Light pink color for average line
+                            borderWidth: 1.5,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false,
                             spanGaps: false
                         }
                     ]
@@ -198,6 +270,28 @@
                         tooltip: {
                             mode: 'index',
                             intersect: false
+                        },
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                                modifierKey: 'ctrl'
+                            },
+                            zoom: {
+                                wheel: {
+                                    enabled: true
+                                },
+                                pinch: {
+                                    enabled: true
+                                },
+                                mode: 'x',
+                            },
+                            limits: {
+                                x: {
+                                    min: startDate,
+                                    max: endDate
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -232,16 +326,28 @@
                                 color: '#6c757d'
                             }
                         }
-                    }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                    maintainAspectRatio: false
                 }
             });
         }
 
+        /**
+         * Updates all charts based on the selected time range
+         * @param {Object} data - Historical data for all metrics
+         * @param {String} range - Selected time range ("month" or "week")
+         */
         function updateAllCharts(data, range) {
+            // Transform data for each metric
             const tempData = transformData(data, 'temp', range);
             const humData  = transformData(data, 'hum', range);
             const co2Data  = transformData(data, 'co2', range);
 
+            // Update Temperature Chart
             updateChart(
                 'temperatureChart',
                 'Temperature',
@@ -253,6 +359,7 @@
                 range
             );
 
+            // Update Humidity Chart
             updateChart(
                 'humidityChart',
                 'Humidity',
@@ -264,6 +371,7 @@
                 range
             );
 
+            // Update CO2 Concentration Chart
             updateChart(
                 'co2Chart',
                 'CO₂ Concentration',
@@ -276,18 +384,23 @@
             );
         }
 
+        // Initialize charts and event listeners once the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             const timeRangeButtons = document.querySelectorAll('.time-range-selector button');
 
+            // Add click event listeners to time range buttons
             timeRangeButtons.forEach(button => {
                 button.addEventListener('click', function() {
+                    // Remove 'active' class from all buttons and add to the clicked button
                     timeRangeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
+
+                    // Update charts based on the selected range
                     updateAllCharts(historicalData, this.dataset.range);
                 });
             });
 
-            // Default display: "Last 30 Days"
+            // Default view: Last 30 Days
             updateAllCharts(historicalData, 'month');
         });
     </script>
