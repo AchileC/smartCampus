@@ -6,7 +6,7 @@
         "dateCapture": "2025-01-09 10:00:00",
         "localisation": "C004",
         "description": "Capture de temp",
-        "nomsa": "ESP-021"
+        "nomsa": "AS-021"
     },
     {
         "id": 43885,
@@ -15,7 +15,7 @@
         "dateCapture": "2025-01-09 10:00:00",
         "localisation": "C004",
         "description": "Capture de hum",
-        "nomsa": "ESP-021"
+        "nomsa": "AS-021"
     },
     {
         "id": 43886,
@@ -24,6 +24,6 @@
         "dateCapture": "2025-01-09 10:00:00",
         "localisation": "C004",
         "description": "Capture de co2",
-        "nomsa": "ESP-021"
+        "nomsa": "AS-021"
     }
 ]
