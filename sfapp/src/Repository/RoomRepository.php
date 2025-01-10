@@ -188,11 +188,6 @@ class RoomRepository extends ServiceEntityRepository
         // 1. Récupération depuis l’API
         $sensorData = $this->fetchSensorDataFromApi($acquisitionSystem);
 
-        // 2. Vérification qu’on a au moins une donnée
-        if (empty($sensorData)) {
-            throw new \RuntimeException('Aucune donnée récupérée depuis l’API.');
-        }
-
         // 3. Construction des paths (live et history)
         $localisation = $sensorData[0]['localisation'] ?? 'unknown';
         $liveFilePath = $this->jsonDirectory . '/live/' . $localisation . '.json';

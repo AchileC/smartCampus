@@ -107,7 +107,7 @@ class RoomController extends AbstractController
 
                 if ($lastUpdatedAt instanceof \DateTimeInterface) {
                     // Vérifie si la dernière mise à jour est plus ancienne que le cutoff
-                    if ($lastUpdatedAt < $cutoffDate) {
+                    if ($lastUpdatedAt > $cutoffDate) {
                         // Si plus de 15 minutes => on relance la mise à jour de l'état
                         try {
                             $roomRepository->updateRoomState($room);
