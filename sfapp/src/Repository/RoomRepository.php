@@ -52,7 +52,28 @@ class RoomRepository extends ServiceEntityRepository
         $this->httpClient = $httpClient;
         $this->projectDir = $projectDir;
         $this->jsonDirectory = $jsonDirectory;
+
+
+        $liveDir = $this->jsonDirectory . '/live';
+        if (!is_dir($liveDir)) {
+            if (!mkdir($liveDir, 0755, true) && !is_dir($liveDir)) {
+                throw new \RuntimeException(sprintf('Le dossier "%s" n\'a pas pu être créé.', $liveDir));
+            }
+        }
+    
+        // Assurer que le dossier 'history' existe
+        $historyDir = $this->jsonDirectory . '/history';
+        if (!is_dir($historyDir)) {
+            if (!mkdir($historyDir, 0755, true) && !is_dir($historyDir)) {
+                throw new \RuntimeException(sprintf('Le dossier "%s" n\'a pas pu être créé.', $historyDir));
+            }
+        }
     }
+
+    
+
+
+
 
     /* ======================================================
      *                 PARTIE REQUÊTES BASIQUES
@@ -169,7 +190,7 @@ class RoomRepository extends ServiceEntityRepository
 
         // 3. Construction des paths (live et history)
         $localisation = $sensorData[0]['localisation'] ?? 'unknown';
-        $liveFilePath = $this->jsonDirectory . '/' . $localisation . '.json';
+        $liveFilePath = $this->jsonDirectory . '/live/' . $localisation . '.json';
         $historyFilePath = $this->jsonDirectory . '/history/' . $localisation . '_history.json';
 
         // 4. Écrire le "live"
@@ -190,7 +211,7 @@ class RoomRepository extends ServiceEntityRepository
     public function loadSensorData(AcquisitionSystem $acquisitionSystem): array
     {
         $room = $acquisitionSystem->getRoom();
-        $filePath = __DIR__ . '/../../assets/json/' . $room->getName() . '.json';
+        $filePath = $this->jsonDirectory . '/live/' . $room->getName() . '.json';
 
         if (!file_exists($filePath)) {
             return []; // Fichier non trouvé => on renvoie un tableau vide
@@ -538,7 +559,7 @@ class RoomRepository extends ServiceEntityRepository
        ====================================================== */
 
     /**
-     * @brief Fetch historical data from the external API for a specific range (week, month, year).
+     * @brief Fetch historical data from the external API for a specific range (week, month).
      *        Then store it in a local JSON file.
      *
      * @param AcquisitionSystem $acquisitionSystem
@@ -594,8 +615,7 @@ class RoomRepository extends ServiceEntityRepository
             }
         }
 
-        // Sauvegarde en local dans un fichier d’historique, par exemple
-        $historyFile = $this->jsonDirectory . '/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
+        $historyFile = $this->jsonDirectory . '/history/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
         file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));
 
         return $data;
