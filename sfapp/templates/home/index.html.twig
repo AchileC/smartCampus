@@ -23,8 +23,8 @@
 
         <!-- Contenu principal en grille -->
         <div class="row gx-3 align-items-stretch" style="height: calc(100% - 300px);">
-            <!-- Colonne gauche -->
-            <div class="col-6 d-flex flex-column gap-3">
+        <!-- Colonne gauche -->
+            <div class="col-12 col-md-6 d-flex flex-column gap-3">
                 <!-- Infos -->
                 <div class="card p-3 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="border-radius: 10px;">
                     <h3 class="text-center mb-4">{{ 'infos'|trans }}</h3>
@@ -117,7 +117,7 @@
             </div>
 
             <!-- Colonne droite : To do list -->
-            <div class="col-6">
+            <div class="col-12 col-md-6">
                 <div class="card p-5 h-60 d-flex flex-column justify-content-between" style="border-radius: 10px; max-height: 500px;">
                     {% if is_granted('ROLE_TECHNICIAN') %}
                         <h3 class="text-center">{{ 'todolist'|trans }}</h3>

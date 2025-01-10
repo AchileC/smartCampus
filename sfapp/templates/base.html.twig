@@ -11,438 +11,7 @@
     <!-- Bootstrap JS (avec Popper) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block stylesheets %}
-        <style>
-
-            #toggleSidebarButton {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1051;
-                background-color: #343a40;
-                color: white;
-                border: none;
-                padding: 10px 15px;
-                border-radius: 5px;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-                cursor: pointer;
-                transition: left 0.4s ease-in-out;
-            }
-
-            #toggleSidebarButton.with-sidebar {
-                left: 270px; /* 250px de sidebar + 20px de marge */
-                transition: left 0.4s ease-in-out;
-            }
-
-            /* Responsive: Écrans de largeur maximale 768px */
-            @media (max-width: 768px) {
-                /* Réduire la largeur de la sidebar */
-                #sidebar {
-                    width: 200px;
-                    left: -200px; /* Ajuster la position fermée */
-                }
-
-                /* Décalage du contenu principal */
-                #main-content.with-sidebar {
-                    margin-left: 200px;
-                }
-
-                /* Ajuster la position du bouton de toggle */
-                #toggleSidebarButton.with-sidebar {
-                    left: 220px; /* 200px de sidebar + 20px de marge */
-                }
-            }
-
-            /* Styles par défaut pour les écrans larges (min-width: 769px) */
-            @media (min-width: 769px) {
-                #sidebar {
-                    width: 250px;
-                }
-            }
-
-            .badge-custom-size {
-                width: 100px;
-                height: 25px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                padding: 0.5em 0.75em;
-                font-size: 10px;
-                border-radius: 2rem;
-                font-weight: bold;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            /* Classe pour les bordures rouges */
-            .is-invalid {
-                border-color: #dc3545 !important;
-            }
-
-            /* Classe pour changer la couleur du bouton en rouge */
-            .card {
-                border-radius: 10px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transition: transform 0.2s;
-            }
-
-            .card:hover {
-                transform: translateY(-5px);
-            }
-
-            /* Styles pour les boutons */
-            .btn-primary {
-                background-color: #007bff;
-                border-color: #007bff;
-                transition: background-color 0.3s, border-color 0.3s;
-            }
-
-            .btn-primary:hover {
-                background-color: #0056b3;
-                border-color: #004085;
-            }
-
-            .btn-secondary {
-                background-color: #6c757d;
-                border-color: #6c757d;
-                transition: background-color 0.3s, border-color 0.3s;
-            }
-
-            .btn-secondary:hover {
-                background-color: #5a6268;
-                border-color: #545b62;
-            }
-
-            .btn-danger {
-                background-color: #dc3545;
-                border-color: #dc3545;
-                transition: background-color 0.3s, border-color 0.3s;
-            }
-
-            .btn-danger:hover {
-                background-color: #c82333;
-                border-color: #bd2130;
-            }
-
-            .btn-warning {
-                background-color: #ffc107;
-                border-color: #ffc107;
-                color: #212529;
-                transition: background-color 0.3s, border-color 0.3s;
-            }
-
-            .btn-warning:hover {
-                background-color: #e0a800;
-                border-color: #d39e00;
-            }
-
-            /* Amélioration des labels et inputs */
-            .form-label {
-                font-weight: 600;
-                color: lightslategray;
-            }
-
-            .form-control,
-            .form-select {
-                border-radius: 5px;
-                box-shadow: none;
-                transition: border-color 0.3s, box-shadow 0.3s;
-            }
-
-            .form-control:focus,
-            .form-select:focus {
-                border-color: #80bdff;
-                box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-            }
-
-            /* Animation pour les erreurs */
-            .shake {
-                animation: shake 0.3s;
-            }
-
-            @keyframes shake {
-                0% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                50% { transform: translateX(5px); }
-                75% { transform: translateX(-5px); }
-                100% { transform: translateX(0); }
-            }
-
-            /* Style pour les badges de l'état de la salle */
-            .badge {
-                font-size: 1rem;
-                padding: 0.5em 0.75em;
-            }
-
-            .menu-button {
-                margin: 20px;
-                font-size: 24px;
-                border: none;
-                background: none;
-                cursor: pointer;
-                padding: 0;
-            }
-
-            .menu-button i {
-                transition: transform 0.3s ease, opacity 0.3s ease;
-            }
-
-            .menu-button i.bi-x {
-                transform: rotate(90deg);
-            }
-
-            .offcanvas-header {
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-            }
-
-            body {
-                font-family: Arial, sans-serif;
-                display: flex;
-                min-height: 100vh;
-                margin: 0;
-            }
-
-            /* Sidebar styles */
-            #sidebar {
-                height: 100%;
-                position: fixed;
-                z-index: 1050;
-                top: 0;
-                left: -250px; /* Par défaut, la sidebar est fermée */
-                background-color: #343a40;
-                color: #fff;
-                padding-top: 20px;
-                transition: left 0.6s;
-            }
-
-            #sidebar .brand {
-                display: flex;
-                align-items: center;
-                padding: 0 15px;
-                font-size: 1.25rem;
-                font-weight: bold;
-            }
-
-            #sidebar .brand img {
-                width: 30px;
-                height: 30px;
-                margin-right: 10px;
-                border-radius: 50%;
-            }
-
-            #sidebar hr {
-                border-color: rgba(255, 255, 255, 0.1);
-            }
-
-            #sidebar .nav-link {
-                color: #adb5bd;
-                font-size: 16px;
-                display: flex;
-                align-items: center;
-                padding: 10px 15px;
-            }
-
-            #sidebar .nav-link.active {
-                color: #fff;
-                background-color: #007bff;
-            }
-
-            #sidebar .nav-link i {
-                margin-right: 10px;
-            }
-
-            #sidebar .nav-link:hover {
-                background-color: #495057;
-                color: #fff;
-            }
-
-            #sidebar .user-section {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                padding: 10px 15px;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-                display: flex;
-                align-items: center;
-            }
-
-            #sidebar .user-section i {
-                font-size: 1.8rem;
-                color: #adb5bd;
-                margin-right: 10px;
-            }
-
-            #sidebar .user-section .dropdown-toggle {
-                color: #adb5bd;
-            }
-
-            #sidebar .user-section .dropdown-menu {
-                background-color: #343a40;
-            }
-
-            #sidebar .user-section .dropdown-menu a {
-                color: #adb5bd;
-            }
-
-            #sidebar .user-section .dropdown-menu a:hover {
-                background-color: #495057;
-                color: #fff;
-            }
-
-            #sidebar.open {
-                left: 0;
-            }
-
-            #main-content {
-                flex: 1;
-                transition: margin-left 0.3s;
-                padding: 20px;
-                margin-left: 0;
-            }
-
-            #main-content.with-sidebar {
-                margin-left: 250px;
-            }
-
-            [data-bs-theme="dark"] #theme-label {
-                color: #ffffff;
-            }
-
-            [data-bs-theme="light"] #theme-label {
-                color: #adb5bd;
-            }
-
-            [data-bs-theme="dark"] .card {
-                background-color: #1e1e1e;
-                border-color: #333333;
-            }
-
-            [data-bs-theme="dark"] .btn-secondary {
-                background-color: #444444;
-                border-color: #555555;
-            }
-
-            .theme-switch-wrapper {
-                position: absolute;
-                bottom: 60px;
-                width: 100%;
-                padding: 10px 15px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            #theme-label {
-                font-weight: 500;
-                transition: color 0.3s ease;
-            }
-
-            /* Styles pour le bouton de paramètres */
-            .settings-button {
-                position: absolute; /* Place le bouton par rapport à la barre latérale */
-                bottom: 1.25rem; /* Distance du bas de la barre latérale */
-                left: 80%; /* Centre horizontalement si nécessaire */
-                transform: translateX(-50%); /* Centre exact si aligné au centre */
-                z-index: 10;
-                margin-left: 5px; /* Réduit l'espace entre le bouton utilisateur et le bouton paramètres */
-                background-color: transparent;
-                border: none;
-                color: #adb5bd;
-                cursor: pointer;
-                padding: 0; /* Supprime le padding pour un bouton plus compact */
-                transition: color 0.3s;
-            }
-
-            .settings-button:hover {
-                color: #fff;
-            }
-
-            /* Optionnel : Ajuster la position si nécessaire */
-            .user-section {
-                display: flex;
-                align-items: center;
-            }
-
-
-            .dropdown-menu {
-                max-height: 300px;
-                overflow-y: auto;
-                width: 340px;
-                padding: 0;
-            }
-            .list-group-item {
-                font-size: 0.9rem;
-                line-height: 1.2;
-            }
-
-            .list-group-item::after {
-                content: "";
-                display: block;
-                margin: 0 auto;
-                width: 80%; /* Ajustez la largeur selon vos préférences */
-                padding-bottom: 5px; /* Optionnel, si vous voulez un peu d'espace */
-            }
-
-            .btn-link {
-                position: relative;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                /* Ajoutez une taille fixe si nécessaire */
-                width: 40px;
-                height: 40px;
-            }
-
-            .notification-badge {
-                position: absolute;
-                top: 0;
-                right: 0;
-                transform: translate(50%, -50%);
-                font-size: 0.8rem;
-                font-weight: bold;
-                color: white;
-                background-color: #dc3545;
-                border-radius: 50%;
-                padding: 0.25em 0.45em;
-                line-height: 1;
-                z-index: 10;
-                width: 20px;
-                height: 20px;
-                box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
-                pointer-events: none;
-            }
-
-
-            .list-group-item.fw-bold {
-                background: #2c2f33;
-                border-left: 4px solid #0d6efd;
-                position: relative;
-                padding-left: 1rem;
-            }
-
-            .list-group-item.fw-muted {
-                border-left: 4px solid #343a40;
-                position: relative;
-                padding-left: 1rem;
-                color: #6c757d;
-            }
-
-            .dropdown-menu > li.sticky-header {
-                position: sticky;
-                top: 0;
-                z-index: 20;
-                background-color: #343a40;
-                color: #ffffff;
-                padding: 10px 0;
-                border-bottom: 1px solid #555;
-                margin: 0;
-            }
-
-
-
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/baseStyle.css') }}">
     {% endblock %}
 </head>
 <div>
@@ -505,11 +74,14 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
                                 <!-- Bouton Logout -->
-                                <form method="post" action="{{ path('app_logout', { '_locale': app.request.locale }) }}">
+                                <form method="post" action="{{ path('app_logout', { '_locale': app.request.locale }) }}" class="m-0 p-0">
                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                    <button type="submit" class="btn btn-outline-danger">
+                                    <button type="submit"
+                                            class="dropdown-item text-danger d-flex align-items-center logout-item">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
                                         {{ 'logout'|trans }}
                                     </button>
+
                                 </form>
 
                             </li>
@@ -632,11 +204,16 @@
 
             // Si on est sur app_home, on force la sidebar à être ouverte et on masque le bouton
             if (currentRoute === "app_home") {
-                sidebar.classList.add("open");
-                mainContent.classList.add("with-sidebar");
-                toggleButton.classList.add("with-sidebar");
-                // On masque le bouton (plus propre de le faire en CSS, mais à titre d’exemple en JS :
-                toggleButton.style.display = "none";
+                if (window.innerWidth >= 768) {
+                    sidebar.classList.add("open");
+                    mainContent.classList.add("with-sidebar");
+                    toggleButton.classList.add("with-sidebar");
+                    toggleButton.style.display = "none";
+                } else {
+                    // Sur mobile (< 768px), on ne modifie rien => la sidebar reste fermée
+                    // Optionnel : s’assurer que le bouton hamburger soit toujours visible sur mobile
+                    toggleButton.style.display = "block";
+                }
             }
 
             /**
@@ -648,15 +225,22 @@
              */
             // Fonction pour basculer la sidebar et ajuster le bouton
             window.toggleSidebar = function () {
+                const isMobile = window.innerWidth <= 768; // Vérifie si on est sur mobile
                 const isOpen = sidebar.classList.toggle('open');
-                mainContent.classList.toggle('with-sidebar', isOpen);
-                toggleButton.classList.toggle('with-sidebar', isOpen);
+
+                if (isMobile) {
+                    // Sur mobile : ne modifiez pas le contenu principal
+                    toggleButton.classList.toggle('with-sidebar', isOpen);
+                } else {
+                    // Sur desktop : déplacez le contenu principal
+                    mainContent.classList.toggle('with-sidebar', isOpen);
+                    toggleButton.classList.toggle('with-sidebar', isOpen);
+                }
 
                 // Basculer l'icône
                 toggleIcon.classList.toggle('bi-list', !isOpen);
                 toggleIcon.classList.toggle('bi-arrow-bar-left', isOpen);
             };
-
             /**
              * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
              *
