@@ -38,7 +38,8 @@
         "symfony/css-selector": "6.4.*",
         "symfony/maker-bundle": "^1.61",
         "symfony/phpunit-bridge": "^7.1",
-        "symfony/stopwatch": "6.4.*"
+        "symfony/stopwatch": "6.4.*",
+      "ext-http": "*"
     },
     "config": {
         "allow-plugins": {

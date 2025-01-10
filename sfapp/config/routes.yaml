@@ -7,8 +7,21 @@ controllers:
 
 app:
     resource: '../src/Controller/'
-    type: annotation
+    type: attribute
     prefix: '/{_locale}'
+    requirements:
+        _locale: 'en|fr'
+
+app_home:
+    path: '/{_locale}/home'
+    controller: App\Controller\HomeController::index
+    requirements:
+        _locale: 'en|fr'
+
+
+app_login:
+    path: '/{_locale}/login'
+    controller: App\Controller\SecurityController::login
     requirements:
         _locale: 'en|fr'
 

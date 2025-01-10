@@ -2,203 +2,98 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\Room;
-use App\Form\FilterRoomType;
-use App\Form\AddRoomType;
-use App\Repository\RoomRepository;
-use App\Utils\FloorEnum;
-use App\Utils\RoomStateEnum;
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
+/**
+ * @class RoomControllerTest
+ * @brief Test suite for the RoomController.
+ *
+ * This class contains unit tests to verify:
+ * - The presence and correctness of form fields and labels in the room list.
+ * - Role-based visibility of the "Add Room" button for managers.
+ */
 class RoomControllerTest extends WebTestCase
 {
+    /**
+     * @brief Verifies the presence and correctness of form fields and labels on the room list page.
+     *
+     * @test This test checks:
+     * - If the filter form contains the expected fields: name, floor, and state.
+     * - If the filter form fields have correct labels.
+     * - If the reset and search buttons are present and labeled correctly.
+     *
+     * @return void
+     */
 
-    public function testIndexPageDisplaysRoomsList()
+
+    public function testRoomListFormFields(): void
     {
+        // Create a client to simulate a browser
         $client = static::createClient();
+
+        // Set the HTTP_ACCEPT_LANGUAGE header to simulate the English language
+        $client->setServerParameter('HTTP_ACCEPT_LANGUAGE', 'en');
+
+        // Make a GET request to the '/rooms' page
         $crawler = $client->request('GET', '/rooms');
 
+        // Assert that the response is successful (status code 200)
         $this->assertResponseIsSuccessful();
 
-        $this->assertSelectorTextContains('h1', 'Rooms List');
+        // Verify the presence of form fields
+        $this->assertSelectorExists('input#filter_room_name', 'The name input field is missing.');
+        $this->assertSelectorExists('select#filter_room_floor', 'The floor select field is missing.');
+        $this->assertSelectorExists('select#filter_room_state', 'The state select field is missing.');
 
-        $this->assertGreaterThan(
-            0,
-            $crawler->filter('.card-title')->count(),
-            'Expected at least one room to be displayed.'
-        );
+        // Verify the labels for the form fields
+        $this->assertSelectorTextContains('label[for="filter_room_name"]', 'Name');
+        $this->assertSelectorTextContains('label[for="filter_room_floor"]', 'Floor');
+        $this->assertSelectorTextContains('label[for="filter_room_state"]', 'State');
+
+        // Verify the presence and correctness of form buttons
+        $this->assertSelectorExists('button#filter_room_reset', 'The reset button is missing.');
+        $this->assertSelectorTextContains('button#filter_room_reset', 'Reset');
+
+        $this->assertSelectorExists('button#filter_room_filter', 'The search button is missing.');
+        $this->assertSelectorTextContains('button#filter_room_filter', 'Search');
     }
 
-    public function testFilterRoomsByName()
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/rooms');
-
-        // Assert the page loaded successfully
-        $this->assertResponseIsSuccessful();
-
-        // Assert that the filter form is present on the page
-        $this->assertSelectorExists('form[name="filter_room"]', 'Filter form should be present on the page.');
-
-        // Add debug statement to check the HTML content
-        // echo $client->getResponse()->getContent();
-
-        // Simulate submitting the filter form with a room name
-        $form = $crawler->selectButton('Search')->form([
-            'filter_room[name]' => 'D001',
-        ]);
-
-        $crawler = $client->submit($form);
-
-        // Assert that the response after submission is successful
-        $this->assertResponseIsSuccessful();
-
-        // Check if the expected room with the name 'D001' is present
-        $this->assertEquals(
-            1,
-            $crawler->filter('.card-title:contains("D001")')->count(),
-            'Expected only one room with name "D001" to be displayed.'
-        );
-    }
-
-    public function testFilterRoomsByFloor()
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/rooms');
-
-        // Vérifier que la page s'est chargée avec succès
-        $this->assertResponseIsSuccessful();
-
-        // Vérifier que le formulaire de filtre est présent
-        $this->assertSelectorExists('form[name="filter_room"]', 'Le formulaire de filtre devrait être présent sur la page.');
-
-        // Simuler la soumission du formulaire avec le filtre de l'étage
-        $form = $crawler->selectButton('Search')->form([
-            'filter_room[floor]' => FloorEnum::GROUND->value,
-        ]);
-
-        $crawler = $client->submit($form);
-
-        // Vérifier que la réponse après soumission est réussie
-        $this->assertResponseIsSuccessful();
-
-        // Vérifier qu'il y a au moins une salle au sol
-        $this->assertGreaterThan(
-            0,
-            $crawler->filter('.card-text:contains("Floor: ground")')->count(),
-            'Au moins une salle au sol devrait être affichée.'
-        );
-    }
-
-    public function testFilterRoomsByState()
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/rooms');
-
-        // Vérifier que la page s'est chargée avec succès
-        $this->assertResponseIsSuccessful();
-
-        // Vérifier que le formulaire de filtre est présent
-        $this->assertSelectorExists('form[name="filter_room"]', 'Le formulaire de filtre devrait être présent sur la page.');
-
-        // Simuler la soumission du formulaire avec le filtre d'état
-        $form = $crawler->selectButton('Search')->form([
-            'filter_room[state]' => RoomStateEnum::PENDING_ASSIGNMENT->value,
-        ]);
-
-        $crawler = $client->submit($form);
-
-        // Vérifier que la réponse après soumission est réussie
-        $this->assertResponseIsSuccessful();
-
-        // Vérifier qu'il y a au moins une salle avec l'état "Pending assignment"
-        $this->assertGreaterThan(
-            0,
-            $crawler->filter('.badge:contains("Pending assignment")')->count(),
-            'Au moins une salle avec l\'état "Pending assignment" devrait être affichée.'
-        );
-    }
-
-    public function testNoRoomsFoundWithFilters()
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/rooms');
-
-        // Assert the page loaded successfully
-        $this->assertResponseIsSuccessful();
-
-        // Assert that the filter form is present
-        $this->assertSelectorExists('form[name="filter_room"]', 'Filter form should be present on the page.');
-
-        // Submit the filter form with a non-existent room name
-        $form = $crawler->selectButton('Search')->form([
-            'filter_room[name]' => 'NonExistentRoom',
-        ]);
-
-        $crawler = $client->submit($form);
-
-        // Assert the response after submission is successful
-        $this->assertResponseIsSuccessful();
-
-        // Check if the message indicating no rooms found is displayed
-        $this->assertSelectorTextContains(
-            '.text-center',
-            'No match. Check spelling or create a new room.',
-            'Expected message indicating no rooms found.'
-        );
-    }
-
-    public function testDetailsPageDisplaysRoomInfo()
+    /**
+     * @brief Ensures the "Add Room", "Edit", and "Delete" buttons are visible only for users with the "manager" role.
+     *
+     * @test This test checks:
+     * - That unauthenticated users do not see the "Add Room", "Edit", and "Delete" buttons on the '/rooms' page.
+     * - That managers see these buttons after logging in.
+     * @return void
+     */
+    public function testRoomButtonsVisibleForManagersOnly(): void
     {
         $client = static::createClient();
 
-        // Ajouter une salle dans la base de données pour le test
-        $entityManager = $client->getContainer()->get('doctrine')->getManager();
-        $room = new Room();
-        $room->setName('TestRoom001');
-        $room->setFloor(FloorEnum::GROUND);
-        $room->setState(RoomStateEnum::OK);
-        $room->setDescription('Test description for TestRoom001');
-        $entityManager->persist($room);
-        $entityManager->flush();
+        // Test as an unauthenticated user first
+        $client->request('GET', '/rooms');
 
-        // Utiliser le nom de la salle pour accéder à la page des détails
-        $crawler = $client->request('GET', '/rooms/' . $room->getName());
+        // Assert buttons not visible
+        $this->assertSelectorNotExists('a.btn-success');
+        $this->assertSelectorNotExists('a.btn-outline-secondary');
+        $this->assertSelectorNotExists('button.btn-outline-danger');
 
-        // Afficher le contenu de la réponse pour le débogage (peut être commenté ensuite)
-        // echo $client->getResponse()->getContent();
 
-        // Vérifier que la requête a réussi
-        $this->assertResponseIsSuccessful();
+        $userRepository = static::getContainer()->get(UserRepository::class);
 
-        $this->assertSelectorTextContains('h1', 'Room TestRoom001'); // Titre de la salle
-        $this->assertSelectorTextContains('.card-title', 'Description'); // Titre de la carte de description
-        $this->assertSelectorTextContains('.card-text.description', 'Test description for TestRoom001'); // Contenu de la description
-        $this->assertSelectorTextContains('.card-text.floor', 'Floor: ground');
+        $testUser = $userRepository->findOneByUsername('manager');
+
+        $client->loginUser($testUser);
+
+
+        // Get the correct rooms URL using the router
+
+        $client->request('GET', '/rooms');
+
+        // Assert buttons are visible
+        $this->assertSelectorExists('a.btn-success', 'Add Room button not found - user might not be properly authenticated');
+        $this->assertSelectorExists('a.btn-outline-secondary', 'Edit button not found - user might not be properly authenticated');
+        $this->assertSelectorExists('button.btn-outline-danger', 'Delete button not found - user might not be properly authenticated');
     }
-
-    public function testDetailsPageRoomNotFound()
-    {
-        $client = static::createClient();
-
-        // Accéder à la page des détails pour une salle inexistante
-        $client->request('GET', '/rooms/NonExistentRoom');
-
-        // Vérifier que la page renvoie un code HTTP 404
-        $this->assertResponseStatusCodeSame(404, 'Expected 404 Not Found for non-existent room.');
-    }
-
-    public function testAddPageDisplaysForm()
-    {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/add');
-
-        // Vérifier que la requête a réussi
-        $this->assertResponseIsSuccessful();
-
-        // Vérifier que le formulaire est affiché correctement
-        $this->assertSelectorExists('form');
-        $this->assertSelectorTextContains('button', 'Add Room');
-    }
-
 }

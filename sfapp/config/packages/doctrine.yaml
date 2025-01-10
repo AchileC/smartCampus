@@ -8,6 +8,7 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+        logging: true
     orm:
         controller_resolver:
             auto_mapping: false
@@ -28,11 +29,24 @@ doctrine:
 when@test:
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: ''
+            # Configure a separate database for testing
+            url: '%env(resolve:DATABASE_TEST_URL)%'
+            dbname_suffix: '_test' # Ensures tests use a different database
+        orm:
+            auto_generate_proxy_classes: true
+            mappings:
+                App:
+                    type: attribute
+                    is_bundle: false
+                    dir: '%kernel.project_dir%/src/Entity'
+                    prefix: 'App\Entity'
+                    alias: App
 
 when@prod:
     doctrine:
+        dbal:
+            # Production-specific DBAL configuration
+            url: '%env(resolve:DATABASE_URL)%'
         orm:
             auto_generate_proxy_classes: false
             proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
