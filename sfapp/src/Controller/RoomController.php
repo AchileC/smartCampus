@@ -97,7 +97,7 @@ class RoomController extends AbstractController
         // --------------------------------------
         $now = new \DateTime();
         // Subtract 15 minutes from the current time
-        $cutoffDate = (clone $now)->sub(new \DateInterval('PT15M'));
+        $cutoffDate = (clone $now)->sub(new \DateInterval('PT3M'));
 
         foreach ($rooms as $room) {
             // On ne traite que les salles LINKED ou en ASSIGNMENT
@@ -542,28 +542,36 @@ class RoomController extends AbstractController
 
 
 
-
-    /**
+/**
  * Displays analytics for a specific room.
  *
  * @param string $name The name of the room
+ * @param string $dbname The database name associated with the room's acquisition system
  * @param RoomRepository $roomRepository The repository to fetch room data
  * @param Request $request The HTTP request
  * @return Response The response rendering the analytics page
  */
-#[Route('/rooms/{name}/analytics', name: 'app_rooms_analytics')]
+#[Route('/rooms/{name}/analytics/{dbname}', name: 'app_rooms_analytics')]
 public function analytics(
     string $name,
+    string $dbname,
     RoomRepository $roomRepository,
     Request $request
 ): Response {
+    // Récupérer la salle par nom
     $room = $roomRepository->findOneBy(['name' => $name]);
 
     if (!$room) {
         throw $this->createNotFoundException('Room not found');
     }
 
-    if (!$room->getAcquisitionSystem()) {
+    // Vérifier que le dbname correspond à l'AcquisitionSystem de la salle
+    $acquisitionSystem = $room->getAcquisitionSystem();
+    if (!$acquisitionSystem || $acquisitionSystem->getDbName() !== $dbname) {
+        throw $this->createNotFoundException('Invalid dbname for this room');
+    }
+
+    if (!$acquisitionSystem) {
         throw $this->createNotFoundException('This room has no acquisition system');
     }
 
@@ -571,7 +579,7 @@ public function analytics(
 
     // Fetch data from the API
     try {
-        $historicalData = $roomRepository->fetchHistoricalDataFromApi($room->getAcquisitionSystem(), $range);
+        $historicalData = $roomRepository->fetchHistoricalDataFromApi($acquisitionSystem, $range);
     } catch (\Exception $e) {
         $this->addFlash('error', 'Failed to fetch data: ' . $e->getMessage());
         $historicalData = [];
@@ -583,5 +591,6 @@ public function analytics(
         'range' => $range,
     ]);
 }
+
 
 }

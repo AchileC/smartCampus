@@ -100,7 +100,7 @@
         <!-- Back to Room Details Button -->
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
-                <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-secondary">Back to Room Details</a>
+                <a href="{{ path('app_rooms_details', { name: room.name}) }}" class="btn btn-outline-secondary">Back to Room Details</a>
             </div>
         </div>
     </div>
@@ -120,61 +120,73 @@
         console.log('Historical Data:', historicalData);
 
         /**
-         * Transforms raw data into a format suitable for Chart.js
-         * @param {Object} data - Contains keys for temperature, humidity, and CO2
-         * @param {String} key - The specific data key ("temp", "hum", or "co2")
-         * @param {String} range - Time range ("month" or "week")
-         * @returns {Array} Array of data points with x (Date) and y (Number)
-         */
-        function transformData(data, key, range) {
-            if (!data || !data[key]) {
-                return [];
-            }
+ * Transforms raw data into a format suitable for Chart.js by finding the closest data point to each target hour.
+ * @param {Object} data - Contains keys for temperature, humidity, and CO2
+ * @param {String} key - The specific data key ("temp", "hum", or "co2")
+ * @param {String} range - Time range ("month" or "week")
+ * @returns {Array} Array of data points with x (Date) and y (Number)
+ */
+function transformData(data, key, range) {
+    if (!data || !data[key]) {
+        return [];
+    }
 
-            // Define specific hours based on the selected time range
-            const specificHours = range === 'month' ? [0, 4, 8, 12, 16, 20] : Array.from({ length: 24 }, (_, i) => i);
-            const daysToSubtract = range === 'month' ? 30 : 7;
+    // Define specific hours based on the selected time range
+    const specificHours = range === 'month' ? [0, 4, 8, 12, 16, 20] : Array.from({ length: 24 }, (_, i) => i);
+    const daysToSubtract = range === 'month' ? 30 : 7;
 
-            // Calculate the start and end dates
-            const startDate = new Date();
-            startDate.setDate(startDate.getDate() - daysToSubtract);
-            const endDate = new Date();
+    // Define tolerance in milliseconds (e.g., 30 minutes)
+    const tolerance = 30 * 60 * 1000;
 
-            // Create a map for quick data lookup
-            const dataMap = new Map();
-            data[key].forEach(item => {
-                const currentDate = new Date(item.dateCapture);
-                const hour = currentDate.getHours();
-                if (specificHours.includes(hour) && currentDate >= startDate && currentDate <= endDate) {
-                    const keyStr = currentDate.toISOString();
-                    dataMap.set(keyStr, parseFloat(item.valeur));
+    // Calculate the start and end dates
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(endDate.getDate() - daysToSubtract);
+
+    // Sort data points by dateCapture for efficient searching
+    const sortedData = data[key].map(item => ({
+        date: new Date(item.dateCapture),
+        value: parseFloat(item.valeur)
+    })).filter(item => item.date >= startDate && item.date <= endDate)
+      .sort((a, b) => a.date - b.date);
+
+    // Initialize result array
+    const result = [];
+
+    // Iterate over each day in the range
+    for (let day = new Date(startDate); day <= endDate; day.setDate(day.getDate() + 1)) {
+        specificHours.forEach(hour => {
+            const targetDate = new Date(day);
+            targetDate.setHours(hour, 0, 0, 0);
+
+            // Find the closest data point within the tolerance
+            let closest = null;
+            let minDiff = tolerance;
+
+            // Binary search could be implemented here for efficiency
+            for (let i = 0; i < sortedData.length; i++) {
+                const current = sortedData[i];
+                const diff = Math.abs(current.date - targetDate);
+                if (diff <= minDiff) {
+                    minDiff = diff;
+                    closest = current.value;
+                } else if (current.date > targetDate && diff > minDiff) {
+                    // Since data is sorted, no need to check further
+                    break;
                 }
-            });
-
-            // Generate expected data points, inserting null for missing data
-            const result = [];
-            const current = new Date(startDate);
-            while (current <= endDate) {
-                specificHours.forEach(hour => {
-                    const date = new Date(current);
-                    date.setHours(hour, 0, 0, 0);
-                    const isoString = date.toISOString();
-                    if (date >= startDate && date <= endDate) {
-                        if (dataMap.has(isoString)) {
-                            result.push({ x: new Date(date), y: dataMap.get(isoString) });
-                        } else {
-                            result.push({ x: new Date(date), y: null });
-                        }
-                    }
-                });
-                current.setDate(current.getDate() + 1);
             }
 
-            // Sort the data points chronologically
-            result.sort((a, b) => new Date(a.x) - new Date(b.x));
+            // Push the closest value or null if no data within tolerance
+            result.push({ x: new Date(targetDate), y: closest !== null ? closest : null });
+        });
+    }
 
-            return result;
-        }
+    // Sort the data points chronologically
+    result.sort((a, b) => new Date(a.x) - new Date(b.x));
+
+    return result;
+}
+
 
         /**
          * Calculates the average of valid y-values in the dataset
@@ -242,7 +254,6 @@
                             tension: 0.2,
                             fill: true,
                             pointRadius: 0,
-                            pointHoverRadius: 1,
                             spanGaps: false
                         },
                         {

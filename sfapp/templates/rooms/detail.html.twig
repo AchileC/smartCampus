@@ -460,7 +460,7 @@
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
                 {% if room.acquisitionSystem %}
-                    <a href="{{ path('app_rooms_analytics', { name: room.name }) }}" class="btn btn-outline-info me-2">View Analytics</a>
+                    <a href="{{ path('app_rooms_analytics', {'name': room.name, 'dbname': room.acquisitionSystem.dbName}) }}" class="btn btn-outline-info me-2">View Analytics</a>
                 {% endif %}
                 <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to Room List</a>
             </div>
