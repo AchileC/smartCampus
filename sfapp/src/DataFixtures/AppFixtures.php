@@ -74,9 +74,9 @@ class AppFixtures extends Fixture
             $room->setNbHeaters(2); // Default value, adjust as needed
             $room->setNbWindows(3); // Default value, adjust as needed
             $room->setSurface(20); // Default value, adjust as needed
-            $room->setSensorState(SensorStateEnum::ASSIGNMENT); // Default value, adjust as needed
+            $room->setSensorState(SensorStateEnum::LINKED); // Default value, adjust as needed
             $room->setCardinalDirection($cardinalDirections[array_rand($cardinalDirections)]);
-            $room->setState(RoomStateEnum::WAITING); // Default value, adjust as needed
+            $room->setState(RoomStateEnum::NO_DATA); // Default value, adjust as needed
 
             $manager->persist($room);
             $roomEntities[$data['nomsa']] = $room;

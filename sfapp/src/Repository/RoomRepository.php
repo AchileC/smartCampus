@@ -364,13 +364,14 @@ class RoomRepository extends ServiceEntityRepository
     {
         $acquisitionSystem = $room->getAcquisitionSystem();
 
-        $this->updateAcquisitionSystemFromJson($acquisitionSystem);
-
         // Check if room has an acquisition system
         if (!$acquisitionSystem) {
-            $room->setState(RoomStateEnum::NONE);
             return;
         }
+
+        $this->updateAcquisitionSystemFromJson($acquisitionSystem);
+
+        $state = RoomStateEnum::NO_DATA; // Default state
 
         // Get current sensor data
         $temperature = $acquisitionSystem->getTemperature();
@@ -380,9 +381,6 @@ class RoomRepository extends ServiceEntityRepository
         // Determine if we're in heating period (November to April)
         $currentMonth = (int)(new \DateTime())->format('m');
         $isHeatingPeriod = $currentMonth >= 11 || $currentMonth <= 4;
-
-        $state = RoomStateEnum::WAITING; // Default state
-
 
         // Get thresholds
         $thresholds = $this->thresholdRepository->getDefaultThresholds();
@@ -394,13 +392,14 @@ class RoomRepository extends ServiceEntityRepository
             $sensorState = SensorStateEnum::NOT_WORKING;
         }
 
-        else if ($temperature == null && $humidity == null && $co2 == null){
+        else if ($temperature == null && $humidity == null && $co2 == null) {
             $sensorState = SensorStateEnum::NOT_WORKING;
         }
 
         else {
             $sensorState = SensorStateEnum::LINKED;
         }
+
 
         // Temperature evaluation
         if ($temperature !== null && !$thresholds->isTemperatureAberrant($temperature)) {
@@ -440,7 +439,7 @@ class RoomRepository extends ServiceEntityRepository
         }
 
         // Create maintenance task if sensor is not working
-        if ($sensorState === SensorStateEnum::NOT_WORKING) {
+        if ($sensorState === SensorStateEnum::NOT_WORKING && $state !== RoomStateEnum::NO_DATA ) {
             $this->createTaskForTechnician($room);
         }
 

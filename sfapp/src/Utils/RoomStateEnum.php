@@ -13,14 +13,10 @@ namespace App\Utils;
 enum RoomStateEnum: string
 {
     /**
-     * Indicates that there is no specific state assigned to the room.
+     * Indicates that there is no data from the api for the moment or that the data are aberrants
      */
-    case NONE = 'none';
+    case NO_DATA = 'no data';
 
-    /**
-     * Indicates that the room is awaiting an assignment or unassignment of an acquisition system.
-     */
-    case WAITING = 'waiting';
 
     /**
      * Indicates that the room is in a stable condition with normal sensor readings.

@@ -1,69 +1,113 @@
 {% extends 'base.html.twig' %}
-{# home/edit.html.twig #}
+{# action/edit.html.twig #}
 {% block title %}Edit Task{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
         <h1 class="text-center">
+            {# Selon l'état, on affiche "begin_task" ou "validate_task" #}
             {{ action.state.value == 'to do' ? 'begin_task'|trans : 'validate_task'|trans }}
         </h1>
 
         <div class="card mt-4">
             <div class="card-body">
                 {% if action.state.value == 'to do' %}
-                    {# Begin Action Template #}
+                    {# --------------------------- #
+                       |      BEGIN ACTION       |
+                       # --------------------------- #}
                     <div class="alert alert-warning text-center">
-                        <h2 class="fw-bold">{{ action.info.value | capitalize }} of an acquisition system on {{ action.room.name }}</h2>
                         <h2 class="fw-bold">
-                            {{ 'installation'|trans }} {{ 'on_room'|trans }} {{ action.room.name }}
+                            {{ action.info.value | capitalize }}
+                            {% if action.info.value == 'assignment' %}
+                                {{ 'of_an_acquisition_system'|trans }}
+                            {% elseif action.info.value == 'unassignment' %}
+                                {{ 'removal_of_acquisition_system'|trans }}
+                            {% else %}
+                                {{ 'task'|trans }}
+                            {% endif %}
+                            {{ 'on_room'|trans }} {{ action.room.name }}
                         </h2>
                         <ul class="list-unstyled mt-3">
-                            <li><strong>{{ 'created_at'|trans }}:</strong> {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y HH:m:s')}}</li>
+                            <li>
+                                <strong>{{ 'created_at'|trans }}:</strong>
+                                {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y HH:mm:ss')}}
+                            </li>
                         </ul>
                     </div>
+
                     <p class="text-info text-center">
                         <i class="bi bi-info-circle"></i>
                         {{ 'begin_task_confirmation'|trans }}
                     </p>
+
                     <div class="text-center">
                         {% if action.info.value == 'assignment' and noAsAvailable %}
-                            {# Display message and link to add AS if none are available #}
+                            {# Si c'est un assignment et qu'il n'y a aucun Acquisition System disponible #}
                             <div class="alert alert-danger">
-                                <p>No Acquisition Systems are available to assign.</p>
+                                <p>{{ 'no_as_available'|trans }}</p>
                                 <a href="{{ path('app_acquisition_system_add', {'from_action': action.id}) }}" class="btn btn-primary">
-                                    Add an Acquisition System
+                                    {{ 'add_acquisition_system'|trans }}
                                 </a>
                             </div>
                         {% else %}
                             <form action="{{ path('app_begin_action', {id: action.id}) }}" method="post">
-                                <button type="submit" class="btn btn-success">{{ 'begin'|trans }}</button>
+                                <button type="submit" class="btn btn-success">
+                                    {{ 'begin'|trans }}
+                                </button>
                                 <a href="{{ path('app_todolist') }}" class="btn btn-secondary">{{ 'not_now'|trans }}</a>
                             </form>
                         {% endif %}
+                    </div>
+
                 {% elseif action.state.value == 'doing' %}
-                    {# Validate Action Template #}
+                    {# --------------------------- #
+                       |    VALIDATE ACTION      |
+                       # --------------------------- #}
                     <div class="alert alert-info text-center">
                         <h2 class="fw-bold">
-                            {{ ('uninstallation' | trans) }} {{ 'on_room'|trans }} {{ action.room.name }}
+                            {# Titre selon le type de tâche #}
+                            {% if action.info.value == 'assignment' %}
+                                {{ 'installation'|trans }} {{ 'on_room'|trans }} {{ action.room.name }}
+                            {% elseif action.info.value == 'unassignment' %}
+                                {{ 'uninstallation'|trans }} {{ 'on_room'|trans }} {{ action.room.name }}
+                            {% elseif action.info.value == 'maintenance' %}
+                                {{ 'maintenance'|trans }} {{ 'on_room'|trans }} {{ action.room.name }}
+                            {% else %}
+                                {{ action.info.value|capitalize }} {{ 'on_room'|trans }} {{ action.room.name }}
+                            {% endif %}
                         </h2>
                         <ul class="list-unstyled mt-3">
-                            <li><strong>{{ 'created_at'|trans }}:</strong> {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y HH:m:s') }}</li>
-                            <li><strong>{{ 'started_on'|trans }}:</strong> {{ action.startedAt|format_datetime(pattern='EEEE d MMMM Y HH:m:s')}}</li>
+                            <li>
+                                <strong>{{ 'created_at'|trans }}:</strong>
+                                {{ action.createdAt|format_datetime(pattern='EEEE d MMMM Y HH:mm:ss') }}
+                            </li>
+                            <li>
+                                <strong>{{ 'started_on'|trans }}:</strong>
+                                {{ action.startedAt|format_datetime(pattern='EEEE d MMMM Y HH:mm:ss')}}
+                            </li>
                         </ul>
                     </div>
+
                     <p class="text-info text-center">
                         <i class="bi bi-info-circle"></i>
                         {{ 'validate_task_confirmation'|trans }}
                     </p>
 
-                <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
-                    {% if action.info.value == 'assignment' %}
+                    <form action="{{ path('app_validate_action', {id: action.id}) }}" method="post">
+                        {% if action.info.value == 'assignment' %}
+                            {# On propose de choisir le système à assigner #}
                             <div class="form-group mt-3 text-center">
-                                <label for="acquisitionSystem">{{ 'choose_acquisition_system'|trans }}</label>
+                                <label for="acquisitionSystem">
+                                    {{ 'choose_acquisition_system'|trans }}
+                                </label>
                                 <div class="d-flex justify-content-center mt-4">
                                     <div class="dropdown custom-dropdown" style="width: 200px;">
-                                        <select id="acquisitionSystem" name="acquisitionSystem" class="form-select text-center">
-                                            <option value="">{{ 'choose_placeholder'|trans }}</option>
+                                        <select id="acquisitionSystem"
+                                                name="acquisitionSystem"
+                                                class="form-select text-center">
+                                            <option value="">
+                                                {{ 'choose_placeholder'|trans }}
+                                            </option>
                                             {% for system in acquisitionSystems %}
                                                 <option value="{{ system.id }}">{{ system.name }}</option>
                                             {% endfor %}
@@ -71,28 +115,45 @@
                                     </div>
                                 </div>
                             </div>
-                    {% elseif action.info.value == 'maintenance' %}
-                        <div class="form-group mt-3 text-center">
-                            <label for="maintenanceStatus">{{ 'repaired?' | trans }}</label>
-                            <div class="d-flex justify-content-center mt-4">
-                                <div class="dropdown custom-dropdown" style="width: 200px;">
-                                    <select id="maintenanceStatus" name="maintenanceStatus" class="form-select text-center">
-                                        <option value="">{{ 'choose_placeholder' | trans }}</option>
-                                        <option value="yes">{{ 'yes_repaired' | trans }}</option>
-                                    </select>
+
+                        {% elseif action.info.value == 'maintenance' %}
+                            {# Maintenance = on propose un champ "repaired = yes" #}
+                            <div class="form-group mt-3 text-center">
+                                <label for="maintenanceStatus">
+                                    {{ 'repaired?' | trans }}
+                                </label>
+                                <div class="d-flex justify-content-center mt-4">
+                                    <div class="dropdown custom-dropdown" style="width: 200px;">
+                                        <select id="maintenanceStatus"
+                                                name="maintenanceStatus"
+                                                class="form-select text-center">
+                                            <option value="">
+                                                {{ 'choose_placeholder' | trans }}
+                                            </option>
+                                            <option value="yes">{{ 'yes_repaired' | trans }}</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <p class="text-info text-center mt-3">
-                            <i class="bi bi-info-circle"></i> {{ 'indicate_as' | trans }}
-                        </p>
+                            <p class="text-info text-center mt-3">
+                                <i class="bi bi-info-circle"></i>
+                                {{ 'indicate_as' | trans }}
+                            </p>
 
                         {% else %}
-                            <p class="text-warning text-center">{{ 'no_acquisition_system_required'|trans }}</p>
+                            {# UNASSIGNMENT ou autre => aucun choix nécessaire #}
+                            <p class="text-warning text-center">
+                                {{ 'no_acquisition_system_required'|trans }}
+                            </p>
                         {% endif %}
+
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-success">{{ 'confirm'|trans }}</button>
-                            <a href="{{ path('app_todolist') }}" class="btn btn-secondary">{{ 'cancel'|trans }}</a>
+                            <button type="submit" class="btn btn-success">
+                                {{ 'confirm'|trans }}
+                            </button>
+                            <a href="{{ path('app_todolist') }}" class="btn btn-secondary">
+                                {{ 'cancel'|trans }}
+                            </a>
                         </div>
                     </form>
                 {% endif %}

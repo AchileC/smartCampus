@@ -23,16 +23,6 @@ enum SensorStateEnum: string
     case LINKED = 'linked';
 
     /**
-     * Indicates that an assignment of sensors to an acquisition system is in progress.
-     */
-    case ASSIGNMENT = 'assignment';
-
-    /**
-     * Indicates that an unassignment of sensors from an acquisition system is in progress.
-     */
-    case UNASSIGNMENT = 'unassignment';
-
-    /**
      * Indicates that the sensors are probably broken or disconnected and require maintenance.
      */
     case NOT_WORKING = 'not working';

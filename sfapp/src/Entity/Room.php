@@ -28,12 +28,8 @@ class Room
     private ?FloorEnum $floor = null;
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
     private ?RoomStateEnum $state = null;
-    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
-    private ?RoomStateEnum $previousState = null;
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $sensorState = null;
-    #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
-    private ?SensorStateEnum $previousSensorState = null;
     #[ORM\Column(type: 'string', enumType: CardinalEnum::class)]
     private ?CardinalEnum $cardinalDirection;
     #[ORM\Column]
@@ -121,17 +117,6 @@ class Room
     public function setSensorState(SensorStateEnum $sensorState): static
     {
         $this->sensorState = $sensorState;
-        return $this;
-    }
-
-    public function getPreviousSensorState(): ?SensorStateEnum
-    {
-        return $this->previousSensorState;
-    }
-
-    public function setPreviousSensorState(SensorStateEnum $previousSensorState): static
-    {
-        $this->previousSensorState = $previousSensorState;
         return $this;
     }
 

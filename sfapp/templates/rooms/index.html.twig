@@ -117,31 +117,46 @@
             {% else %}
                 {% for room in rooms %}
                     <div class="col">
-                        <div class="card h-100 shadow-sm">
+                        <div class="card h-100 shadow-sm position-relative"> <!-- Ajout de position-relative -->
+
+                            <!-- Conteneur pour les symboles d'avertissement -->
+                            {% if is_granted('ROLE_MANAGER') and ongoingTasks[room.id] is defined %}
+                                {% set task = ongoingTasks[room.id] %}
+                                {% if task.info is defined and task.info is not null %}
+                                    <div class="task-symbol position-absolute top-0 end-0 m-2">
+                                        {% if task.info.value == 'assignment' %}
+                                            <i class="bi bi-plus-circle text-success" title="{{ 'Assignment in progress' | trans }}"></i>
+                                        {% elseif task.info.value == 'unassignment' %}
+                                            <i class="bi bi-dash-circle text-warning" title="{{ 'Unassignment in progress' | trans }}"></i>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
                             <div class="card-body d-flex flex-column justify-content-between">
+                                <!-- Contenu de la carte -->
                                 <div>
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text mb-1"><strong>{{ 'floor' | trans }}:</strong> {{ ('filter.floor.' ~ room.floor.value) | trans }}</p>
                                     <p class="card-text mb-1"><strong>{{ 'state' | trans }}:</strong>
                                         <span class="badge-custom-size
-                                    {% if room.state.value == 'none' %}bg-secondary
-                                    {% elseif room.state.value == 'waiting' %}bg-primary
-                                    {% elseif room.state.value == 'stable' %}bg-success
-                                    {% elseif room.state.value == 'at risk' %}bg-warning
-                                    {% else %}bg-danger{% endif %}">
-                                    {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
-                                    </span>
+                        {% if room.state.value == 'none' %}bg-secondary
+                        {% elseif room.state.value == 'waiting' %}bg-primary
+                        {% elseif room.state.value == 'stable' %}bg-success
+                        {% elseif room.state.value == 'at risk' %}bg-warning
+                        {% else %}bg-danger{% endif %}">
+                        {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
+                        </span>
                                     </p>
                                     {% if is_granted('ROLE_TECHNICIAN') %}
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
                                             <span class="badge-custom-size
-                                            {% if room.sensorState.value == 'linked' %}bg-success
-                                            {% elseif room.sensorState.value == 'not working' %}bg-warning
-                                            {% elseif room.sensorState.value == 'not linked' %}bg-secondary
-                                            {% else %}bg-danger{% endif %}">
-                                            {{('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
-                                            </span>
-                                       </span>
+                            {% if room.sensorState.value == 'linked' %}bg-success
+                            {% elseif room.sensorState.value == 'not working' %}bg-warning
+                            {% elseif room.sensorState.value == 'not linked' %}bg-secondary
+                            {% else %}bg-danger{% endif %}">
+                            {{('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
+                            </span>
                                         </p>
                                     {% endif %}
                                 </div>
@@ -170,6 +185,7 @@
                         </div>
                     </div>
                 {% endfor %}
+
             {% endif %}
         </div>
     </div>

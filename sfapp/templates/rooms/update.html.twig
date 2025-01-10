@@ -123,87 +123,92 @@
                     </div>
                 </div>
 
-                {# installations #}
-
+                {# --------------------------------------------------------------------------- #}
+                {#                SECTION : Gestion des actions d'Assignment                  #}
+                {# --------------------------------------------------------------------------- #}
                 <div class="card mt-4 shadow-sm">
                     <div class="card-body text-center">
                         <h5>{{ 'acquisition_system'|trans }}</h5>
 
-                        {% set sensorState = room.sensorState.value %}
-                        {% set roomState = room.state.value %}
-
-                        {% if sensorState in ['assignment', 'unassignment'] %}
-                            <!-- Cas : Assignation/Désassignation en attente -->
-                            <p class="mb-3">
+                        {# On suppose que le contrôleur nous a passé une variable 'ongoingTask'
+                       qui correspond à une éventuelle action 'ASSIGNMENT' ou 'UNASSIGNMENT' en cours. #}
+                        {% if ongoingTask %}
+                            {# Il y a déjà une tâche en cours => on ne propose que "Cancel" #}
+                            <p class="mb-3 text-warning">
                                 {{ 'sensor_state.assignment_pending'|trans }}
+                                ({{ ongoingTask.info.value|capitalize }})
                             </p>
                             <form method="post" action="{{ path('app_rooms_cancel_installation', { name: room.name }) }}">
-                                <!-- CSRF Token -->
                                 <input type="hidden" name="_token" value="{{ csrf_token('cancel_installation') }}">
                                 <button type="submit" class="btn btn-warning">
                                     <i class="bi bi-x-circle"></i> {{ 'cancel_installation'|trans }}
                                 </button>
                             </form>
-                        {% elseif sensorState == 'linked' %}
-                            <!-- Cas : Système d'acquisition déjà assigné -->
-                            <p class="mb-3">
-                                {{ 'sensor_state.linked'|trans }}
-                            </p>
-                            <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
-                                <!-- CSRF Token -->
-                                <input type="hidden" name="_token" value="{{ csrf_token('request_unassignment') }}">
-                                <button type="submit" class="btn btn-warning">
-                                    <i class="bi bi-arrow-left-circle"></i> {{ 'request_unassignment'|trans }}
-                                </button>
-                            </form>
-                        {% elseif sensorState == 'not linked' %}
-                            <!-- Cas : Aucun système d'acquisition assigné -->
-                            <p class="mb-3">
-                                {{ 'sensor_state.not_linked'|trans }}
-                            </p>
-                            <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
-                                <!-- CSRF Token -->
-                                <input type="hidden" name="_token" value="{{ csrf_token('request_assignment') }}">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-plus-circle"></i> {{ 'request_assignment'|trans }}
-                                </button>
-                            </form>
                         {% else %}
-                            <!-- Cas par défaut : État non spécifié -->
-                            <p class="mb-3">{{ 'sensor_state.unspecified'|trans }}</p>
+                            {# Aucune tâche en cours => on se base sur le sensorState pour proposer l'action #}
+                            {% set sensorState = room.sensorState.value %}
+                            {% set roomState = room.state.value %}
+
+                            {% if sensorState == 'linked' %}
+                                <!-- Cas : Système d'acquisition déjà assigné -->
+                                <p class="mb-3">
+                                    {{ 'sensor_state.linked'|trans }}
+                                </p>
+                                <form method="post" action="{{ path('app_rooms_request_unassignment', { name: room.name }) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('request_unassignment') }}">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="bi bi-arrow-left-circle"></i> {{ 'request_unassignment'|trans }}
+                                    </button>
+                                </form>
+                            {% elseif sensorState == 'not linked' %}
+                                <!-- Cas : Aucun système d'acquisition assigné -->
+                                <p class="mb-3">
+                                    {{ 'sensor_state.not_linked'|trans }}
+                                </p>
+                                <form method="post" action="{{ path('app_rooms_request_assignment', { name: room.name }) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('request_assignment') }}">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-plus-circle"></i> {{ 'request_assignment'|trans }}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <!-- Cas par défaut : État non spécifié ou "no data" etc. -->
+                                <p class="mb-3">{{ 'sensor_state.unspecified'|trans }}</p>
+                            {% endif %}
                         {% endif %}
 
-                        <!-- Affichage de l'état général de la salle -->
+                        {# Affichage de l'état général de la salle #}
                         <div class="mt-4">
                             <strong>{{ 'room_state_text'|trans }}:</strong>
-                            {% if roomState == 'stable' %}
+                            {% if room.state.value == 'stable' %}
                                 <span class="badge bg-success">
-                    <i class="bi bi-check-circle"></i> {{ 'room_state.stable'|trans }}
-                </span>
-                            {% elseif roomState == 'at risk' %}
+                                <i class="bi bi-check-circle"></i> {{ 'room_state.stable'|trans }}
+                            </span>
+                            {% elseif room.state.value == 'at risk' %}
                                 <span class="badge bg-warning text-dark">
-                    <i class="bi bi-exclamation-triangle"></i> {{ 'room_state.at_risk'|trans }}
-                </span>
-                            {% elseif roomState == 'critical' %}
+                                <i class="bi bi-exclamation-triangle"></i> {{ 'room_state.at_risk'|trans }}
+                            </span>
+                            {% elseif room.state.value == 'critical' %}
                                 <span class="badge bg-danger">
-                    <i class="bi bi-fire"></i> {{ 'room_state.critical'|trans }}
-                </span>
+                                <i class="bi bi-fire"></i> {{ 'room_state.critical'|trans }}
+                            </span>
                             {% else %}
                                 <span class="badge bg-primary">
-                    <i class="bi bi-question-circle"></i> {{ roomState|capitalize }}
-                </span>
+                                <i class="bi bi-question-circle"></i> {{ room.state.value|capitalize }}
+                            </span>
                             {% endif %}
                         </div>
                     </div>
                 </div>
-
-                {# installations #}
+                {# --------------------------------------------------------------------------- #}
 
             </div>
 
             <div class="card w-75 mx-auto mt-4 text-center">
                 <div class="card-body">
-                    <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'back_to_room_list' | trans }}</a>
+                    <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">
+                        {{ 'back_to_room_list' | trans }}
+                    </a>
                 </div>
             </div>
         </div>

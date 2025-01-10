@@ -126,12 +126,11 @@ class ActionController extends AbstractController
      */
     #[Route('/todolist/{id}/begin', name: 'app_begin_action', methods: ['POST'])]
     public function begin(
-        int $id,
+        int                         $id,
         ActionRepository            $actionRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
         EntityManagerInterface      $entityManager
-    ): Response
-    {
+    ): Response {
         $action = $actionRepository->find($id);
 
         if (!$action) {
@@ -143,21 +142,28 @@ class ActionController extends AbstractController
             return $this->redirectToRoute('app_todolist');
         }
 
-        $availableSystems = $acquisitionSystemRepository->findSystemsNotLinked();
-
-        if (empty($availableSystems)) {
-            return $this->redirectToRoute('app_acquisition_system_add', [
-                'from_action' => true,
-            ]);
+        // ⇩⇩⇩ Vérifier la dispo des systèmes UNIQUEMENT si c'est un ASSIGNMENT ⇩⇩⇩
+        if ($action->getInfo() === ActionInfoEnum::ASSIGNMENT) {
+            $availableSystems = $acquisitionSystemRepository->findSystemsNotLinked();
+            if (empty($availableSystems)) {
+                // Rediriger vers la création d’un nouveau système d’acquisition
+                return $this->redirectToRoute('app_acquisition_system_add', [
+                    'from_action' => true,
+                ]);
+            }
         }
 
-        $action->setState(ActionStateEnum::DOING); // Change state to DOING
-        $action->setStartedAt(new \DateTime()); // Set start time
+        // Si la tâche est un UNASSIGNMENT (ou maintenance, etc.),
+        // on ne redirige PAS vers la création d'AS
+
+        $action->setState(ActionStateEnum::DOING); // passe la tâche en "DOING"
+        $action->setStartedAt(new \DateTime());    // date de début de la tâche
         $entityManager->flush();
 
         $this->addFlash('success', 'Action has been started.');
         return $this->redirectToRoute('app_todolist');
     }
+
 
     /**
      * @brief Validates and completes an action.
@@ -210,7 +216,6 @@ class ActionController extends AbstractController
 
             $room->setSensorState(SensorStateEnum::LINKED);
             $room->setAcquisitionSystem($acquisitionSystem);
-            $room->setState(RoomStateEnum::WAITING);
             $acquisitionSystem->setState(SensorStateEnum::LINKED);
             $action->setAcquisitionSystem($acquisitionSystem);
         }
@@ -238,7 +243,7 @@ class ActionController extends AbstractController
 
             if ($room) {
                 $room->setSensorState(SensorStateEnum::NOT_LINKED);
-                $room->setState(RoomStateEnum::NONE);
+                $room->setState(RoomStateEnum::NO_DATA);
                 $acquisitionSystem = $room->getAcquisitionSystem();
                 if ($acquisitionSystem) {
                     $acquisitionSystem->setState(SensorStateEnum::NOT_LINKED);

@@ -87,6 +87,7 @@ class RoomController extends AbstractController
     #[Route('/rooms', name: 'app_rooms')]
     public function index(
         RoomRepository  $roomRepository,
+        ActionRepository $actionRepository,
         Request         $request
     ): Response
     {
@@ -100,9 +101,7 @@ class RoomController extends AbstractController
 
         foreach ($rooms as $room) {
             // On ne traite que les salles LINKED ou en ASSIGNMENT
-            if ($room->getSensorState() === SensorStateEnum::LINKED
-                || $room->getSensorState() === SensorStateEnum::ASSIGNMENT
-            ) {
+            if ($room->getSensorState() === SensorStateEnum::LINKED) {
                 // On récupère la date de dernière mise à jour si elle existe
                 $lastUpdatedAt = $room->getLastUpdatedAt();
 
@@ -178,10 +177,16 @@ class RoomController extends AbstractController
 
         // Retrieve rooms based on criteria
         $rooms = $roomRepository->findByCriteria($criteria);
+        $ongoingTasksByRoomId = [];
+        foreach ($rooms as $room) {
+            $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
+            $ongoingTasksByRoomId[$room->getId()] = $ongoingTask;
+        }
 
         return $this->render('rooms/index.html.twig', [
             'rooms' => $rooms,
             'filterForm' => $filterForm->createView(),
+            'ongoingTasks' => $ongoingTasksByRoomId,
         ]);
     }
 
@@ -208,7 +213,7 @@ class RoomController extends AbstractController
 
         $room = new Room();
         $room->setSensorState(SensorStateEnum::NOT_LINKED);
-        $room->setState(RoomStateEnum::NONE);
+        $room->setState(RoomStateEnum::NO_DATA);
         $form = $this->createForm(AddRoomType::class, $room, ['validation_groups' => ['Default', 'add']]);
         $form->handleRequest($request);
 
@@ -295,38 +300,41 @@ class RoomController extends AbstractController
      *
      * @throws NotFoundException If the room is not found.
      */
+    // RoomController.php
+
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
     public function update(
         string                  $name,
         RoomRepository          $roomRepository,
+        ActionRepository        $actionRepository,
         Request                 $request,
         EntityManagerInterface  $entityManager
     ): Response
     {
         $room = $roomRepository->findOneBy(['name' => $name]);
-
         if (!$room) {
             throw $this->createNotFoundException('Room not found');
         }
 
+        // Récupérer la (ou les) tâche(s) en cours sur la salle
+        $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
+
         $form = $this->createForm(AddRoomType::class, $room);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Room updated successfully.');
-
-                return $this->redirectToRoute('app_rooms');
-            }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Room updated successfully.');
+            return $this->redirectToRoute('app_rooms');
         }
 
         return $this->render('rooms/update.html.twig', [
-            'form' => $form->createView(),
             'room' => $room,
+            'form' => $form->createView(),
+            'ongoingTask' => $ongoingTask, // On passe la tâche en cours
         ]);
     }
+
 
     /**
      * @brief Deletes a specific room.
@@ -393,10 +401,11 @@ class RoomController extends AbstractController
      * @throws NotFoundException If the room is not found.
      */
     #[Route('/rooms/{name}/request-assignment', name: 'app_rooms_request_assignment', methods: ['POST'])]
-    public function requesAssignment(
+    public function requestAssignment(
         string                      $name,
         RoomRepository              $roomRepository,
         AcquisitionSystemRepository $acquisitionSystemRepository,
+        ActionRepository            $actionRepository,
         EntityManagerInterface      $entityManager
     ): Response {
         $room = $roomRepository->findOneBy(['name' => $name]);
@@ -405,31 +414,24 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        // Check available acquisition systems
-        $availableSystems = $acquisitionSystemRepository->findSystemsNotLinked();
-
-        if (empty($availableSystems)) {
-            $this->addFlash('warning', 'Assignment may take some time, as there are no more acquisition systems available.');
+        // Vérifier s’il existe déjà une tâche en cours (ASSIGNMENT ou UNASSIGNMENT)
+        $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
+        if ($ongoingTask) {
+            $this->addFlash('warning', 'Une tâche d’(dés)installation est déjà en cours pour cette salle.');
+            return $this->redirectToRoute('app_rooms');
         }
 
-        // Create a new assignment action
+        // Pas de tâche en cours => on peut créer l’action
         $action = new Action();
-        $action->setInfo(ActionInfoEnum::ASSIGNMENT); // Action type: ASSIGNMENT
-        $action->setState(ActionStateEnum::TO_DO);    // State: TO_DO
-        $action->setCreatedAt(new \DateTime());       // Creation date
-        $action->setRoom($room);                      // Associate the room with the action
+        $action->setInfo(ActionInfoEnum::ASSIGNMENT);
+        $action->setState(ActionStateEnum::TO_DO);
+        $action->setCreatedAt(new \DateTime());
+        $action->setRoom($room);
 
-        $room->setState(RoomStateEnum::WAITING);
-        $room->setSensorState(SensorStateEnum::ASSIGNMENT);
-
-        // Persist the action to the database
         $entityManager->persist($action);
-
-        // Save changes to the database
         $entityManager->flush();
 
-        // Add a flash message indicating success
-        $this->addFlash('success', 'A new assignment task has been created.');
+        $this->addFlash('success', 'Tâche d’installation créée.');
 
         return $this->redirectToRoute('app_rooms');
     }
@@ -451,6 +453,7 @@ class RoomController extends AbstractController
     public function requestUnassignment(
         string                  $name,
         RoomRepository          $roomRepository,
+        ActionRepository        $actionRepository,
         EntityManagerInterface  $entityManager
     ): Response
     {
@@ -460,22 +463,24 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException('Room not found');
         }
 
-        // Create a new unassignment action
+        // Vérifier s’il existe déjà une tâche en cours
+        $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
+        if ($ongoingTask) {
+            $this->addFlash('warning', 'Une tâche d’(dés)installation est déjà en cours pour cette salle.');
+            return $this->redirectToRoute('app_rooms');
+        }
+
+        // Créer l’action
         $action = new Action();
-        $action->setInfo(ActionInfoEnum::UNASSIGNMENT); // Action type: UNASSIGNMENT
-        $action->setState(ActionStateEnum::TO_DO);      // State: TO_DO
-        $action->setCreatedAt(new \DateTime());         // Creation date
-        $action->setRoom($room);                        // Associate the room with the action
+        $action->setInfo(ActionInfoEnum::UNASSIGNMENT);
+        $action->setState(ActionStateEnum::TO_DO);
+        $action->setCreatedAt(new \DateTime());
+        $action->setRoom($room);
 
-
-        $room->setPreviousState($room->getState());
-        $room->setPreviousSensorState($room->getSensorState());
-        $room->setState(RoomStateEnum::WAITING);
-        $room->setSensorState(SensorStateEnum::UNASSIGNMENT);
         $entityManager->persist($action);
         $entityManager->flush();
 
-        $this->addFlash('success', 'A new unassignment task has been created.');
+        $this->addFlash('success', 'Tâche de désinstallation créée.');
 
         return $this->redirectToRoute('app_rooms');
     }
@@ -496,53 +501,31 @@ class RoomController extends AbstractController
      */
     #[Route('/rooms/{name}/cancel-installation', name: 'app_rooms_cancel_installation', methods: ['POST'])]
     public function cancelInstallation(
-        string                  $name,
-        RoomRepository          $roomRepository,
-        EntityManagerInterface  $entityManager,
-        ActionRepository        $actionRepository
+        string           $name,
+        RoomRepository   $roomRepository,
+        ActionRepository $actionRepository,
+        EntityManagerInterface $entityManager
     ): Response {
         $room = $roomRepository->findOneBy(['name' => $name]);
-
         if (!$room) {
             throw $this->createNotFoundException('Room not found');
         }
 
-        // Cancel an ASSIGNMENT action
-        if ($room->getSensorState() == SensorStateEnum::ASSIGNMENT) {
-            $room->setState(RoomStateEnum::NONE);
-            $room->setSensorState(SensorStateEnum::NOT_LINKED);
-        }
-        // Cancel an UNASSIGNMENT action
-        elseif ($room->getSensorState() == SensorStateEnum::UNASSIGNMENT) {
-            $room->setState($room->getPreviousState());
-            $room->setSensorState($room->getPreviousSensorState());
+        $ongoingTasks = $actionRepository->findOngoingTaskForRoom($room);
 
-            // Restore previous actions
-            foreach ($room->getPreviousActions() as $previousAction) {
-                $entityManager->persist($previousAction);
-            }
-
-            // Clear previous actions after restoration
-            $room->getPreviousActions()->clear();
+        if (empty($ongoingTasks)) {
+            $this->addFlash('info', 'Aucune tâche d’installation/désinstallation en cours pour cette salle.');
+            return $this->redirectToRoute('app_rooms');
         }
 
-        // Remove associated tasks
-        $tasks = $actionRepository->findTasksForRoomToDelete($room->getId());
-
-        // Flash message based on deleted tasks
-        if (!empty($tasks)) {
-            $this->addFlash('success', 'The installation task(s) have been successfully canceled.');
-        } else {
-            $this->addFlash('info', 'No pending or ongoing installation task was found for this room.');
-        }
-
-        foreach ($tasks as $task) {
+        // Si vous préférez vraiment "supprimer" la tâche de la base :
+        foreach ($ongoingTasks as $task) {
             $entityManager->remove($task);
         }
 
         $entityManager->flush();
 
-        // Redirect
+        $this->addFlash('success', 'Tâche d’installation/désinstallation annulée avec succès.');
         return $this->redirectToRoute('app_rooms');
     }
 }
