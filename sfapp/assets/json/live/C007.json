@@ -1,0 +1,29 @@
+[
+    {
+        "id": 6967,
+        "nom": "temp",
+        "valeur": "21",
+        "dateCapture": "2024-12-31 23:59:59",
+        "localisation": "C007",
+        "description": "Derni\u00e8re capture de l'ann\u00e9e",
+        "nomsa": "ESP-022"
+    },
+    {
+        "id": 6968,
+        "nom": "hum",
+        "valeur": "15",
+        "dateCapture": "2024-12-31 23:59:59",
+        "localisation": "C007",
+        "description": "Derni\u00e8re capture de l'ann\u00e9e",
+        "nomsa": "ESP-022"
+    },
+    {
+        "id": 6969,
+        "nom": "co2",
+        "valeur": "11",
+        "dateCapture": "2024-12-31 23:59:59",
+        "localisation": "C007",
+        "description": "Derni\u00e8re capture de l'ann\u00e9e",
+        "nomsa": "ESP-022"
+    }
+]

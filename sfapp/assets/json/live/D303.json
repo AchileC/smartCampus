@@ -1,0 +1,29 @@
+[
+    {
+        "id": 21542,
+        "nom": "temp",
+        "valeur": "22.5",
+        "dateCapture": "2025-01-07 11:59:53",
+        "localisation": "D303",
+        "description": "Envois des donn\u00e9es de la salle D303",
+        "nomsa": "ESP-005"
+    },
+    {
+        "id": 21543,
+        "nom": "hum",
+        "valeur": "53.1",
+        "dateCapture": "2025-01-07 11:59:53",
+        "localisation": "D303",
+        "description": "Envois des donn\u00e9es de la salle D303",
+        "nomsa": "ESP-005"
+    },
+    {
+        "id": 21541,
+        "nom": "co2",
+        "valeur": "408",
+        "dateCapture": "2025-01-07 11:59:53",
+        "localisation": "D303",
+        "description": "Envois des donn\u00e9es de la salle D303",
+        "nomsa": "ESP-005"
+    }
+]

@@ -308,12 +308,13 @@ class RoomRepository extends ServiceEntityRepository
         $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
         $sensorTypes = ['temp', 'hum', 'co2'];
         $sensorName = $acquisitionSystem->getName();
+        $dbName = $acquisitionSystem->getDbName(); // Récupérer dbName dynamique
         $combinedData = [];
 
         foreach ($sensorTypes as $type) {
             $response = $this->httpClient->request('GET', $url, [
                 'headers' => [
-                    'dbname'   => 'sae34bdm1eq2',
+                    'dbname'   => $dbName,
                     'username' => 'm1eq2',
                     'userpass' => 'kabxaq-4qopra-quXvit',
                 ],
@@ -506,6 +507,13 @@ class RoomRepository extends ServiceEntityRepository
             }
         }
 
+        if (
+            $state === RoomStateEnum::NO_DATA &&
+            ($temperature !== null || $humidity !== null || $co2 !== null)
+        ) {
+            $state = RoomStateEnum::STABLE;
+        }
+
         // 5. Créer une tâche de maintenance si capteur KO et qu’on n’est pas dans NO_DATA
         if ($sensorState === SensorStateEnum::NOT_WORKING && $state !== RoomStateEnum::NO_DATA) {
             $this->createTaskForTechnician($room);
@@ -589,11 +597,12 @@ class RoomRepository extends ServiceEntityRepository
         }
 
         $data = [];
+        $dbName = $acquisitionSystem->getDbName(); // Récupérer dbName dynamique
         foreach ($sensorTypes as $type) {
             try {
                 $response = $this->httpClient->request('GET', $url, [
                     'headers' => [
-                        'dbname'   => 'sae34bdm1eq2',
+                        'dbname'   => $dbName,
                         'username' => 'm1eq2',
                         'userpass' => 'kabxaq-4qopra-quXvit',
                     ],
