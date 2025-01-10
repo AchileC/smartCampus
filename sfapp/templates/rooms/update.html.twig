@@ -11,7 +11,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row mb-3">
-                            <!-- Nom de la salle -->
+                            <!-- Room Name -->
                             <div class="col-md-6">
                                 {{ form_label(form.name, 'add_room.name.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                 {{ form_widget(form.name, {
@@ -26,7 +26,7 @@
                                 {% endif %}
                             </div>
 
-                            <!-- Étage -->
+                            <!-- Floor -->
                             <div class="col-md-6">
                                 {{ form_label(form.floor, 'add_room.floor.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                 {{ form_widget(form.floor, {
@@ -45,11 +45,11 @@
                     </div>
                 </div>
 
-                <!-- Caractéristiques physiques -->
+                <!-- Physical Characteristics -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row mb-3">
-                            <!-- Nombre de fenêtres -->
+                            <!-- Number of Windows -->
                             <div class="col-md-6">
                                 {{ form_label(form.nbWindows, 'add_room.nb_windows.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                 {{ form_widget(form.nbWindows, {
@@ -65,7 +65,7 @@
                                 {% endif %}
                             </div>
 
-                            <!-- Nombre de radiateurs -->
+                            <!-- Number of Heaters -->
                             <div class="col-md-6">
                                 {{ form_label(form.nbHeaters, 'add_room.nb_heaters.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                 {{ form_widget(form.nbHeaters, {
@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <!-- Dimensions et orientation -->
+                <!-- Dimensions and Orientation -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row mb-3">
@@ -104,7 +104,7 @@
                                 {% endif %}
                             </div>
 
-                            <!-- Orientation cardinale -->
+                            <!-- Cardinal Direction -->
                             <div class="col-md-6">
                                 {{ form_label(form.cardinalDirection, 'add_room.cardinal.label'|trans, {'label_attr': {'class': 'form-label'}}) }}
                                 {{ form_widget(form.cardinalDirection, {
@@ -124,16 +124,15 @@
                 </div>
 
                 {# --------------------------------------------------------------------------- #}
-                {#                SECTION : Gestion des actions d'Assignment                  #}
+                {#                SECTION : Management of Assignment Actions                  #}
                 {# --------------------------------------------------------------------------- #}
                 <div class="card mt-4 shadow-sm">
                     <div class="card-body text-center">
                         <h5>{{ 'acquisition_system'|trans }}</h5>
 
-                        {# On suppose que le contrôleur nous a passé une variable 'ongoingTask'
-                       qui correspond à une éventuelle action 'ASSIGNMENT' ou 'UNASSIGNMENT' en cours. #}
+                        {# Assume controller passes 'ongoingTask' variable for 'ASSIGNMENT' or 'UNASSIGNMENT' actions #}
                         {% if ongoingTask %}
-                            {# Il y a déjà une tâche en cours => on ne propose que "Cancel" #}
+                            {# Task in progress => offer only "Cancel" #}
                             <p class="mb-3 text-warning">
                                 {{ 'sensor_state.assignment_pending'|trans }}
                                 ({{ ongoingTask.info.value|capitalize }})
@@ -145,12 +144,12 @@
                                 </button>
                             </form>
                         {% else %}
-                            {# Aucune tâche en cours => on se base sur le sensorState pour proposer l'action #}
+                            {# No ongoing task => base action on sensorState #}
                             {% set sensorState = room.sensorState.value %}
                             {% set roomState = room.state.value %}
 
                             {% if sensorState == 'linked' %}
-                                <!-- Cas : Système d'acquisition déjà assigné -->
+                                <!-- Acquisition System Already Assigned -->
                                 <p class="mb-3">
                                     {{ 'sensor_state.linked'|trans }}
                                 </p>
@@ -161,7 +160,7 @@
                                     </button>
                                 </form>
                             {% elseif sensorState == 'not linked' %}
-                                <!-- Cas : Aucun système d'acquisition assigné -->
+                                <!-- No Acquisition System Assigned -->
                                 <p class="mb-3">
                                     {{ 'sensor_state.not_linked'|trans }}
                                 </p>
@@ -172,12 +171,12 @@
                                     </button>
                                 </form>
                             {% else %}
-                                <!-- Cas par défaut : État non spécifié ou "no data" etc. -->
+                                <!-- Default Case: Unspecified State or "no data" -->
                                 <p class="mb-3">{{ 'sensor_state.unspecified'|trans }}</p>
                             {% endif %}
                         {% endif %}
 
-                        {# Affichage de l'état général de la salle #}
+                        {# Display General Room State #}
                         <div class="mt-4">
                             <strong>{{ 'room_state_text'|trans }}:</strong>
                             {% if room.state.value == 'stable' %}
@@ -193,7 +192,7 @@
                                 <i class="bi bi-fire"></i> {{ 'room_state.critical'|trans }}
                             </span>
                             {% else %}
-                                <span class="badge bg-primary">
+                                <span class="badge bg-secondary">
                                 <i class="bi bi-question-circle"></i> {{ room.state.value|capitalize }}
                             </span>
                             {% endif %}
@@ -213,4 +212,5 @@
             </div>
         </div>
     </div>
+
 {% endblock %}

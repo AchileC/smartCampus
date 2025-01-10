@@ -117,9 +117,9 @@
             {% else %}
                 {% for room in rooms %}
                     <div class="col">
-                        <div class="card h-100 shadow-sm position-relative"> <!-- Ajout de position-relative -->
+                        <div class="card h-100 shadow-sm position-relative"> <!-- Added position-relative -->
 
-                            <!-- Conteneur pour les symboles d'avertissement -->
+                            <!-- Warning Symbols Container -->
                             {% if is_granted('ROLE_MANAGER') and ongoingTasks[room.id] is defined %}
                                 {% set task = ongoingTasks[room.id] %}
                                 {% if task.info is defined and task.info is not null %}
@@ -134,17 +134,17 @@
                             {% endif %}
 
                             <div class="card-body d-flex flex-column justify-content-between">
-                                <!-- Contenu de la carte -->
+                                <!-- Card Content -->
                                 <div>
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text mb-1"><strong>{{ 'floor' | trans }}:</strong> {{ ('filter.floor.' ~ room.floor.value) | trans }}</p>
                                     <p class="card-text mb-1"><strong>{{ 'state' | trans }}:</strong>
                                         <span class="badge-custom-size
-                        {% if room.state.value == 'none' %}bg-secondary
-                        {% elseif room.state.value == 'waiting' %}bg-primary
+                        {% if room.state.value == 'no data' %}bg-secondary
                         {% elseif room.state.value == 'stable' %}bg-success
                         {% elseif room.state.value == 'at risk' %}bg-warning
-                        {% else %}bg-danger{% endif %}">
+                        {% elseif room.state.value == 'critical' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
                         {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
                         </span>
                                     </p>
@@ -152,10 +152,10 @@
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
                                             <span class="badge-custom-size
                             {% if room.sensorState.value == 'linked' %}bg-success
-                            {% elseif room.sensorState.value == 'not working' %}bg-warning
                             {% elseif room.sensorState.value == 'not linked' %}bg-secondary
-                            {% else %}bg-danger{% endif %}">
-                            {{('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
+                            {% elseif room.sensorState.value == 'not working' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ ('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
                             </span>
                                         </p>
                                     {% endif %}
@@ -190,7 +190,7 @@
         </div>
     </div>
 
-    <!-- Modale de Suppression -->
+    <!-- Deletion Modal -->
     <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

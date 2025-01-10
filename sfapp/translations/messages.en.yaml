@@ -20,15 +20,13 @@ _room_state:
   AT RISK: "At risk"
   STABLE: "Stable"
   WAITING: "Waiting"
-  NONE: "None"
+  NO DATA: "No Data"
 
 # Sensor State Enum
 _sensor_state:
   NOT LINKED: "Not linked"
   LINKED: "Linked"
   NOT WORKING: "Not working"
-  ASSIGNMENT: "Assignment"
-  UNASSIGNMENT: "Unassignment"
 
 _action_info_state:
   ASSIGNMENT: "Assignment"
@@ -39,8 +37,8 @@ temperature: "Temperature"
 humidity: "Humidity"
 
 # Dashboard
-as_list: "Acquisition systems list"
-my_to_do_list: "My To-Do List"
+as_list: "AS List"
+my_to_do_list: "To-Do-List"
 configure_thresholds: "Configure thresholds"
 
 # Orientation
@@ -56,8 +54,8 @@ today: "Today"
 no_data: "No weather data available."
 
 # Todolist
-todolist: "Task list"
-todolist_technician: "Technician's task list"
+todolist: "To-do-list"
+todolist_technician: "Technician's to-do-list"
 
 #
 on_room: "on"
@@ -99,7 +97,7 @@ access_to_linked_room: "Access the room"
 _add_as: "Add an acquisition system"
 
 rooms_list:
-  list: "Room list"
+  list: "Room List"
 no_match_create_room: "No results found. Check the spelling or <a href=\"{{ path('app_rooms_add') }}\">create a new room</a>."
 no_match_adjust_filters: "No results found. Check the spelling or adjust the filters."
 _add_room: "Add a room"

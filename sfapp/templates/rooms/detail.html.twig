@@ -5,8 +5,14 @@
 {% block body %}
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-10 offset-md-1 {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %} py-5 position-relative">
-                <h1 class="text-center text-white mb-0">{{ 'room'| trans}} {{ room.name }}</h1>
+            <div class="col-md-10 offset-md-1
+                {% if room.state.value == 'no data' %}bg-secondary
+                {% elseif room.state.value == 'stable' %}bg-success
+                {% elseif room.state.value == 'at risk' %}bg-warning
+                {% elseif room.state.value == 'critical' %}bg-danger
+                {% else %}bg-secondary{% endif %}
+                py-5 position-relative">
+                <h1 class="text-center text-white mb-0">{{ 'room'|trans}} {{ room.name }}</h1>
             </div>
         </div>
 
@@ -15,7 +21,12 @@
             <div class="card-body">
                 <h5 class="card-title">{{ 'room_constants'|trans }}</h5>
                 <p class="card-text"><strong>{{ 'ambient_room_state'|trans}} </strong>
-                    <span class="badge-custom-size {% if room.state.value == 'none' %}bg-secondary{%elseif room.state.value == 'waiting' %}bg-primary{% elseif room.state.value == 'stable' %}bg-success{% elseif room.state.value == 'at risk' %}bg-warning{% else %}bg-danger{% endif %}">
+                    <span class="badge-custom-size
+                        {% if room.state.value == 'no data' %}bg-secondary
+                        {% elseif room.state.value == 'stable' %}bg-success
+                        {% elseif room.state.value == 'at risk' %}bg-warning
+                        {% elseif room.state.value == 'critical' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
                         {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
                     </span>
                 </p>
@@ -251,7 +262,7 @@
         </div>
 
         {% if todayForecast is not null %}
-            {# Définir le mapping des pictocodes #}
+            {# Define pictocode mapping #}
             {% set pictocodeMapping = {
                 1: '☀️',
                 2: '🌤️',
@@ -373,10 +384,10 @@
             <div id="generalInfo" class="collapse">
                 <div class="card-body">
                     <div class="row">
-                        <!-- Colonne de gauche pour les informations générales -->
+                        <!-- Left Column for General Information -->
                         <div class="col-md-8">
                             <div class="row g-3">
-                                <!-- Nombre de Fenêtres -->
+                                <!-- Number of Windows -->
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-microsoft fs-2 text-secondary me-3"></i>
                                     <div>
@@ -384,7 +395,7 @@
                                         <span class="badge bg-secondary rounded-pill">{{ room.nbWindows }}</span>
                                     </div>
                                 </div>
-                                <!-- Nombre de Chauffages -->
+                                <!-- Number of Heaters -->
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-thermometer-half fs-2 text-secondary me-3"></i>
                                     <div>
@@ -400,20 +411,20 @@
                                         <span class="badge bg-secondary rounded-pill">{{ room.surface }} m²</span>
                                     </div>
                                 </div>
-                                <!-- Direction Cardinale -->
+                                <!-- Cardinal Direction -->
                                 <div class="col-md-6 d-flex align-items-center">
                                     <i class="bi bi-compass fs-2 text-secondary me-3"></i>
                                     <div>
                                         <h6 class="mb-0">{{ 'cardinal_direction'| trans }}</h6>
                                         <span class="badge bg-secondary rounded-pill">
-                                            {{ ('_cardinal_direction.' ~ room.cardinalDirection.value ) |trans}}
+                                            {{ ('_cardinal_direction.' ~ room.cardinalDirection.value ) |trans }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Colonne de droite pour les informations de monitoring -->
+                        <!-- Right Column for Monitoring Information -->
                         <div class="col-md-4">
                             {% if room.acquisitionSystem %}
                                 <div class="alert alert-info mb-0">
