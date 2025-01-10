@@ -1,108 +1,27 @@
 [
     {
-        "id": 9364,
-        "nom": "temp",
-        "valeur": "20.10",
-        "dateCapture": "2025-01-10 11:09:29",
-        "localisation": "D206",
-        "description": "Temp\u00e9rature de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9365,
-        "nom": "hum",
-        "valeur": "76.40",
-        "dateCapture": "2025-01-10 11:09:29",
-        "localisation": "D206",
-        "description": "Humidit\u00e9 de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9366,
-        "nom": "co2",
-        "valeur": "1720",
-        "dateCapture": "2025-01-10 11:09:29",
-        "localisation": "D206",
-        "description": "CO2 de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9367,
-        "nom": "temp",
-        "valeur": "20.10",
-        "dateCapture": "2025-01-10 11:19:22",
-        "localisation": "D206",
-        "description": "Temp\u00e9rature de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9368,
-        "nom": "hum",
-        "valeur": "76.40",
-        "dateCapture": "2025-01-10 11:19:22",
-        "localisation": "D206",
-        "description": "Humidit\u00e9 de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9369,
-        "nom": "co2",
-        "valeur": "1814",
-        "dateCapture": "2025-01-10 11:19:22",
-        "localisation": "D206",
-        "description": "CO2 de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9370,
-        "nom": "temp",
-        "valeur": "20.00",
-        "dateCapture": "2025-01-10 11:29:15",
-        "localisation": "D206",
-        "description": "Temp\u00e9rature de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9371,
-        "nom": "hum",
-        "valeur": "74.80",
-        "dateCapture": "2025-01-10 11:29:15",
-        "localisation": "D206",
-        "description": "Humidit\u00e9 de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9372,
-        "nom": "co2",
-        "valeur": "1039",
-        "dateCapture": "2025-01-10 11:29:15",
-        "localisation": "D206",
-        "description": "CO2 de la salle",
-        "nomsa": "ESP-008"
-    },
-    {
-        "id": 9373,
+        "id": 9482,
         "nom": "temp",
         "valeur": "19.50",
-        "dateCapture": "2025-01-10 11:39:08",
+        "dateCapture": "2025-01-10 17:35:43",
         "localisation": "D206",
         "description": "Temp\u00e9rature de la salle",
         "nomsa": "ESP-008"
     },
     {
-        "id": 9374,
+        "id": 9483,
         "nom": "hum",
-        "valeur": "75.20",
-        "dateCapture": "2025-01-10 11:39:08",
+        "valeur": "81.70",
+        "dateCapture": "2025-01-10 17:35:43",
         "localisation": "D206",
         "description": "Humidit\u00e9 de la salle",
         "nomsa": "ESP-008"
     },
     {
-        "id": 9375,
+        "id": 9484,
         "nom": "co2",
-        "valeur": "985",
-        "dateCapture": "2025-01-10 11:39:08",
+        "valeur": "400",
+        "dateCapture": "2025-01-10 17:35:43",
         "localisation": "D206",
         "description": "CO2 de la salle",
         "nomsa": "ESP-008"

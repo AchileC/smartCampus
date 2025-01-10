@@ -1,27 +1,27 @@
 [
     {
-        "id": 6516,
+        "id": 6596,
         "nom": "temp",
-        "valeur": "21.4",
-        "dateCapture": "2025-01-10 11:32:14",
+        "valeur": "23.3",
+        "dateCapture": "2025-01-10 15:49:49",
         "localisation": "D109",
         "description": "",
         "nomsa": "ESP-024"
     },
     {
-        "id": 6517,
+        "id": 6597,
         "nom": "hum",
-        "valeur": "61.6",
-        "dateCapture": "2025-01-10 11:32:15",
+        "valeur": "59.3",
+        "dateCapture": "2025-01-10 15:49:50",
         "localisation": "D109",
         "description": "",
         "nomsa": "ESP-024"
     },
     {
-        "id": 6518,
+        "id": 6598,
         "nom": "co2",
         "valeur": "400",
-        "dateCapture": "2025-01-10 11:32:16",
+        "dateCapture": "2025-01-10 15:49:50",
         "localisation": "D109",
         "description": "",
         "nomsa": "ESP-024"

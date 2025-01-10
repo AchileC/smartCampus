@@ -1,29 +1,29 @@
 [
     {
-        "id": 21542,
+        "id": 21605,
         "nom": "temp",
-        "valeur": "22.5",
-        "dateCapture": "2025-01-07 11:59:53",
+        "valeur": "26",
+        "dateCapture": "2025-01-10 15:42:26",
         "localisation": "D303",
-        "description": "Envois des donn\u00e9es de la salle D303",
+        "description": "Test d'envois apr\u00e8s refactor",
         "nomsa": "ESP-005"
     },
     {
-        "id": 21543,
+        "id": 21606,
         "nom": "hum",
-        "valeur": "53.1",
-        "dateCapture": "2025-01-07 11:59:53",
+        "valeur": "57.1",
+        "dateCapture": "2025-01-10 15:42:26",
         "localisation": "D303",
-        "description": "Envois des donn\u00e9es de la salle D303",
+        "description": "Test d'envois apr\u00e8s refactor",
         "nomsa": "ESP-005"
     },
     {
-        "id": 21541,
+        "id": 21604,
         "nom": "co2",
-        "valeur": "408",
-        "dateCapture": "2025-01-07 11:59:53",
+        "valeur": "400",
+        "dateCapture": "2025-01-10 15:42:26",
         "localisation": "D303",
-        "description": "Envois des donn\u00e9es de la salle D303",
+        "description": "Test d'envois apr\u00e8s refactor",
         "nomsa": "ESP-005"
     }
 ]

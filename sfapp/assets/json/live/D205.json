@@ -1,27 +1,27 @@
 [
     {
-        "id": 12405,
+        "id": 12592,
         "nom": "temp",
-        "valeur": "19.80",
-        "dateCapture": "",
+        "valeur": "18.50",
+        "dateCapture": "2025-01-10 17:43:06",
         "localisation": "D205",
         "description": "Capture de la temp\u00e9rature (en \u00b0C)",
         "nomsa": "ESP-004"
     },
     {
-        "id": 12406,
+        "id": 12593,
         "nom": "hum",
-        "valeur": "67.90",
-        "dateCapture": "",
+        "valeur": "75.90",
+        "dateCapture": "2025-01-10 17:43:06",
         "localisation": "D205",
         "description": "Capture de l'humidit\u00e9 (en %)",
         "nomsa": "ESP-004"
     },
     {
-        "id": 12407,
+        "id": 12594,
         "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "",
+        "valeur": "401",
+        "dateCapture": "2025-01-10 17:43:06",
         "localisation": "D205",
         "description": "Capture du taux de CO2 (en ppm)",
         "nomsa": "ESP-004"

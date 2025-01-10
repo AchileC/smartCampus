@@ -1,90 +1,27 @@
 [
     {
-        "id": 12385,
+        "id": 12592,
         "nom": "temp",
-        "valeur": "20.60",
-        "dateCapture": "",
+        "valeur": "18.50",
+        "dateCapture": "2025-01-10 17:43:06",
         "localisation": "D205",
         "description": "Capture de la temp\u00e9rature (en \u00b0C)",
         "nomsa": "ESP-004"
     },
     {
-        "id": 12386,
+        "id": 12593,
         "nom": "hum",
-        "valeur": "66.10",
-        "dateCapture": "",
+        "valeur": "75.90",
+        "dateCapture": "2025-01-10 17:43:06",
         "localisation": "D205",
         "description": "Capture de l'humidit\u00e9 (en %)",
         "nomsa": "ESP-004"
     },
     {
-        "id": 12387,
+        "id": 12594,
         "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture du taux de CO2 (en ppm)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12388,
-        "nom": "temp",
-        "valeur": "20.30",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture de la temp\u00e9rature (en \u00b0C)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12397,
-        "nom": "temp",
-        "valeur": "20.80",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture de la temp\u00e9rature (en \u00b0C)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12398,
-        "nom": "hum",
-        "valeur": "66.40",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture de l'humidit\u00e9 (en %)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12399,
-        "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture du taux de CO2 (en ppm)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12405,
-        "nom": "temp",
-        "valeur": "19.80",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture de la temp\u00e9rature (en \u00b0C)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12406,
-        "nom": "hum",
-        "valeur": "67.90",
-        "dateCapture": "",
-        "localisation": "D205",
-        "description": "Capture de l'humidit\u00e9 (en %)",
-        "nomsa": "ESP-004"
-    },
-    {
-        "id": 12407,
-        "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "",
+        "valeur": "401",
+        "dateCapture": "2025-01-10 17:43:06",
         "localisation": "D205",
         "description": "Capture du taux de CO2 (en ppm)",
         "nomsa": "ESP-004"

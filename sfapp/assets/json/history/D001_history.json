@@ -1,108 +1,27 @@
 [
     {
-        "id": 11206,
+        "id": 11263,
         "nom": "temp",
         "valeur": "21",
-        "dateCapture": "2025-01-10 11:16:55",
+        "dateCapture": "2025-01-10 14:30:31",
         "localisation": "D001",
         "description": "Donn\u00e9e de temp\u00e9rature",
         "nomsa": "ESP-030"
     },
     {
-        "id": 11207,
+        "id": 11264,
         "nom": "hum",
-        "valeur": "60",
-        "dateCapture": "2025-01-10 11:16:55",
+        "valeur": "66",
+        "dateCapture": "2025-01-10 14:30:31",
         "localisation": "D001",
         "description": "Donn\u00e9e d'humidit\u00e9",
         "nomsa": "ESP-030"
     },
     {
-        "id": 11208,
-        "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "2025-01-10 11:16:55",
-        "localisation": "D001",
-        "description": "Donn\u00e9e de CO2",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11209,
-        "nom": "temp",
-        "valeur": "21",
-        "dateCapture": "2025-01-10 11:21:59",
-        "localisation": "D001",
-        "description": "Donn\u00e9e de temp\u00e9rature",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11210,
-        "nom": "hum",
-        "valeur": "61",
-        "dateCapture": "2025-01-10 11:21:59",
-        "localisation": "D001",
-        "description": "Donn\u00e9e d'humidit\u00e9",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11211,
-        "nom": "co2",
-        "valeur": "403",
-        "dateCapture": "2025-01-10 11:21:59",
-        "localisation": "D001",
-        "description": "Donn\u00e9e de CO2",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11212,
-        "nom": "temp",
-        "valeur": "21",
-        "dateCapture": "2025-01-10 11:27:03",
-        "localisation": "D001",
-        "description": "Donn\u00e9e de temp\u00e9rature",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11213,
-        "nom": "hum",
-        "valeur": "60",
-        "dateCapture": "2025-01-10 11:27:03",
-        "localisation": "D001",
-        "description": "Donn\u00e9e d'humidit\u00e9",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11214,
-        "nom": "co2",
-        "valeur": "404",
-        "dateCapture": "2025-01-10 11:27:03",
-        "localisation": "D001",
-        "description": "Donn\u00e9e de CO2",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11218,
-        "nom": "temp",
-        "valeur": "22",
-        "dateCapture": "2025-01-10 11:37:11",
-        "localisation": "D001",
-        "description": "Donn\u00e9e de temp\u00e9rature",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11219,
-        "nom": "hum",
-        "valeur": "60",
-        "dateCapture": "2025-01-10 11:37:11",
-        "localisation": "D001",
-        "description": "Donn\u00e9e d'humidit\u00e9",
-        "nomsa": "ESP-030"
-    },
-    {
-        "id": 11220,
+        "id": 11265,
         "nom": "co2",
         "valeur": "415",
-        "dateCapture": "2025-01-10 11:37:11",
+        "dateCapture": "2025-01-10 14:30:31",
         "localisation": "D001",
         "description": "Donn\u00e9e de CO2",
         "nomsa": "ESP-030"

@@ -1,108 +1,27 @@
 [
     {
-        "id": 9868,
+        "id": 10132,
         "nom": "temp",
-        "valeur": "22.7",
-        "dateCapture": "2025-01-10 11:17:27",
+        "valeur": "23.4",
+        "dateCapture": "2025-01-10 17:33:57",
         "localisation": "D004",
         "description": "valeur temp du capteur ESP-020",
         "nomsa": "ESP-020"
     },
     {
-        "id": 9869,
-        "nom": "hum",
-        "valeur": "60.8",
-        "dateCapture": "2025-01-10 11:17:27",
-        "localisation": "D004",
-        "description": "valeur hum du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9886,
-        "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "2025-01-10 11:17:27",
-        "localisation": "D004",
-        "description": "valeur co2 du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9900,
-        "nom": "temp",
-        "valeur": "22.7",
-        "dateCapture": "2025-01-10 11:20:27",
-        "localisation": "D004",
-        "description": "valeur temp du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9901,
-        "nom": "hum",
-        "valeur": "60.5",
-        "dateCapture": "2025-01-10 11:20:27",
-        "localisation": "D004",
-        "description": "valeur hum du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9902,
-        "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "2025-01-10 11:20:27",
-        "localisation": "D004",
-        "description": "valeur co2 du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9929,
-        "nom": "temp",
-        "valeur": "22.8",
-        "dateCapture": "2025-01-10 11:30:28",
-        "localisation": "D004",
-        "description": "valeur temp du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9930,
+        "id": 10133,
         "nom": "hum",
         "valeur": "60.0",
-        "dateCapture": "2025-01-10 11:30:28",
+        "dateCapture": "2025-01-10 17:33:57",
         "localisation": "D004",
         "description": "valeur hum du capteur ESP-020",
         "nomsa": "ESP-020"
     },
     {
-        "id": 9928,
+        "id": 10130,
         "nom": "co2",
         "valeur": "400",
-        "dateCapture": "2025-01-10 11:30:28",
-        "localisation": "D004",
-        "description": "valeur co2 du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9945,
-        "nom": "temp",
-        "valeur": "22.7",
-        "dateCapture": "2025-01-10 11:35:52",
-        "localisation": "D004",
-        "description": "valeur temp du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9946,
-        "nom": "hum",
-        "valeur": "60.0",
-        "dateCapture": "2025-01-10 11:35:52",
-        "localisation": "D004",
-        "description": "valeur hum du capteur ESP-020",
-        "nomsa": "ESP-020"
-    },
-    {
-        "id": 9944,
-        "nom": "co2",
-        "valeur": "400",
-        "dateCapture": "2025-01-10 11:35:48",
+        "dateCapture": "2025-01-10 17:26:21",
         "localisation": "D004",
         "description": "valeur co2 du capteur ESP-020",
         "nomsa": "ESP-020"

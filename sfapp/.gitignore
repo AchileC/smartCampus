@@ -7,6 +7,8 @@
 /public/bundles/
 /var/
 /vendor/
+sfapp/assets/json/
+
 ###< symfony/framework-bundle ###
 
 ###> symfony/phpunit-bridge ###
