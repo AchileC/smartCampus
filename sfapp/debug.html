@@ -1,0 +1,973 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap JS (avec Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+                <style>
+
+            #toggleSidebarButton {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1051;
+                background-color: #343a40;
+                color: white;
+                border: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+                transition: left 0.4s ease-in-out;
+            }
+
+            #toggleSidebarButton.with-sidebar {
+                left: 270px; /* 250px de sidebar + 20px de marge */
+                transition: left 0.4s ease-in-out;
+            }
+
+            /* Responsive: Écrans de largeur maximale 768px */
+            @media (max-width: 768px) {
+                /* Réduire la largeur de la sidebar */
+                #sidebar {
+                    width: 200px;
+                    left: -200px; /* Ajuster la position fermée */
+                }
+
+                /* Décalage du contenu principal */
+                #main-content.with-sidebar {
+                    margin-left: 200px;
+                }
+
+                /* Ajuster la position du bouton de toggle */
+                #toggleSidebarButton.with-sidebar {
+                    left: 220px; /* 200px de sidebar + 20px de marge */
+                }
+            }
+
+            /* Styles par défaut pour les écrans larges (min-width: 769px) */
+            @media (min-width: 769px) {
+                #sidebar {
+                    width: 250px;
+                }
+            }
+
+            .badge-custom-size {
+                width: 100px;
+                height: 25px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 0.5em 0.75em;
+                font-size: 10px;
+                border-radius: 2rem;
+                font-weight: bold;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            /* Classe pour les bordures rouges */
+            .is-invalid {
+                border-color: #dc3545 !important;
+            }
+
+            /* Classe pour changer la couleur du bouton en rouge */
+            .card {
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+            }
+
+            /* Styles pour les boutons */
+            .btn-primary {
+                background-color: #007bff;
+                border-color: #007bff;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                border-color: #004085;
+            }
+
+            .btn-secondary {
+                background-color: #6c757d;
+                border-color: #6c757d;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-secondary:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+
+            .btn-danger {
+                background-color: #dc3545;
+                border-color: #dc3545;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+
+            .btn-warning {
+                background-color: #ffc107;
+                border-color: #ffc107;
+                color: #212529;
+                transition: background-color 0.3s, border-color 0.3s;
+            }
+
+            .btn-warning:hover {
+                background-color: #e0a800;
+                border-color: #d39e00;
+            }
+
+            /* Amélioration des labels et inputs */
+            .form-label {
+                font-weight: 600;
+                color: lightslategray;
+            }
+
+            .form-control,
+            .form-select {
+                border-radius: 5px;
+                box-shadow: none;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+
+            .form-control:focus,
+            .form-select:focus {
+                border-color: #80bdff;
+                box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            }
+
+            /* Animation pour les erreurs */
+            .shake {
+                animation: shake 0.3s;
+            }
+
+            @keyframes shake {
+                0% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                50% { transform: translateX(5px); }
+                75% { transform: translateX(-5px); }
+                100% { transform: translateX(0); }
+            }
+
+            /* Style pour les badges de l'état de la salle */
+            .badge {
+                font-size: 1rem;
+                padding: 0.5em 0.75em;
+            }
+
+            .menu-button {
+                margin: 20px;
+                font-size: 24px;
+                border: none;
+                background: none;
+                cursor: pointer;
+                padding: 0;
+            }
+
+            .menu-button i {
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+
+            .menu-button i.bi-x {
+                transform: rotate(90deg);
+            }
+
+            .offcanvas-header {
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                min-height: 100vh;
+                margin: 0;
+            }
+
+            /* Sidebar styles */
+            #sidebar {
+                height: 100%;
+                position: fixed;
+                z-index: 1050;
+                top: 0;
+                left: -250px; /* Par défaut, la sidebar est fermée */
+                background-color: #343a40;
+                color: #fff;
+                padding-top: 20px;
+                transition: left 0.6s;
+            }
+
+            #sidebar .brand {
+                display: flex;
+                align-items: center;
+                padding: 0 15px;
+                font-size: 1.25rem;
+                font-weight: bold;
+            }
+
+            #sidebar .brand img {
+                width: 30px;
+                height: 30px;
+                margin-right: 10px;
+                border-radius: 50%;
+            }
+
+            #sidebar hr {
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            #sidebar .nav-link {
+                color: #adb5bd;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                padding: 10px 15px;
+            }
+
+            #sidebar .nav-link.active {
+                color: #fff;
+                background-color: #007bff;
+            }
+
+            #sidebar .nav-link i {
+                margin-right: 10px;
+            }
+
+            #sidebar .nav-link:hover {
+                background-color: #495057;
+                color: #fff;
+            }
+
+            #sidebar .user-section {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                padding: 10px 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+            }
+
+            #sidebar .user-section i {
+                font-size: 1.8rem;
+                color: #adb5bd;
+                margin-right: 10px;
+            }
+
+            #sidebar .user-section .dropdown-toggle {
+                color: #adb5bd;
+            }
+
+            #sidebar .user-section .dropdown-menu {
+                background-color: #343a40;
+            }
+
+            #sidebar .user-section .dropdown-menu a {
+                color: #adb5bd;
+            }
+
+            #sidebar .user-section .dropdown-menu a:hover {
+                background-color: #495057;
+                color: #fff;
+            }
+
+            #sidebar.open {
+                left: 0;
+            }
+
+            #main-content {
+                flex: 1;
+                transition: margin-left 0.3s;
+                padding: 20px;
+                margin-left: 0;
+            }
+
+            #main-content.with-sidebar {
+                margin-left: 250px;
+            }
+
+            [data-bs-theme="dark"] #theme-label {
+                color: #ffffff;
+            }
+
+            [data-bs-theme="light"] #theme-label {
+                color: #adb5bd;
+            }
+
+            [data-bs-theme="dark"] .card {
+                background-color: #1e1e1e;
+                border-color: #333333;
+            }
+
+            [data-bs-theme="dark"] .btn-secondary {
+                background-color: #444444;
+                border-color: #555555;
+            }
+
+            .theme-switch-wrapper {
+                position: absolute;
+                bottom: 60px;
+                width: 100%;
+                padding: 10px 15px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            #theme-label {
+                font-weight: 500;
+                transition: color 0.3s ease;
+            }
+
+            /* Styles pour le bouton de paramètres */
+            .settings-button {
+                position: absolute; /* Place le bouton par rapport à la barre latérale */
+                bottom: 1.25rem; /* Distance du bas de la barre latérale */
+                left: 80%; /* Centre horizontalement si nécessaire */
+                transform: translateX(-50%); /* Centre exact si aligné au centre */
+                z-index: 10;
+                margin-left: 5px; /* Réduit l'espace entre le bouton utilisateur et le bouton paramètres */
+                background-color: transparent;
+                border: none;
+                color: #adb5bd;
+                cursor: pointer;
+                padding: 0; /* Supprime le padding pour un bouton plus compact */
+                transition: color 0.3s;
+            }
+
+            .settings-button:hover {
+                color: #fff;
+            }
+
+            /* Optionnel : Ajuster la position si nécessaire */
+            .user-section {
+                display: flex;
+                align-items: center;
+            }
+
+
+            .dropdown-menu {
+                max-height: 300px;
+                overflow-y: auto;
+                width: 340px;
+                padding: 0;
+            }
+            .list-group-item {
+                font-size: 0.9rem;
+                line-height: 1.2;
+            }
+
+            .list-group-item::after {
+                content: "";
+                display: block;
+                margin: 0 auto;
+                width: 80%; /* Ajustez la largeur selon vos préférences */
+                padding-bottom: 5px; /* Optionnel, si vous voulez un peu d'espace */
+            }
+
+            .btn-link {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                /* Ajoutez une taille fixe si nécessaire */
+                width: 40px;
+                height: 40px;
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                transform: translate(50%, -50%);
+                font-size: 0.8rem;
+                font-weight: bold;
+                color: white;
+                background-color: #dc3545;
+                border-radius: 50%;
+                padding: 0.25em 0.45em;
+                line-height: 1;
+                z-index: 10;
+                width: 20px;
+                height: 20px;
+                box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+                pointer-events: none;
+            }
+
+
+            .list-group-item.fw-bold {
+                background: #2c2f33;
+                border-left: 4px solid #0d6efd;
+                position: relative;
+                padding-left: 1rem;
+            }
+
+            .list-group-item.fw-muted {
+                border-left: 4px solid #343a40;
+                position: relative;
+                padding-left: 1rem;
+                color: #6c757d;
+            }
+
+            .dropdown-menu > li.sticky-header {
+                position: sticky;
+                top: 0;
+                z-index: 20;
+                background-color: #343a40;
+                color: #ffffff;
+                padding: 10px 0;
+                border-bottom: 1px solid #555;
+                margin: 0;
+            }
+
+
+
+        </style>
+    
+    <style>
+        .container.mt-4 {
+            max-width: 1200px;
+        }
+
+        #lastUpdateTime {
+            font-weight: 600;
+        }
+
+        #filterForm {
+            padding: 20px;
+
+            border-radius: 8px;
+            box-shadow: var(--bs-shadow-sm);
+            border: 1px solid var(--bs-border-color); /* Ensure border visibility */
+        }
+
+        /* Utilize Bootstrap's border colors */
+        #filterForm .form-control,
+        #filterForm .form-select {
+            border: 1px solid var(--bs-border-color);
+        }
+
+        #filterForm .form-control:focus,
+        #filterForm .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Bootstrap's primary color with opacity */
+        }
+
+        /* Ensure modal adapts to themes */
+        .modal-content {
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+    </style>
+</head>
+<body>
+<div id="sidebar">
+    <div class="brand d-flex justify-content-center align-items-center">
+                <img src="/media/logo.png" alt="Logo" style="height: 75px; width: auto; border-radius: 0;">
+            </div>
+    <hr>
+        <nav class="nav flex-column">
+                                    <a href="/rooms" class="nav-link active">
+                <i class="bi bi-box"></i>
+                Rooms
+            </a>
+                        
+        </nav>
+
+
+
+
+        <div class="user-section d-flex align-items-center">
+                <!-- Utilisateur connecté -->
+                <div class="d-flex align-items-center">
+
+                                            <a class="btn d-flex align-items-center" href="/en/login" role="button" aria-expanded="false" style="color: #adb5bd;">
+                            <i class="bi bi-person-circle me-2" style="font-size: 1.5rem;"></i>
+                            <span>Login</span>
+                        </a>
+                        <!-- Utilisateur non connecté -->
+                                        <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
+                        <i class="bi bi-gear-fill" style="font-size: 1.25rem;"></i>
+                    </button>
+                                                        </div>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <button id="toggleSidebarButton" onclick="toggleSidebar()">
+            <i id="sidebarToggleIcon" class="bi bi-list"></i> <!-- Icône hamburger -->
+        </button>
+
+            <div class="container mt-4">
+
+        <!-- Title and Update Indicator -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+            <h1 class="h2">Room list</h1>
+            <div class="d-flex align-items-center">
+                            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
+                    </div>
+
+        <!-- Filter Form -->
+        <form name="filter_room" method="post" class="mb-4" id="filterForm">
+        <div class="row g-3 align-items-end">
+
+            <!-- Name Search Field -->
+            <div class="col-md-3">
+                <div><label for="filter_room_name">Name</label><input type="text" id="filter_room_name" name="filter_room[name]" placeholder="Search for a room by name" class="form-control"></div>
+            </div>
+
+            <!-- Floor Filter Field -->
+            <div class="col-md-3">
+                <div><label for="filter_room_floor">Floor</label><select id="filter_room_floor" name="filter_room[floor]" class="form-select"><option value>Select a floor</option><option value="0">Ground floor</option><option value="1">First floor</option><option value="2">Second floor</option><option value="3">Third floor</option></select></div>
+            </div>
+
+            <!-- State Filter Field -->
+            <div class="col-md-3">
+                <div><label for="filter_room_state">State</label><select id="filter_room_state" name="filter_room[state]" class="form-select"><option value>Select a state</option><option value="stable">Stable</option><option value="at risk">At risk</option><option value="critical">Critical</option></select></div>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="col-md-1">
+                <div><button type="submit" id="filter_room_reset" name="filter_room[reset]" class="btn btn-outline-secondary w-100" formnovalidate="formnovalidate">Reset</button></div>
+            </div>
+
+            <!-- Filter Button -->
+            <div class="col-md-2">
+                <div><button type="submit" id="filter_room_filter" name="filter_room[filter]" class="btn btn-primary w-100">Search</button></div>
+            </div>
+        </div>
+        <input type="hidden" id="filter_room__token" name="filter_room[_token]" value="c2794f3dc6cb25.rVi22DIH9iZ0t7i1HcQHgTlzp_X-e3FFSm1fvio1erU.9Dzhn0t1nnkx-YvyZL4w0UlEkseVOgURf1wc_x9vTMfCN_GOU2OGcyzUzw"></form>
+
+        <!-- Rooms List -->
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+                                                <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div>
+                                    <h5 class="card-title">D201</h5>
+                                    <p class="card-text mb-1"><strong>Floor:</strong> Second floor</p>
+                                    <p class="card-text mb-1"><strong>State:</strong>
+                                        <span class="badge-custom-size
+                                    bg-primary
+                                    ">
+                                    WAITING
+                                    </span>
+                                    </p>
+                                                                    </div>
+
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="/rooms/D201" class="btn btn-outline-primary">
+                                            <i class="bi bi-info-circle"></i> Details
+                                        </a>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div>
+                                    <h5 class="card-title">D204</h5>
+                                    <p class="card-text mb-1"><strong>Floor:</strong> Second floor</p>
+                                    <p class="card-text mb-1"><strong>State:</strong>
+                                        <span class="badge-custom-size
+                                    bg-warning
+                                    ">
+                                    AT RISK
+                                    </span>
+                                    </p>
+                                                                    </div>
+
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="/rooms/D204" class="btn btn-outline-primary">
+                                            <i class="bi bi-info-circle"></i> Details
+                                        </a>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div>
+                                    <h5 class="card-title">D301</h5>
+                                    <p class="card-text mb-1"><strong>Floor:</strong> Third floor</p>
+                                    <p class="card-text mb-1"><strong>State:</strong>
+                                        <span class="badge-custom-size
+                                    bg-primary
+                                    ">
+                                    WAITING
+                                    </span>
+                                    </p>
+                                                                    </div>
+
+                                <div class="mt-3">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="/rooms/D301" class="btn btn-outline-primary">
+                                            <i class="bi bi-info-circle"></i> Details
+                                        </a>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                    </div>
+    </div>
+
+    <!-- Modale de Suppression -->
+    <div class="modal fade" id="deleteRoomModal" tabindex="-1" aria-labelledby="deleteRoomModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteRoomModalLabel">Delete Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete the room <strong><span id="roomNameToDelete"></span></strong>?
+                    <p class="text-danger mt-2">⚠️ <strong>If an acquisition system is assigned, it will be automatically unassigned.</strong></p>
+                </div>
+                <div class="modal-footer d-flex flex-column align-items-stretch">
+                    <form id="deleteRoomForm" method="post" class="mb-2">
+                        <input type="hidden" name="_token" value="7b114da4d.KMD8EX-eCZ5YlGtdafEOgUDLldkEmDnrqs3QPvexiPI.eo2UfBP6bPgU4A8fOZxG0TWR3pNc_GOe-fimdbzepbsZr79bS9loxmD4DA">
+                        <button type="submit" class="btn btn-danger w-100">Delete</button>
+                    </form>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="settingsModalLabel">Parameters</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center">
+                        <span id="theme-label-modal" class="form-label me-3 mb-0">Mode Sombre</span>
+                        <i class="bi bi-moon-fill theme-icon moon me-3"></i>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="theme-toggle-switch-modal">
+                            <label class="form-check-label" for="theme-toggle-switch-modal"></label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="d-flex align-items-center">
+                        <label for="language-select" class="form-label me-3 mb-0">Langue</label>
+                        <select class="form-select form-select-sm" id="language-select" aria-label="Sélecteur de langue" style="width: 120px;">
+                            <option value="en" selected>English</option>
+                            <option value="fr">Français</option>
+                            <!-- Vous pouvez ajouter d'autres langues ici -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <script>
+        /**
+         * @file base.html.twig
+         * @brief Main Twig template for the Smart Campus application.
+         *
+         * This script handles the interactivity of the sidebar, theme toggling, and options activation.
+         */
+
+        document.addEventListener("DOMContentLoaded", function () {
+            /**
+             * @var {HTMLElement} sidebar - The sidebar element.
+             * @var {HTMLElement} toggleButton - The main content area.
+             * @var {HTMLElement} toggleIcon - The icon used to toggle the sidebar.
+             */
+            const sidebar = document.getElementById('sidebar');
+            const toggleButton = document.getElementById('toggleSidebarButton');
+            const toggleIcon = document.getElementById('sidebarToggleIcon');
+            const mainContent = document.getElementById('main-content');
+
+
+            /**
+             * @function toggleSidebar
+             * @brief Toggles the visibility of the sidebar and updates the toggle icon.
+             *
+             * This function adds or removes the 'closed' class on the sidebar and 'with-sidebar' on the main content.
+             * It also switches the toggle icon between the hamburger and close icons.
+             */
+            // Fonction pour basculer la sidebar et ajuster le bouton
+            window.toggleSidebar = function () {
+                const isOpen = sidebar.classList.toggle('open');
+                mainContent.classList.toggle('with-sidebar', isOpen);
+                toggleButton.classList.toggle('with-sidebar', isOpen);
+
+                // Basculer l'icône
+                toggleIcon.classList.toggle('bi-list', !isOpen);
+                toggleIcon.classList.toggle('bi-arrow-bar-left', isOpen);
+            };
+
+            /**
+             * @var {NodeListOf<HTMLElement>} flashMessages - All elements with the class 'flash-message'.
+             *
+             * Selects all elements that display flash messages to the user.
+             */
+            const flashMessages = document.querySelectorAll('.flash-message');
+
+            /**
+             * @brief Fades out and removes flash messages after 3 seconds.
+             *
+             * Iterates through each flash message, adds a 'fade' class to initiate a fade-out effect,
+             * and removes the element from the DOM shortly after the fade-out animation completes.
+             */
+            flashMessages.forEach((message) => {
+                setTimeout(() => {
+                    message.classList.add('fade');
+                    setTimeout(() => message.remove(), 150);
+                }, 3000);
+            });
+
+            /**
+             * @var {HTMLInputElement} themeToggleSwitch - The theme toggle switch element.
+             * @var {HTMLElement} themeLabel - The label displaying the current theme.
+             */
+            const themeToggleSwitchModal = document.getElementById("theme-toggle-switch-modal");
+            const themeLabelModal = document.getElementById("theme-label-modal");
+
+            // Set the initial theme based on localStorage or system preferences
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+            const currentTheme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
+
+            // Apply the current theme
+            document.documentElement.setAttribute("data-bs-theme", currentTheme);
+            if (themeToggleSwitchModal) {
+                themeToggleSwitchModal.checked = currentTheme === "dark";
+                themeLabelModal.innerText = "Mode Sombre";
+            }
+
+            /**
+             * Event listener for theme toggle switch in modal
+             */
+            if (themeToggleSwitchModal) {
+                themeToggleSwitchModal.addEventListener("change", function () {
+                    const newTheme = themeToggleSwitchModal.checked ? "dark" : "light";
+                    document.documentElement.setAttribute("data-bs-theme", newTheme);
+                    localStorage.setItem("theme", newTheme);
+                    themeLabelModal.innerText ="Mode Sombre";
+                });
+            }
+
+            /**
+             * Handle Language Selection in Modal
+             */
+            const languageSelect = document.getElementById("language-select");
+
+            if (languageSelect) {
+                const savedLanguage = localStorage.getItem("language");
+                if (savedLanguage) {
+                    languageSelect.value = savedLanguage;
+                }
+
+                languageSelect.addEventListener("change", function () {
+                    const selectedLanguage = languageSelect.value;
+                    localStorage.setItem("language", selectedLanguage);
+
+                    // On récupère le chemin actuel
+                    const pathParts = window.location.pathname.split('/').filter(Boolean);
+                    // pathParts[0] contient la langue actuelle, on la remplace par la nouvelle
+                    pathParts[0] = selectedLanguage;
+
+                    // Reconstruction de l'URL
+                    const newPath = `/${pathParts.join('/')}`;
+                    window.location.href = newPath;
+                });
+            }
+
+
+            /**
+             * Fonction pour gérer les animations et styles en cas d'erreurs de validation.
+             */
+            function handleFormValidationErrors() {
+                // Sélectionne tous les champs de formulaire invalides
+                const invalidInputs = document.querySelectorAll('.form-control.is-invalid');
+
+                // Sélectionne le bouton de soumission
+                const saveButton = document.querySelector('button[type="submit"]');
+
+                if (invalidInputs.length > 0) {
+                    invalidInputs.forEach((input) => {
+                        // Ajoute l'effet de tremblement en re-déclenchant l'animation
+                        input.classList.remove('shake');
+                        void input.offsetWidth; // Hack pour redéclencher l'animation
+                        input.classList.add('shake');
+                    });
+
+                    if (saveButton) {
+                        // Change la couleur du bouton "Save Room" en rouge
+                        saveButton.classList.remove('btn-primary');
+                        saveButton.classList.add('btn-danger');
+                    }
+                } else {
+                    if (saveButton) {
+                        // Réinitialise la couleur du bouton "Save Room" si pas d'erreurs
+                        saveButton.classList.remove('btn-danger');
+                        saveButton.classList.add('btn-primary');
+                    }
+                }
+            }
+
+            const markAllAsReadButton = document.getElementById("markAllAsReadButton");
+            const notificationBadge = document.querySelector(".notification-badge");
+
+            markAllAsReadButton.addEventListener("click", function () {
+                fetch("/en/notifications/mark-as-read", {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-Token": "85012000ae03ddd88758.k5T-czNowYwQCuTNzlEp35kssfTr9sQtj8kJBzNodPc.yaCtFl46qOJ8QNGL_Txkifsc6ZehqYtc9YBWV2ARH7Di9pILVUWp9mc-qQ",
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Cache la pastille de notification s'il y en a une
+                            if (notificationBadge) {
+                                notificationBadge.style.display = "none";
+                            }
+
+                            // Optionnel : rafraîchir la liste ou modifier l'apparence des notifications
+                            const notificationItems = document.querySelectorAll(".list-group-item.fw-bold");
+                            notificationItems.forEach(item => {
+                                item.classList.remove("fw-bold");
+                                item.classList.add("fw-muted");
+                            });
+                        }
+                    })
+                    .catch(error => console.error("Erreur AJAX :", error));
+            });
+
+            document.addEventListener('DOMContentLoaded', handleFormValidationErrors);
+        });
+
+        /**
+         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 900,000 milliseconds (15 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 900000);
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            /**
+             * @var {NodeList} deleteButtons
+             * @brief List of all room delete buttons.
+             *
+             * Selects all elements with the class 'delete-room-button' which
+             * are used to trigger the deletion of a specific room.
+             */
+            const deleteButtons = document.querySelectorAll('.delete-room-button');
+
+            /**
+             * @var {HTMLElement} roomNameSpan
+             * @brief Span element displaying the name of the room to delete in the modal.
+             *
+             * This element is dynamically updated when the user clicks on a delete button.
+             */
+            const roomNameSpan = document.getElementById('roomNameToDelete');
+
+            /**
+             * @var {HTMLFormElement} deleteForm
+             * @brief Deletion form in the modal.
+             *
+             * The 'action' attribute of this form is dynamically updated to point to the appropriate deletion URL.
+             */
+            const deleteForm = document.getElementById('deleteRoomForm');
+
+            /**
+             * @function initializeDeleteRoomModal
+             * @brief Initializes event listeners on the delete buttons.
+             *
+             * For each delete button, adds a 'click' event listener that
+             * updates the modal content with the room name and sets the
+             * form action to the specific room deletion URL.
+             */
+            function initializeDeleteRoomModal() {
+                deleteButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        /**
+                         * @var {string} roomName
+                         * @brief Name of the room to delete, extracted from the 'data-room-name' attribute of the button.
+                         */
+                        const roomName = this.getAttribute('data-room-name');
+
+                        /**
+                         * @var {string} deleteUrl
+                         * @brief Specific deletion URL for the room, extracted from the 'data-delete-url' attribute of the button.
+                         */
+                        const deleteUrl = this.getAttribute('data-delete-url');
+
+                        // Update the room name in the modal
+                        roomNameSpan.textContent = roomName;
+
+                        // Update the form action with the specific URL
+                        deleteForm.action = deleteUrl;
+                    });
+                });
+            }
+
+            // Call the initialization function on DOM load
+            initializeDeleteRoomModal();
+
+            /**
+             * @var {HTMLInputElement|null} sensorStatusCheckbox - The checkbox to filter rooms based on sensor status.
+             *
+             * Selects the checkbox that, when toggled, filters the room listings to show only linked rooms.
+             */
+            const sensorStatusCheckbox = document.querySelector('.sensor-status-checkbox');
+
+            /**
+             * @brief Submits the filter form automatically when the "Only show linked rooms" checkbox is toggled.
+             *
+             * Adds an event listener to the checkbox to detect changes. When the checkbox state changes,
+             * the associated filter form is submitted to update the room listings accordingly.
+             */
+            if (sensorStatusCheckbox) {
+                sensorStatusCheckbox.addEventListener('change', function () {
+                    document.getElementById('filterForm').submit();
+                });
+            }
+        });
+    </script>
+
+</body>
