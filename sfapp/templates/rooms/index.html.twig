@@ -4,41 +4,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        .container.mt-4 {
-            max-width: 1200px;
-        }
-
-        #lastUpdateTime {
-            font-weight: 600;
-        }
-
-        #filterForm {
-            padding: 20px;
-
-            border-radius: 8px;
-            box-shadow: var(--bs-shadow-sm);
-            border: 1px solid var(--bs-border-color); /* Ensure border visibility */
-        }
-
-        /* Utilize Bootstrap's border colors */
-        #filterForm .form-control,
-        #filterForm .form-select {
-            border: 1px solid var(--bs-border-color);
-        }
-
-        #filterForm .form-control:focus,
-        #filterForm .form-select:focus {
-            border-color: var(--bs-primary);
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Bootstrap's primary color with opacity */
-        }
-
-        /* Ensure modal adapts to themes */
-        .modal-content {
-            background-color: var(--bs-body-bg);
-            color: var(--bs-body-color);
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/roomsIndex.css.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -76,28 +42,28 @@
         <div class="row g-3 align-items-end">
 
             <!-- Name Search Field -->
-            <div class="col-md-3">
+            <div class="col-md-4 col-sm-12">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
             </div>
 
             <!-- Floor Filter Field -->
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
             </div>
 
             <!-- State Filter Field -->
-            <div class="col-md-3">
+            <div class="col-md-3 col-sm-6">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
             </div>
 
-            <!-- Reset Button -->
-            <div class="col-md-1">
-                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-outline-secondary w-100'}}) }}
+            <!-- Filter Button -->
+            <div class="col-md-1 col-sm-6">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
             </div>
 
-            <!-- Filter Button -->
-            <div class="col-md-2">
-                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
+            <!-- Reset Button -->
+            <div class="col-md-1 col-sm-6">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-outline-secondary w-100'}}) }}
             </div>
         </div>
         {{ form_end(filterForm) }}
@@ -117,31 +83,46 @@
             {% else %}
                 {% for room in rooms %}
                     <div class="col">
-                        <div class="card h-100 shadow-sm">
+                        <div class="card h-100 shadow-sm position-relative"> <!-- Added position-relative -->
+
+                            <!-- Warning Symbols Container -->
+                            {% if is_granted('ROLE_MANAGER') and ongoingTasks[room.id] is defined %}
+                                {% set task = ongoingTasks[room.id] %}
+                                {% if task.info is defined and task.info is not null %}
+                                    <div class="task-symbol position-absolute top-0 end-0 m-2">
+                                        {% if task.info.value == 'assignment' %}
+                                            <i class="bi bi-plus-circle text-success" title="{{ 'Assignment in progress' | trans }}"></i>
+                                        {% elseif task.info.value == 'unassignment' %}
+                                            <i class="bi bi-dash-circle text-warning" title="{{ 'Unassignment in progress' | trans }}"></i>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+
                             <div class="card-body d-flex flex-column justify-content-between">
+                                <!-- Card Content -->
                                 <div>
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text mb-1"><strong>{{ 'floor' | trans }}:</strong> {{ ('filter.floor.' ~ room.floor.value) | trans }}</p>
                                     <p class="card-text mb-1"><strong>{{ 'state' | trans }}:</strong>
                                         <span class="badge-custom-size
-                                    {% if room.state.value == 'none' %}bg-secondary
-                                    {% elseif room.state.value == 'waiting' %}bg-primary
-                                    {% elseif room.state.value == 'stable' %}bg-success
-                                    {% elseif room.state.value == 'at risk' %}bg-warning
-                                    {% else %}bg-danger{% endif %}">
-                                    {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
-                                    </span>
+                        {% if room.state.value == 'no data' %}bg-secondary
+                        {% elseif room.state.value == 'stable' %}bg-success
+                        {% elseif room.state.value == 'at risk' %}bg-warning
+                        {% elseif room.state.value == 'critical' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
+                        </span>
                                     </p>
                                     {% if is_granted('ROLE_TECHNICIAN') %}
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
                                             <span class="badge-custom-size
-                                            {% if room.sensorState.value == 'linked' %}bg-success
-                                            {% elseif room.sensorState.value == 'not working' %}bg-warning
-                                            {% elseif room.sensorState.value == 'not linked' %}bg-secondary
-                                            {% else %}bg-danger{% endif %}">
-                                            {{('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
-                                            </span>
-                                       </span>
+                            {% if room.sensorState.value == 'linked' %}bg-success
+                            {% elseif room.sensorState.value == 'not linked' %}bg-secondary
+                            {% elseif room.sensorState.value == 'not working' %}bg-danger
+                            {% else %}bg-secondary{% endif %}">
+                            {{ ('_sensor_state.' ~ room.sensorState.value | upper )| trans | upper }}
+                            </span>
                                         </p>
                                     {% endif %}
                                 </div>
@@ -170,6 +151,7 @@
                         </div>
                     </div>
                 {% endfor %}
+
             {% endif %}
         </div>
     </div>
