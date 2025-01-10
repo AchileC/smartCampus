@@ -96,8 +96,8 @@ class RoomController extends AbstractController
         // Check the freshness of the JSON data
         // --------------------------------------
         $now = new \DateTime();
-        // Subtract 2 minutes from the current time
-        $cutoffDate = (clone $now)->sub(new \DateInterval('PT2M'));
+        // Subtract 15 minutes from the current time
+        $cutoffDate = (clone $now)->sub(new \DateInterval('PT3M'));
 
         foreach ($rooms as $room) {
             // On ne traite que les salles LINKED ou en ASSIGNMENT
