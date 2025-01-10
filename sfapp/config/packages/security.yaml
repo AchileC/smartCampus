@@ -43,6 +43,7 @@ security:
         # Protected Routes
         - { path: "^/[a-z]{2}/rooms/[a-zA-Z0-9]+/update$", roles: ROLE_MANAGER }
         - { path: "^/[a-z]{2}/rooms/[a-zA-Z0-9]+/delete$", roles: ROLE_MANAGER }
+        - { path: "^/[a-z]{2}/rooms/add", roles: ROLE_MANAGER }
         - { path: "^/[a-z]{2}/as", roles: ROLE_TECHNICIAN }
         - { path: "^/[a-z]{2}/todolist", roles: ROLE_TECHNICIAN }
 
