@@ -528,4 +528,59 @@ class RoomController extends AbstractController
         $this->addFlash('success', 'Tâche d’installation/désinstallation annulée avec succès.');
         return $this->redirectToRoute('app_rooms');
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+ * Displays analytics for a specific room.
+ *
+ * @param string $name The name of the room
+ * @param RoomRepository $roomRepository The repository to fetch room data
+ * @param Request $request The HTTP request
+ * @return Response The response rendering the analytics page
+ */
+#[Route('/rooms/{name}/analytics', name: 'app_rooms_analytics')]
+public function analytics(
+    string $name,
+    RoomRepository $roomRepository,
+    Request $request
+): Response {
+    $room = $roomRepository->findOneBy(['name' => $name]);
+
+    if (!$room) {
+        throw $this->createNotFoundException('Room not found');
+    }
+
+    if (!$room->getAcquisitionSystem()) {
+        throw $this->createNotFoundException('This room has no acquisition system');
+    }
+
+    $range = $request->query->get('range', 'month'); // Default to 'month'
+
+    // Fetch data from the API
+    try {
+        $historicalData = $roomRepository->fetchHistoricalDataFromApi($room->getAcquisitionSystem(), $range);
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Failed to fetch data: ' . $e->getMessage());
+        $historicalData = [];
+    }
+
+    return $this->render('rooms/analytics.html.twig', [
+        'room' => $room,
+        'historicalData' => $historicalData,
+        'range' => $range,
+    ]);
+}
+
 }

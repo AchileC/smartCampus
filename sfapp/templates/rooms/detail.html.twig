@@ -459,7 +459,10 @@
         <!-- Back to List Button -->
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
-                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'back_to_room_list' | trans }}</a>
+                {% if room.acquisitionSystem %}
+                    <a href="{{ path('app_rooms_analytics', { name: room.name }) }}" class="btn btn-outline-info me-2">View Analytics</a>
+                {% endif %}
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to Room List</a>
             </div>
         </div>
     </div>

@@ -531,4 +531,99 @@ class RoomRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Gets historical data for a room from the JSON files
+     * Returns data for temperature, humidity, and CO2 levels
+     */
+    public function getHistoricalData(Room $room): array
+    {
+        $historicalDataPath = __DIR__ . '/../../assets/json/historical/' . $room->getName() . '_history.json';
+        
+        if (!file_exists($historicalDataPath)) {
+            // If no historical data exists, return empty arrays
+            return [
+                'temperature' => [],
+                'humidity' => [],
+                'co2' => []
+            ];
+        }
+
+        $jsonData = file_get_contents($historicalDataPath);
+        $data = json_decode($jsonData, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Invalid JSON format in historical data file');
+        }
+
+        return $data;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function fetchHistoricalDataFromApi(AcquisitionSystem $acquisitionSystem, string $range): array
+{
+    $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/interval';
+    $sensorName = $acquisitionSystem->getName();
+    $noms = ['temp', 'hum', 'co2'];
+    $now = new \DateTime();
+    $startDate = clone $now;
+
+    // Déterminer la plage de dates
+    if ($range === 'week') {
+        $startDate->modify('-7 days');
+    } elseif ($range === 'month') {
+        $startDate->modify('-30 days');
+    } elseif ($range === 'year') {
+        $startDate->modify('-1 year');
+    }
+
+    $data = [];
+    foreach ($noms as $nom) {
+        try {
+            $response = $this->httpClient->request('GET', $url, [
+                'headers' => [
+                    'dbname' => 'sae34bdm1eq2',
+                    'username' => 'm1eq2',
+                    'userpass' => 'kabxaq-4qopra-quXvit',
+                ],
+                'query' => [
+                    'nom' => $nom,
+                    'date1' => $startDate->format('Y-m-d'),
+                    'date2' => $now->format('Y-m-d'),
+                ],
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                $responseData = $response->toArray();
+                $data[$nom] = $responseData;
+            } else {
+                throw new \RuntimeException("API error: {$response->getStatusCode()}");
+            }
+        } catch (\Exception $e) {
+            // Log or display the error
+            throw new \RuntimeException('Error fetching data: ' . $e->getMessage());
+        }
+    }
+
+    // Sauvegarder les données dans un fichier JSON
+    $filePath = $this->jsonDirectory . '/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
+    file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
+
+    return $data;
+}
+
 }
