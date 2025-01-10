@@ -110,6 +110,11 @@ class RoomRepository extends ServiceEntityRepository
                ->setParameter('state', $criteria['state']);
         }
 
+        if (isset($criteria['state_not'])) {
+            $qb->andWhere('r.state != :state_not')
+                ->setParameter('state_not', $criteria['state_not']);
+        }
+
         if (isset($criteria['sensorStatus']) && is_array($criteria['sensorStatus'])) {
             $qb->andWhere('r.sensorState IN (:sensorStatus)')
                ->setParameter('sensorStatus', $criteria['sensorStatus']);

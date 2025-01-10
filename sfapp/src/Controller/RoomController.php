@@ -144,7 +144,8 @@ class RoomController extends AbstractController
 
         // Filtering for unauthenticated users
         if (!$this->getUser()) {
-            $criteria['sensorStatus'] = ['linked'];
+            $criteria['sensorStatus'] = 'linked';
+            $criteria['state_not'] = 'no data'; // Exclure les états "no data"
         }
 
         // Apply initial filter based on URL
