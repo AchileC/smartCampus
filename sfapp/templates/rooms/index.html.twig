@@ -4,7 +4,41 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/roomsIndex.css.css') }}">
+    <style>
+        .container.mt-4 {
+            max-width: 1200px;
+        }
+
+        #lastUpdateTime {
+            font-weight: 600;
+        }
+
+        #filterForm {
+            padding: 20px;
+
+            border-radius: 8px;
+            box-shadow: var(--bs-shadow-sm);
+            border: 1px solid var(--bs-border-color); /* Ensure border visibility */
+        }
+
+        /* Utilize Bootstrap's border colors */
+        #filterForm .form-control,
+        #filterForm .form-select {
+            border: 1px solid var(--bs-border-color);
+        }
+
+        #filterForm .form-control:focus,
+        #filterForm .form-select:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); /* Bootstrap's primary color with opacity */
+        }
+
+        /* Ensure modal adapts to themes */
+        .modal-content {
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -42,28 +76,28 @@
         <div class="row g-3 align-items-end">
 
             <!-- Name Search Field -->
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-3">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
             </div>
 
             <!-- Floor Filter Field -->
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-3">
                 {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
             </div>
 
             <!-- State Filter Field -->
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-3">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
             </div>
 
-            <!-- Filter Button -->
-            <div class="col-md-1 col-sm-6">
-                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
+            <!-- Reset Button -->
+            <div class="col-md-1">
+                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-outline-secondary w-100'}}) }}
             </div>
 
-            <!-- Reset Button -->
-            <div class="col-md-1 col-sm-6">
-                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-outline-secondary w-100'}}) }}
+            <!-- Filter Button -->
+            <div class="col-md-2">
+                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
             </div>
         </div>
         {{ form_end(filterForm) }}
