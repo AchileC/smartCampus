@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Analytics - {{ room.name }}{% endblock %}
+{% block title %}{{ 'analytics.title'|trans }} - {{ room.name }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -50,7 +50,7 @@
         <!-- Header Section -->
         <div class="row">
             <div class="col-md-10 offset-md-1 bg-info py-5 position-relative">
-                <h1 class="text-center text-white mb-0">Analytics for Room {{ room.name }}</h1>
+                <h1 class="text-center text-white mb-0">{{ 'analytics.summary'|trans }} {{ room.name }}</h1>
             </div>
         </div>
 
@@ -60,38 +60,39 @@
                 <!-- Time Range Selection Buttons -->
                 <div class="time-range-selector text-center mb-4">
                     <div class="btn-group" role="group" aria-label="Time range selector">
-                        <button type="button" class="btn btn-outline-primary active" data-range="month">Last 30 Days</button>
-                        <button type="button" class="btn btn-outline-primary" data-range="week">Last 7 Days</button>
+                        <button type="button" class="btn btn-outline-primary active" data-range="month">{{ 'analytics.last_30_days'|trans }}</button>
+                        <button type="button" class="btn btn-outline-primary" data-range="week">{{ 'analytics.last_7_days'|trans }}</button>
+
                     </div>
                 </div>
 
                 <!-- Temperature Evolution Chart -->
                 <div class="chart-container">
-                    <h3 class="chart-title">Temperature Evolution</h3>
+                    <h3 class="chart-title">{{ 'analytics.temperature_evolution'|trans }}</h3>
                     <canvas id="temperatureChart"></canvas>
                     <div id="temperatureNoData" class="no-data-message d-none">
                         <i class="bi bi-exclamation-circle fs-1"></i>
-                        <p>No temperature data available for this period</p>
+                        <p>{{ 'analytics.no_temperature_data'|trans }}</p>
                     </div>
                 </div>
 
                 <!-- Humidity Evolution Chart -->
                 <div class="chart-container">
-                    <h3 class="chart-title">Humidity Evolution</h3>
+                    <h3 class="chart-title">{{ 'analytics.humidity_evolution'|trans }}</h3>
                     <canvas id="humidityChart"></canvas>
                     <div id="humidityNoData" class="no-data-message d-none">
                         <i class="bi bi-exclamation-circle fs-1"></i>
-                        <p>No humidity data available for this period</p>
+                        <p>{{ 'analytics.no_humidity_data'|trans }}</p>
                     </div>
                 </div>
 
                 <!-- CO2 Concentration Evolution Chart -->
                 <div class="chart-container">
-                    <h3 class="chart-title">CO₂ Concentration Evolution</h3>
+                    <h3 class="chart-title">{{ 'analytics.co2_concentration_evolution'|trans }}</h3>
                     <canvas id="co2Chart"></canvas>
                     <div id="co2NoData" class="no-data-message d-none">
                         <i class="bi bi-exclamation-circle fs-1"></i>
-                        <p>No CO₂ data available for this period</p>
+                        <p>{{ 'analytics.no_co2_data'|trans }}</p>
                     </div>
                 </div>
             </div>
@@ -100,7 +101,7 @@
         <!-- Back to Room Details Button -->
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
-                <a href="{{ path('app_rooms_details', { name: room.name}) }}" class="btn btn-outline-secondary">Back to Room Details</a>
+                <a href="{{ path('app_rooms_details', { name: room.name}) }}" class="btn btn-outline-secondary">{{ 'back_to_room_details'|trans }}</a>
             </div>
         </div>
     </div>

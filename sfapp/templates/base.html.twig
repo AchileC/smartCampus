@@ -440,7 +440,214 @@
                 margin: 0;
             }
 
+            .threshold-section {
+                background-color: var(--bs-body-bg);
+                border: 1px solid var(--bs-border-color);
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
 
+            .threshold-section h3 {
+                color: var(--bs-primary);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .threshold-visualization {
+                margin-top: 15px;
+                padding: 20px;
+                border-radius: 4px;
+                position: relative;
+            }
+
+            .progress {
+                height: 30px;
+                margin-bottom: 30px;
+                position: relative;
+                background-color: #e9ecef;
+                border-radius: 8px;
+                overflow: visible;
+            }
+
+            .slider-container {
+                position: relative;
+                margin-bottom: 60px;
+                padding: 0 10px;
+            }
+
+            .slider-thumb {
+                width: 0;
+                height: 0;
+                position: absolute;
+                top: 30px;
+                transform: translateX(-50%);
+                cursor: grab;
+                z-index: 10;
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-top: 0;
+                border-bottom: 12px solid var(--bs-blue);
+
+            }
+
+            .slider-thumb::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -12px;
+                right: -12px;
+                bottom: -4px;
+                z-index: -1;
+            }
+
+            .slider-thumb:hover {
+                border-bottom-color: var(--bs-primary);
+                transform: translateX(-50%) scale(1.2);
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            }
+
+            .slider-thumb.dragging {
+                cursor: grabbing;
+                border-bottom-color: var(--bs-primary);
+            }
+
+            .slider-value {
+                position: absolute;
+                top: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                white-space: nowrap;
+                color: white;
+                background-color: var(--bs-blue);
+                font-weight: 500;
+            }
+
+            .slider-thumb:hover .slider-value {
+                background-color: var(--bs-primary);
+                transform: translateX(-50%) scale(1.1);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                transition: all 0.2s ease-in-out;
+            }
+
+            .slider-thumb.dragging .slider-value {
+                background-color: var(--bs-primary);
+            }
+
+            .slider-label {
+                position: absolute;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 11px;
+                white-space: nowrap;
+                color: var(--bs-secondary);
+                font-weight: 500;
+            }
+
+            .btn-toolbar {
+                margin-top: 20px;
+                gap: 10px;
+            }
+
+            .period-switch {
+                margin-bottom: 20px;
+            }
+
+            .alert {
+                margin-bottom: 20px;
+            }
+
+            /* Zones de couleur pour les seuils */
+            .zone-critical-low {
+                background-color: #dc3545;
+                border-radius: 8px 0 0 8px;
+            }
+            .zone-warning-low { background-color: #ffc107; }
+            .zone-optimal { background-color: #198754; }
+            .zone-warning-high { background-color: #ffc107; }
+            .zone-critical-high {
+                background-color: #dc3545;
+                border-radius: 0 8px 8px 0;
+            }
+
+            /* Style pour les valeurs cachées */
+            .hidden-inputs {
+                display: none;
+            }
+
+            /* Info icons */
+            .info-icon {
+                font-size: 1.2rem;
+                color: var(--bs-primary);
+                cursor: help;
+            }
+
+            /* Tooltip personnalisé */
+            .threshold-tooltip {
+                position: absolute;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 12px;
+                z-index: 1000;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+
+            .threshold-tooltip.visible {
+                opacity: 1;
+            }
+
+            /* Style pour la grille de valeurs recommandées */
+            .recommended-values {
+                margin-top: 10px;
+                padding: 10px;
+                background-color: rgba(var(--bs-info-rgb), 0.1);
+                border-radius: 4px;
+                font-size: 0.9rem;
+            }
+
+            .recommended-values table {
+                width: 100%;
+                margin-bottom: 0;
+            }
+
+            .recommended-values td {
+                padding: 4px 8px;
+            }
+
+            .recommended-values td:first-child {
+                font-weight: 500;
+                color: var(--bs-primary);
+            }
+
+            /* Style for the aberrant values accordion */
+            .aberrant-values-accordion {
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .aberrant-values-accordion .accordion-button {
+                background-color: rgba(var(--bs-primary-rgb), 0.1);
+            }
+
+            .aberrant-values-accordion .accordion-button:not(.collapsed) {
+                color: var(--bs-primary);
+                background-color: rgba(var(--bs-primary-rgb), 0.1);
+            }
+
+            .aberrant-values-accordion .accordion-body {
+                background-color: var(--bs-body-bg);
+            }
 
         </style>
     {% endblock %}
@@ -524,9 +731,10 @@
                         </a>
                         <!-- Utilisateur non connecté -->
                     {% endif %}
-                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
+                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="{{ 'settings.parameters_button_label'|trans }}">
                         <i class="bi bi-gear-fill" style="font-size: 1.25rem;"></i>
                     </button>
+
                     {% set unreadNotifications = notifications|filter(notification => not notification.isRead) %}
                     {% if is_granted('ROLE_MANAGER') %}
                         <div class="dropdown position-relative">
@@ -541,8 +749,8 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
                                 <li class="fw-bold text-center mb-2 sticky-header d-flex justify-content-between align-items-center px-3">
-                                    <span>Notifications</span>
-                                    <button class="btn btn-sm btn-link text-white p-0" id="markAllAsReadButton" title="Mark all as read">
+                                    <span>{{ 'notifications.header'|trans }}</span>
+                                    <button class="btn btn-sm btn-link text-white p-0" id="markAllAsReadButton" title="{{ 'notifications.mark_all_as_read'|trans }}">
                                         <i class="bi bi-check2" style="font-size: 1.25rem;"></i>
                                     </button>
                                 </li>
@@ -555,8 +763,9 @@
                                         </a>
                                     </li>
                                 {% else %}
-                                    <li class="text-center text-muted">No new notifications</li>
+                                    <li class="text-center text-muted">{{ 'notifications.no_new_notifications'|trans }}</li>
                                 {% endfor %}
+
                             </ul>
                         </div>
                     {% endif %}
@@ -579,12 +788,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="settingsModalLabel">Parameters</h1>
+                    <h1 class="modal-title fs-5" id="settingsModalLabel">{{ 'settings.parameters'|trans }}</h1>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="d-flex align-items-center">
-                        <span id="theme-label-modal" class="form-label me-3 mb-0">Mode Sombre</span>
+                        <span id="theme-label-modal" class="form-label me-3 mb-0">{{ 'settings.theme_label'|trans }}</span>
                         <i class="bi bi-moon-fill theme-icon moon me-3"></i>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="theme-toggle-switch-modal">
@@ -593,8 +803,8 @@
                     </div>
                     <br>
                     <div class="d-flex align-items-center">
-                        <label for="language-select" class="form-label me-3 mb-0">Langue</label>
-                        <select class="form-select form-select-sm" id="language-select" aria-label="Sélecteur de langue" style="width: 120px;">
+                        <label for="language-select" class="form-label me-3 mb-0">{{ 'settings.language_label'|trans }}</label>
+                        <select class="form-select form-select-sm" id="language-select" aria-label="Language Selector" style="width: 120px;">
                             <option value="en" selected>English</option>
                             <option value="fr">Français</option>
                             <!-- Vous pouvez ajouter d'autres langues ici -->
@@ -602,7 +812,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'settings.close_button'|trans }}</button>
                 </div>
             </div>
         </div>
@@ -693,7 +903,7 @@
             document.documentElement.setAttribute("data-bs-theme", currentTheme);
             if (themeToggleSwitchModal) {
                 themeToggleSwitchModal.checked = currentTheme === "dark";
-                themeLabelModal.innerText = "Mode Sombre";
+                themeLabelModal.innerText = "Dark Mode";
             }
 
             /**
@@ -704,7 +914,7 @@
                     const newTheme = themeToggleSwitchModal.checked ? "dark" : "light";
                     document.documentElement.setAttribute("data-bs-theme", newTheme);
                     localStorage.setItem("theme", newTheme);
-                    themeLabelModal.innerText ="Mode Sombre";
+                    themeLabelModal.innerText ="Dark Mode";
                 });
             }
 

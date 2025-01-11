@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 {# rooms/update.html.twig #}
-{% block title %}Update Room{% endblock %}
+{% block title %}{{ 'update_room.title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h1 class="text-center mb-4">Update Room: {{ room.name }}</h1>
+                <h1 class="text-center mb-4">{{ 'update_room.header'|trans }}: {{ room.name }}</h1>
 
                 <div class="card mb-4">
                     <div class="card-body">

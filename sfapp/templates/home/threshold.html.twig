@@ -1,220 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Configure Thresholds{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .threshold-section {
-            background-color: var(--bs-body-bg);
-            border: 1px solid var(--bs-border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .threshold-section h3 {
-            color: var(--bs-primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .threshold-visualization {
-            margin-top: 15px;
-            padding: 20px;
-            border-radius: 4px;
-            position: relative;
-        }
-
-        .progress {
-            height: 30px;
-            margin-bottom: 30px;
-            position: relative;
-            background-color: #e9ecef;
-            border-radius: 8px;
-            overflow: visible;
-        }
-
-        .slider-container {
-            position: relative;
-            margin-bottom: 60px;
-            padding: 0 10px;
-        }
-
-        .slider-thumb {
-            width: 0;
-            height: 0;
-            position: absolute;
-            top: 30px;
-            transform: translateX(-50%);
-            cursor: grab;
-            z-index: 10;
-            border-left: 8px solid transparent;
-            border-right: 8px solid transparent;
-            border-top: 0;
-            border-bottom: 12px solid var(--bs-blue);
-
-        }
-
-        .slider-thumb::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -12px;
-            right: -12px;
-            bottom: -4px;
-            z-index: -1;
-        }
-
-        .slider-thumb:hover {
-            border-bottom-color: var(--bs-primary);
-            transform: translateX(-50%) scale(1.2);
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-        }
-
-        .slider-thumb.dragging {
-            cursor: grabbing;
-            border-bottom-color: var(--bs-primary);
-        }
-
-        .slider-value {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            white-space: nowrap;
-            color: white;
-            background-color: var(--bs-blue);
-            font-weight: 500;
-        }
-
-        .slider-thumb:hover .slider-value {
-            background-color: var(--bs-primary);
-            transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: all 0.2s ease-in-out;
-        }
-
-        .slider-thumb.dragging .slider-value {
-            background-color: var(--bs-primary);
-        }
-
-        .slider-label {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 11px;
-            white-space: nowrap;
-            color: var(--bs-secondary);
-            font-weight: 500;
-        }
-
-        .btn-toolbar {
-            margin-top: 20px;
-            gap: 10px;
-        }
-
-        .period-switch {
-            margin-bottom: 20px;
-        }
-
-        .alert {
-            margin-bottom: 20px;
-        }
-
-        /* Zones de couleur pour les seuils */
-        .zone-critical-low { 
-            background-color: #dc3545;
-            border-radius: 8px 0 0 8px;
-        }
-        .zone-warning-low { background-color: #ffc107; }
-        .zone-optimal { background-color: #198754; }
-        .zone-warning-high { background-color: #ffc107; }
-        .zone-critical-high { 
-            background-color: #dc3545;
-            border-radius: 0 8px 8px 0;
-        }
-
-        /* Style pour les valeurs cachées */
-        .hidden-inputs {
-            display: none;
-        }
-
-        /* Info icons */
-        .info-icon {
-            font-size: 1.2rem;
-            color: var(--bs-primary);
-            cursor: help;
-        }
-
-        /* Tooltip personnalisé */
-        .threshold-tooltip {
-            position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 1000;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .threshold-tooltip.visible {
-            opacity: 1;
-        }
-
-        /* Style pour la grille de valeurs recommandées */
-        .recommended-values {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: rgba(var(--bs-info-rgb), 0.1);
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-
-        .recommended-values table {
-            width: 100%;
-            margin-bottom: 0;
-        }
-
-        .recommended-values td {
-            padding: 4px 8px;
-        }
-
-        .recommended-values td:first-child {
-            font-weight: 500;
-            color: var(--bs-primary);
-        }
-
-        /* Style for the aberrant values accordion */
-        .aberrant-values-accordion {
-            margin-top: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .aberrant-values-accordion .accordion-button {
-            background-color: rgba(var(--bs-primary-rgb), 0.1);
-        }
-        
-        .aberrant-values-accordion .accordion-button:not(.collapsed) {
-            color: var(--bs-primary);
-            background-color: rgba(var(--bs-primary-rgb), 0.1);
-        }
-        
-        .aberrant-values-accordion .accordion-body {
-            background-color: var(--bs-body-bg);
-        }
-    </style>
-{% endblock %}
+{% block title %}{{ 'configure_thresholds'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mt-4">
@@ -414,17 +200,19 @@
             <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#aberrantValuesInfo" aria-expanded="false" aria-controls="aberrantValuesInfo">
-                        <i class="bi bi-info-circle me-2"></i> Fixed Aberrant Value Thresholds Information
+                        <i class="bi bi-info-circle me-2"></i> {{ 'aberrant_values_information_title'|trans }}
                     </button>
+
                 </h2>
                 <div id="aberrantValuesInfo" class="accordion-collapse collapse" data-bs-parent="#aberrantValuesAccordion">
                     <div class="accordion-body">
-                        <p class="mb-2">The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as "NOT WORKING" and a maintenance task will be created:</p>
+                        <p class="mb-2">{{ 'aberrant_values_info_description'|trans }}</p>
                         <ul class="mb-0">
-                            <li><strong>Temperature:</strong> Below 10°C or above 40°C</li>
-                            <li><strong>Humidity:</strong> Below 20% or above 100%</li>
-                            <li><strong>CO₂:</strong> Below 400ppm or above 2000ppm</li>
+                            <li><strong>{{ 'temperature_fixed'|trans }}</strong></li>
+                            <li><strong>{{ 'humidity_fixed'|trans }}</strong></li>
+                            <li><strong>{{ 'co2_fixed'|trans }}</strong></li>
                         </ul>
+
                     </div>
                 </div>
             </div>

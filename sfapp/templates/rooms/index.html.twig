@@ -49,7 +49,7 @@
             <h1 class="h2">{{ 'rooms_list.list' | trans }}</h1>
             <div class="d-flex align-items-center">
                 <small class="text-muted me-3">
-                    <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
+                    <p class="text-muted mt-2">{{ 'last_updated'|trans }}: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
                 </small>
                 {% if is_granted('ROLE_MANAGER') %}
                     <a href="{{ path('app_rooms_add') }}" class="btn btn-success">
@@ -302,12 +302,5 @@
 
         });
 
-        /**
-         * @brief Automatically reloads the page every minute to ensure data is up-to-date.
-         *
-         * Sets an interval that triggers a page reload after 60,000 milliseconds (1 minutes).
-         * This helps in keeping the displayed data fresh without requiring manual intervention.
-         */
-        setInterval(() => { location.reload(); }, 60000);
     </script>
 {% endblock %}

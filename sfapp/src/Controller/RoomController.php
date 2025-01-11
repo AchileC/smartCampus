@@ -62,79 +62,63 @@ class RoomController extends AbstractController
     }
 
     /**
-     * @brief Redirects to the rooms listing page.
-     *
-     * @return Response A redirect response to the rooms route.
-     */
-    #[Route('/', name: 'index')]
-    public function redirectRoute(): Response
-    {
-        // Redirect to the 'app_rooms' route
-        return $this->redirectToRoute('app_rooms');
-    }
-
-    /**
      * @brief Displays the list of rooms with filtering options.
      *
      * Retrieves rooms based on filter criteria and updates room states based on sensor data.
      *
-     * @param RoomRepository $roomRepository Repository to manage Room entities.
-     * @param Request $request The current HTTP request.
+     * @param RoomRepository   $roomRepository   Repository to manage Room entities.
+     * @param ActionRepository $actionRepository Repository to manage Action entities.
+     * @param Request          $request          The current HTTP request.
      *
      * @return Response The rendered rooms listing page.
-     * @throws \DateInvalidOperationException
      */
     #[Route('/rooms', name: 'app_rooms')]
     public function index(
-        RoomRepository  $roomRepository,
+        RoomRepository   $roomRepository,
         ActionRepository $actionRepository,
-        Request         $request
-    ): Response
-    {
+        Request          $request
+    ): Response {
+        date_default_timezone_set('Europe/Paris');
+        // Récupération de toutes les salles disposant d'un AcquisitionSystem.
         $rooms = $roomRepository->findRoomsWithAS();
-        // --------------------------------------
-        // Check the freshness of the JSON data
-        // --------------------------------------
-        $now = new \DateTime();
-        // Subtract 15 minutes from the current time
-        $cutoffDate = (clone $now)->sub(new \DateInterval('PT3M'));
 
+        // --------------------------------------
+        // Vérification de la fraîcheur de lastUpdatedAt
+        // et mise à jour si nécessaire (seulement si plus vieux que 3 minutes)
+        // --------------------------------------
         foreach ($rooms as $room) {
-            // On ne traite que les salles LINKED ou en ASSIGNMENT
+            // On ne traite que les salles vraiment équipées (LINKED)
             if ($room->getSensorState() === SensorStateEnum::LINKED) {
-                // On récupère la date de dernière mise à jour si elle existe
                 $lastUpdatedAt = $room->getLastUpdatedAt();
+                $now           = new \DateTimeImmutable('now');
 
-                if ($lastUpdatedAt instanceof \DateTimeInterface) {
-                    // Vérifie si la dernière mise à jour est plus ancienne que le cutoff
-                    if ($lastUpdatedAt > $cutoffDate) {
-                        // Si plus de 15 minutes => on relance la mise à jour de l'état
-                        try {
-                            $roomRepository->updateRoomState($room);
-                        } catch (\Exception $e) {
-                            // Logger / ignorer
-                            continue;
-                        }
-                    } else {
-                        // Sinon, si on veut juste recharger les données du capteur
-                        $roomRepository->loadSensorData($room->getAcquisitionSystem());
-                    }
-                } else {
-                    // lastUpdatedAt est null => on décide quoi faire (ex: forcer updateRoomState)
+                // Si lastUpdatedAt est nul ou date de plus de 3 minutes
+                if (
+                    null === $lastUpdatedAt
+                    || ($now->getTimestamp() - $lastUpdatedAt->getTimestamp()) >= 180
+                ) {
+                    // => on met à jour la salle (updateRoomState)
                     try {
                         $roomRepository->updateRoomState($room);
                     } catch (\Exception $e) {
-                        // Logger / ignorer
+                        // Gérer ou logger l’erreur
                         continue;
+                    }
+                } else {
+                    // Sinon, on ne fait qu'un "load" local pour ne pas surcharger
+                    try {
+                        $roomRepository->loadSensorData($room->getAcquisitionSystem());
+                    } catch (\Exception $e) {
+                        // Gérer ou logger l’erreur
                     }
                 }
             }
         }
 
         $stateParam = $request->query->get('state');
-        $stateEnum = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
+        $stateEnum  = $stateParam ? RoomStateEnum::tryFrom($stateParam) : null;
 
-        // Filter form
+        // Formulaire de filtre
         $filterForm = $this->createForm(FilterRoomType::class, null, [
             'state' => $stateEnum,
         ]);
@@ -142,23 +126,23 @@ class RoomController extends AbstractController
 
         $criteria = [];
 
-        // Filtering for unauthenticated users
+        // Filtering pour utilisateurs non authentifiés
         if (!$this->getUser()) {
             $criteria['sensorStatus'] = 'linked';
-            $criteria['state_not'] = 'no data'; // Exclure les états "no data"
+            $criteria['state_not']    = 'no data'; // Exclure les états "no data"
         }
 
-        // Apply initial filter based on URL
+        // Filtrage initial (via URL)
         if ($stateParam) {
             $criteria['state'] = $stateParam;
         }
 
-        // Reset the form
+        // Reset du formulaire
         if ($filterForm->get('reset')->isClicked()) {
             return $this->redirectToRoute('app_rooms');
         }
 
-        // Apply form criteria
+        // Application des critères du formulaire
         if ($filterForm->isSubmitted() && $filterForm->isValid()) {
             /** @var Room $data */
             $data = $filterForm->getData();
@@ -166,18 +150,18 @@ class RoomController extends AbstractController
             if (!empty($data->getName())) {
                 $criteria['name'] = $data->getName();
             }
-
             if ($data->getFloor()) {
                 $criteria['floor'] = $data->getFloor();
             }
-
             if ($data->getState()) {
                 $criteria['state'] = $data->getState();
             }
         }
 
-        // Retrieve rooms based on criteria
+        // Récupération des salles selon critères
         $rooms = $roomRepository->findByCriteria($criteria);
+
+        // Récupération des actions en cours pour chaque salle
         $ongoingTasksByRoomId = [];
         foreach ($rooms as $room) {
             $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
@@ -185,11 +169,12 @@ class RoomController extends AbstractController
         }
 
         return $this->render('rooms/index.html.twig', [
-            'rooms' => $rooms,
-            'filterForm' => $filterForm->createView(),
+            'rooms'        => $rooms,
+            'filterForm'   => $filterForm->createView(),
             'ongoingTasks' => $ongoingTasksByRoomId,
         ]);
     }
+
 
     /**
      * @brief Adds a new room.

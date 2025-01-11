@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {# rooms/detail.html.twig #}
-{% block title %}Room Details - {{ room.name }}{% endblock %}
+{% block title %}{{ 'room_details.title'|trans }} - {{ room.name }}{% endblock %}
 
 {% block body %}
     <div class="container-fluid">
@@ -256,7 +256,7 @@
                         </li>
                     </ul>
                 {% else %}
-                    <p class="text-muted">No acquisition system</p>
+                    <p class="text-muted">{{ 'no_as_left'|trans }}</p>
                 {% endif %}
             </div>
         </div>
@@ -460,9 +460,9 @@
         <div class="card w-75 mx-auto mt-4 text-center">
             <div class="card-body">
                 {% if room.acquisitionSystem %}
-                    <a href="{{ path('app_rooms_analytics', {'name': room.name, 'dbname': room.acquisitionSystem.dbName}) }}" class="btn btn-outline-info me-2">View Analytics</a>
+                    <a href="{{ path('app_rooms_analytics', {'name': room.name, 'dbname': room.acquisitionSystem.dbName}) }}" class="btn btn-outline-info me-2">{{ 'view_analytics'|trans }}</a>
                 {% endif %}
-                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">Back to Room List</a>
+                <a href="{{ path('app_rooms') }}" class="btn btn-outline-secondary">{{ 'back_to_room_list'| trans }}</a>
             </div>
         </div>
     </div>

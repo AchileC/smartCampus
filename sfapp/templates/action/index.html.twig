@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {# action/index.html.twig #}
-{% block title %}To-Do-List{% endblock %}
+{% block title %}{{ 'action_index.todolist'|trans }}{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
@@ -10,7 +10,7 @@
 
         <div class="text-start mb-3">
             <a href="{{ path('app_todolist_done') }}" class="btn btn-outline-success btn-sm">
-                {{ 'view_completed_tasks' | trans }}
+                {{ 'action_index.view_completed_tasks'|trans }}
             </a>
         </div>
 

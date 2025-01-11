@@ -19,7 +19,6 @@ _room_state:
   CRITICAL: "Critical"
   AT RISK: "At risk"
   STABLE: "Stable"
-  WAITING: "Waiting"
   NO DATA: "No Data"
 
 # Sensor State Enum
@@ -71,6 +70,8 @@ add: "Add"
 update: "Update"
 back_to_room_list: "Back to the room list"
 
+
+
 # Home index.html.twig
 systems: "Acquisition systems"
 at_risk: "At risk"
@@ -90,6 +91,7 @@ non_heating: "Non-heating"
 optimal_temp: "Optimal temperature"
 as_assigned_to_room: "An acquisition system is assigned to this room."
 no_as_assigned_to_room: "No acquisition system assigned to this room."
+
 
 # Aslist.html.twig
 no_linked_as: "No linked acquisition system"
@@ -342,3 +344,173 @@ critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
 save_changes: "Save Changes"
 reset_to_default: "Reset to Default"
 reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"
+
+# Room Details Page
+room_details:
+  title: "Room Details"
+
+# Buttons and Actions
+view_analytics: "View Analytics"
+
+# Update Room Page
+update_room:
+  title: "Update Room"
+  header: "Update Room"
+
+# Analytics Page
+analytics:
+  title: "Analytics"
+  summary : "Analytics for Room"
+  temperature_evolution: "Temperature Evolution"
+  humidity_evolution: "Humidity Evolution"
+  co2_concentration_evolution: "CO₂ Concentration Evolution"
+  last_30_days: "Last 30 Days"
+  last_7_days: "Last 7 Days"
+  no_temperature_data: "No temperature data available for this period"
+  no_humidity_data: "No humidity data available for this period"
+  no_co2_data: "No CO₂ data available for this period"
+
+# Navigation and Labels
+back_to_room_details: "Back to Room Details"
+
+# Notifications
+notifications:
+  header: "Notifications"
+  mark_all_as_read: "Mark all as read"
+  no_new_notifications: "No new notifications"
+
+# Settings Modal
+settings:
+  parameters: "Parameters"
+  parameters_button_label: "Parameters"
+  theme_label: "Dark Mode"
+  language_label: "Language"
+  close_button: "Close"
+  language_select_label: "Language"
+
+  # Configure Thresholds Page
+  configure_thresholds: "Configure Thresholds"
+
+  # Period Switch
+  period: "Period"
+  nov_apr: "November-April"
+  may_oct: "May-October"
+
+  # Temperature Thresholds
+  temperature_thresholds: "Temperature Thresholds"
+  heating: "Heating"
+  non_heating: "Non-Heating"
+  recommended_heating_period: "Recommended temperature ranges for the heating period (November to April)"
+  recommended_non_heating_period: "Recommended temperature ranges for the non-heating period (May to October)"
+  critical_min: "Critical Min"
+  warning_min: "Warning Min"
+  warning_max: "Warning Max"
+  critical_max: "Critical Max"
+  critical_min_heating_desc: "16°C - Too cold, risk of discomfort and health issues"
+  warning_min_heating_desc: "18°C - Minimum comfortable temperature for the heating season"
+  warning_max_heating_desc: "22°C - Maximum recommended temperature for the heating season"
+  critical_max_heating_desc: "24°C - Too warm, excessive energy consumption"
+  critical_min_non_heating_desc: "20°C - Too cold for comfort in summer"
+  warning_min_non_heating_desc: "22°C - Lower bound of summer comfort zone"
+  warning_max_non_heating_desc: "26°C - Upper bound of summer comfort zone"
+  critical_max_non_heating_desc: "28°C - Too warm, risk of discomfort"
+
+  # Humidity Thresholds
+  humidity_thresholds: "Humidity Thresholds"
+  recommended_humidity_ranges: "Recommended humidity ranges for optimal comfort and air quality"
+  critical_min_humidity_desc: "20% - Very dry, risk of respiratory issues and static electricity"
+  warning_min_humidity_desc: "30% - Minimum for comfort and health"
+  warning_max_humidity_desc: "60% - Maximum for comfort and mold prevention"
+  critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
+
+  # Buttons
+  save_changes: "Save Changes"
+  reset_to_default: "Reset to Default"
+  reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"
+  cancel: "Cancel"
+
+  # Aberrant Values Accordion
+  aberrant_values_information_title: "Fixed Aberrant Value Thresholds Information"
+  aberrant_values_info_description: "The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as \"NOT WORKING\" and a maintenance task will be created:"
+  temperature_fixed: "Temperature: Below 10°C or above 40°C"
+  humidity_fixed: "Humidity: Below 20% or above 100%"
+  co2_fixed: "CO₂: Below 400ppm or above 2000ppm"
+
+  # Slider Labels
+  slider_label_critical_min: "Critical Min"
+  slider_label_warning_min: "Warning Min"
+  slider_label_warning_max: "Warning Max"
+  slider_label_critical_max: "Critical Max"
+
+  # Security - Login Page
+  login:
+    title: "Log In"
+    header: "Please Sign In"
+    username_label: "Username"
+    username_placeholder: "Username"
+    password_label: "Password"
+    password_placeholder: "Password"
+    submit_button: "Sign in"
+
+  # Security - Unauthorized Access Page
+  access_denied:
+    title: "Access Denied"
+    header: "403 - Access Denied"
+    message: "You do not have the necessary permissions to access this page."
+    contact_admin: "Please contact your administrator if you believe this is an error."
+    return_button: "Return to Rooms List"
+    login_button: "Login"
+
+# Action - Edit Task Page
+action_edit:
+  title: "Edit Task"
+  begin_task: "Begin Task"
+  validate_task: "Validate Task"
+  of_an_acquisition_system: "of an Acquisition System"
+  removal_of_acquisition_system: "removal of Acquisition System"
+  task: "Task"
+  on_room: "on Room"
+  begin_task_confirmation: "Are you sure you want to begin this task?"
+  no_as_available: "No Acquisition Systems are available."
+  add_acquisition_system: "Add Acquisition System"
+  begin: "Begin"
+  not_now: "Not Now"
+
+  # Validation Section
+  validate_task_confirmation: "Are you sure you want to validate this task?"
+
+  # Maintenance Section
+  repaired?: "Repaired?"
+  yes_repaired: "Yes, Repaired"
+  indicate_as: "Please indicate the status of the repair."
+
+  # General Buttons
+  confirm: "Confirm"
+  cancel: "Cancel"
+
+  # Installation and Uninstallation
+  installation: "Installation"
+  uninstallation: "Uninstallation"
+  maintenance: "Maintenance"
+
+# Action - To-Do List Page
+action_index:
+  todolist: "To-Do-List"
+  awaiting_tasks: "awaiting tasks"
+  view_completed_tasks: "View Completed Tasks"
+  flash_close_label: "Close"
+  no_pending: "No tasks pending."
+  last_updated: "Last Updated"
+
+  # Action States
+  _action_info_state:
+    ASSIGNMENT: "Assignment"
+    UNASSIGNMENT: "Unassignment"
+    MAINTENANCE: "Maintenance"
+
+  _action_state:
+    TO_DO: "TO DO"
+    DOING: "DOING"
+    DONE: "DONE"
+
+
