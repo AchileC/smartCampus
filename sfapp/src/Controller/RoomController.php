@@ -523,44 +523,45 @@ class RoomController extends AbstractController
      * @return Response The response rendering the analytics page
      */
     #[Route('/rooms/{name}/analytics/{dbname}', name: 'app_rooms_analytics')]
-    public function analytics(
-        string $name,
-        string $dbname,
-        RoomRepository $roomRepository,
-        Request $request
-    ): Response {
+public function analytics(
+    string $name,
+    string $dbname,
+    RoomRepository $roomRepository,
+    Request $request
+): Response {
+    $this->denyAccessUnlessGranted('ROLE_MANAGER');
 
-        $room = $roomRepository->findByName($name);
-        if (!$room) {
-            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
-        }
-
-        $acquisitionSystem = $room->getAcquisitionSystem();
-
-        if (!$acquisitionSystem) {
-            throw $this->createNotFoundException('This room has no acquisition system');
-        }
-
-        if ($acquisitionSystem->getDbName() !== $dbname) {
-            throw $this->createNotFoundException('Invalid dbname for this room');
-        }
-
-        $range = $request->query->get('range', 'month'); // Default to 'month'
-
-        // Fetch data from the API
-        try {
-            $historicalData = $this->roomSensorService->fetchHistoricalDataFromApi($acquisitionSystem, $range);
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Failed to fetch data: ' . $e->getMessage());
-            $historicalData = [];
-        }
-
-        return $this->render('rooms/analytics.html.twig', [
-            'room' => $room,
-            'historicalData' => $historicalData,
-            'range' => $range,
-        ]);
+    $room = $roomRepository->findByName($name);
+    if (!$room) {
+        throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
     }
+
+    $acquisitionSystem = $room->getAcquisitionSystem();
+    if (!$acquisitionSystem) {
+        throw $this->createNotFoundException('This room has no acquisition system');
+    }
+
+    if ($acquisitionSystem->getDbName() !== $dbname) {
+        throw $this->createNotFoundException('Invalid dbname for this room');
+    }
+
+    $range = $request->query->get('range', 'month');
+
+    // Fetch data from the API
+    try {
+        $historicalData = $this->roomSensorService->fetchHistoricalDataFromApi($acquisitionSystem, $range);
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Failed to fetch data: ' . $e->getMessage());
+        $historicalData = [];
+    }
+
+    return $this->render('rooms/analytics.html.twig', [
+        'room' => $room,
+        'historicalData' => $historicalData,
+        'range' => $range,
+    ]);
+}
+
 
 
 }
