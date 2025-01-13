@@ -134,7 +134,7 @@ class RoomControllerTest extends WebTestCase
     {
         $this->createRoom(
             'Not linked room test',
-            RoomStateEnum::NONE,
+            RoomStateEnum::NO_DATA,
             SensorStateEnum::NOT_LINKED
         );
 
@@ -161,7 +161,7 @@ class RoomControllerTest extends WebTestCase
     {
         $this->createRoom(
             'Not linked room test',
-            RoomStateEnum::NONE,
+            RoomStateEnum::NO_DATA,
             SensorStateEnum::NOT_LINKED
         );
 
@@ -191,7 +191,7 @@ class RoomControllerTest extends WebTestCase
         {
             $this->createRoom(
                 'Not linked room test',
-                RoomStateEnum::NONE,
+                RoomStateEnum::NO_DATA,
                 SensorStateEnum::NOT_LINKED
             );
 
@@ -245,7 +245,7 @@ class RoomControllerTest extends WebTestCase
 
         $this->createRoom(
             'None room',
-            RoomStateEnum::NONE,
+            RoomStateEnum::NO_DATA,
             SensorStateEnum::NOT_LINKED
         );
 
