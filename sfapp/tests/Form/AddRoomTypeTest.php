@@ -3,11 +3,13 @@
 namespace App\Tests\Form;
 
 use App\Entity\Room;
+use App\Repository\RoomRepository;
 use App\Repository\UserRepository;
 use App\Utils\FloorEnum;
 use App\Utils\CardinalEnum;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class AddRoomTypeTest
@@ -18,9 +20,10 @@ class AddRoomTypeTest extends WebTestCase
 {
     private $client;
     private $entityManager;
+    private $router;
 
     /**
-     * Sets up the client and entity manager for each test.
+     * Sets up the client, entity manager, and router for each test.
      *
      * @return void
      */
@@ -29,6 +32,7 @@ class AddRoomTypeTest extends WebTestCase
         parent::setUp();
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
+        $this->router = static::getContainer()->get(RouterInterface::class);
     }
 
     /**
@@ -40,7 +44,7 @@ class AddRoomTypeTest extends WebTestCase
     protected function login(string $username): void
     {
         $userRepository = static::getContainer()->get(UserRepository::class);
-        $testUser = $userRepository->findOneByUsername($username);
+        $testUser = $userRepository->findOneBy(['username' => $username]);
 
         if (!$testUser) {
             throw new \InvalidArgumentException(sprintf('User with username "%s" not found.', $username));
@@ -57,52 +61,50 @@ class AddRoomTypeTest extends WebTestCase
      */
     public function testAddRoomForm(): void
     {
-        // Prepare test data
-        $roomData = [
-            'add_room[name]' => 'A101',
-            'add_room[floor]' => FloorEnum::FIRST->value,
-            'add_room[nbWindows]' => 3,
-            'add_room[nbHeaters]' => 2,
-            'add_room[surface]' => 25.5,
-            'add_room[cardinalDirection]' => CardinalEnum::NORTH->value,
-        ];
-
-        // Log in as manager
         $this->login('manager');
 
-        // Send a GET request to access the Add Room form
-        $crawler = $this->client->request('GET', '/rooms');
-        $this->assertResponseIsSuccessful();
+        // Génère l'URL pour la page d'ajout de salle en anglais
+        $addRoomUrl = $this->router->generate('app_rooms_add', ['_locale' => 'en']);
 
+        // Accède à la page d'ajout de salle
+        $crawler = $this->client->request('GET', $addRoomUrl);
 
-        // Fill the form with valid data
-        $submitButton = $crawler->selectButton('Add');
-        $form = $submitButton->form();
+        // Vérifie que la page s'affiche correctement
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-        $form['add_room[name]'] = $roomData['add_room[name]'];
-        $form['add_room[floor]'] = $roomData['add_room[floor]'];
-        $form['add_room[nbWindows]'] = $roomData['add_room[nbWindows]'];
-        $form['add_room[nbHeaters]'] = $roomData['add_room[nbHeaters]'];
-        $form['add_room[surface]'] = $roomData['add_room[surface]'];
-        $form['add_room[cardinalDirection]'] = $roomData['add_room[cardinalDirection]'];
+        // Sélectionne le formulaire
+        $form = $crawler->selectButton('Add')->form(); // Assurez-vous que "Add" correspond au texte exact du bouton
 
-        // Submit the form
+        // Remplit les champs du formulaire avec des données valides
+        $form['add_room[name]'] = 'A123';
+        $form['add_room[floor]'] = FloorEnum::FIRST->value;
+        $form['add_room[nbWindows]'] = 2;
+        $form['add_room[nbHeaters]'] = 1;
+        $form['add_room[surface]'] = 15;
+        $form['add_room[cardinalDirection]'] = CardinalEnum::NORTH->value;
+
+        // Soumet le formulaire
         $this->client->submit($form);
 
-//        // Follow the redirect to the Rooms List page
-//        $this->assertResponseRedirects('/rooms');
-//        $this->client->followRedirect();
-//
-//
-//        // Verify that the room is successfully created in the database
-//        $room = $this->entityManager->getRepository(Room::class)->findOneBy(['name' => $roomData['add_room[name]']]);
-//
-//        $this->assertNotNull($room, 'The room was not created in the database.');
-//        $this->assertEquals($roomData['add_room[name]'], $room->getName(), 'The room name is incorrect.');
-//        $this->assertEquals($roomData['add_room[floor]'], $room->getFloor()->value, 'The floor is incorrect.');
-//        $this->assertEquals($roomData['add_room[nbWindows]'], $room->getNbWindows(), 'The number of windows is incorrect.');
-//        $this->assertEquals($roomData['add_room[nbHeaters]'], $room->getNbHeaters(), 'The number of heaters is incorrect.');
-//        $this->assertEquals($roomData['add_room[surface]'], $room->getSurface(), 'The surface is incorrect.');
-//        $this->assertEquals($roomData['add_room[cardinalDirection]'], $room->getCardinalDirection()->value, 'The cardinal direction is incorrect.');
-   }
+        $this->router->generate('app_rooms', ['_locale' => 'en']);
+
+        // Vérifie que la liste des salles contient la nouvelle salle
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('h5.card-title:contains("A123")')->count(),
+            'The room "A123" was not found in the list.'
+        );
+
+        // Optionnel : Vérifie dans la base de données que la salle a bien été ajoutée
+        /** @var RoomRepository $roomRepository */
+        $roomRepository = static::getContainer()->get(RoomRepository::class);
+        $room = $roomRepository->findOneBy(['name' => 'A123']);
+
+        $this->assertNotNull($room, 'The room "A123" has been successfully created in the database.');
+        $this->assertEquals(FloorEnum::FIRST, $room->getFloor());
+        $this->assertEquals(2, $room->getNbWindows());
+        $this->assertEquals(1, $room->getNbHeaters());
+        $this->assertEquals(15, $room->getSurface());
+        $this->assertEquals(CardinalEnum::NORTH, $room->getCardinalDirection());
+    }
 }

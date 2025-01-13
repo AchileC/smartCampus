@@ -538,5 +538,32 @@
         "localisation": "C004",
         "description": "Capture de co2",
         "nomsa": "AS-021"
+    },
+    {
+        "id": 49368,
+        "nom": "temp",
+        "valeur": "21.9",
+        "dateCapture": "2025-01-13 09:00:00",
+        "localisation": "C004",
+        "description": "Capture de temp",
+        "nomsa": "AS-021"
+    },
+    {
+        "id": 49369,
+        "nom": "hum",
+        "valeur": "49.7",
+        "dateCapture": "2025-01-13 09:00:00",
+        "localisation": "C004",
+        "description": "Capture de hum",
+        "nomsa": "AS-021"
+    },
+    {
+        "id": 49370,
+        "nom": "co2",
+        "valeur": "510",
+        "dateCapture": "2025-01-13 09:00:00",
+        "localisation": "C004",
+        "description": "Capture de co2",
+        "nomsa": "AS-021"
     }
 ]
