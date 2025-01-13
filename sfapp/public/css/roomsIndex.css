@@ -127,4 +127,14 @@
         border-color: var(--bs-border-color);
         color: var(--bs-body-color);
     }
+
+    .badge-fixed-size {
+        display: inline-flex;           /* Pour aligner le texte au centre verticalement */
+        align-items: center;            /* Centre vertical */
+        justify-content: center;        /* Centre horizontal */
+        min-width: 100px;           /* Largeur minimale (ou fixe) */
+        height: 30px;                   /* Hauteur fixe du badge */
+        font-size: 0.9rem;              /* Ajuster la taille du texte au besoin */
+        /* Optionnel: line-height: 1;   (selon vos préférences) */
+    }
 }

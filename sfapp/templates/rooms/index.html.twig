@@ -4,7 +4,7 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('css/roomsIndex.css.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/roomsIndex.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -12,7 +12,6 @@
 
         <!-- Title and Update Indicator -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-            <h1 class="h2">{{ 'rooms_list.list' | trans }}</h1>
             <div class="d-flex align-items-center">
                 <small class="text-muted me-3">
                     <p class="text-muted mt-2">Last updated: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
@@ -41,32 +40,45 @@
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row g-3 align-items-end">
 
-            <!-- Name Search Field -->
-            <div class="col-md-4 col-sm-12">
-                {{ form_row(filterForm.name, {'attr': {'class': 'form-control'}}) }}
+            <!-- Name -->
+            <div class="col-12 col-md">
+                {{ form_row(filterForm.name, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+            </div>
+            <div class="w-100 d-block d-md-none"></div>
+
+            <!-- Floor -->
+            <div class="col-6 col-md">
+                {{ form_row(filterForm.floor, {
+                    'attr': {'class': 'form-select'}
+                }) }}
+            </div>
+            <!-- State -->
+            <div class="col-6 col-md">
+                {{ form_row(filterForm.state, {
+                    'attr': {'class': 'form-select'}
+                }) }}
+            </div>
+            <div class="w-100 d-block d-md-none"></div>
+
+            <!-- Reset (col-auto + btn-sm) -->
+            <div class="col-auto">
+                {{ form_row(filterForm.reset, {
+                    'attr': {'class': 'btn btn-secondary btn-sm'}
+                }) }}
+            </div>
+            <!-- Search (col-auto + btn-sm) -->
+            <div class="col-auto">
+                {{ form_row(filterForm.filter, {
+                    'attr': {'class': 'btn btn-primary btn-sm'}
+                }) }}
             </div>
 
-            <!-- Floor Filter Field -->
-            <div class="col-md-3 col-sm-6">
-                {{ form_row(filterForm.floor, {'attr': {'class': 'form-select'}}) }}
-            </div>
-
-            <!-- State Filter Field -->
-            <div class="col-md-3 col-sm-6">
-                {{ form_row(filterForm.state, {'attr': {'class': 'form-select'}}) }}
-            </div>
-
-            <!-- Filter Button -->
-            <div class="col-md-1 col-sm-6">
-                {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary w-100'}}) }}
-            </div>
-
-            <!-- Reset Button -->
-            <div class="col-md-1 col-sm-6">
-                {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-outline-secondary w-100'}}) }}
-            </div>
         </div>
         {{ form_end(filterForm) }}
+
+
 
         <!-- Rooms List -->
         <div class="row row-cols-1 row-cols-md-2 g-4">
@@ -105,7 +117,7 @@
                                     <h5 class="card-title">{{ room.name }}</h5>
                                     <p class="card-text mb-1"><strong>{{ 'floor' | trans }}:</strong> {{ ('filter.floor.' ~ room.floor.value) | trans }}</p>
                                     <p class="card-text mb-1"><strong>{{ 'state' | trans }}:</strong>
-                                        <span class="badge-custom-size
+                                        <span class="badge rounded-pill  badge-fixed-size
                         {% if room.state.value == 'no data' %}bg-secondary
                         {% elseif room.state.value == 'stable' %}bg-success
                         {% elseif room.state.value == 'at risk' %}bg-warning
@@ -116,7 +128,7 @@
                                     </p>
                                     {% if is_granted('ROLE_TECHNICIAN') %}
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
-                                            <span class="badge-custom-size
+                                            <span class="badge rounded-pill  badge-fixed-size
                             {% if room.sensorState.value == 'linked' %}bg-success
                             {% elseif room.sensorState.value == 'not linked' %}bg-secondary
                             {% elseif room.sensorState.value == 'not working' %}bg-danger
