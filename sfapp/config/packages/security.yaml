@@ -26,6 +26,7 @@ security:
                 path: app_logout
                 target: /rooms
                 csrf_token_manager: security.csrf.token_manager
+                csrf_token_generator: security.csrf.token_manager
 
             remember_me:
                 secret: '%kernel.secret%'

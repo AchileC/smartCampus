@@ -7,12 +7,12 @@
     <div class="container mt-4">
         <h1 class="mb-4 text-center">{{ 'as_list'|trans }}</h1>
 
-        <!-- Bouton pour ajouter un système d'acquisition -->
+        <!-- Add Acquisition System Button -->
         <div class="mb-4">
             <a href="{{ path('app_acquisition_system_add') }}" class="btn btn-success btn-lg add-room-link">{{ '_add_as'|trans }}</a>
         </div>
 
-        <!-- Bloc des messages flash -->
+        <!-- Flash Messages -->
         <div id="flash-messages-container" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 1050;">
             {% for type, messages in app.flashes %}
                 {% for message in messages %}
@@ -24,26 +24,26 @@
             {% endfor %}
         </div>
 
-        <!-- Formulaire de filtre -->
+        <!-- Filter Form -->
         {{ form_start(filterForm, {'attr': {'class': 'mb-4', 'id': 'filterForm'}}) }}
         <div class="row align-items-center">
 
-            <!-- Champ de recherche par nom -->
+            <!-- Name Search Field -->
             <div class="col-md-3 mb-4">
                 {{ form_row(filterForm.name, {'attr': {'class': 'form-control', 'placeholder': 'filter.name.placeholder'|trans }}) }}
             </div>
 
-            <!-- Champ de filtrage par état -->
+            <!-- State Filter Field -->
             <div class="col-md-3 mb-4">
                 {{ form_row(filterForm.state, {'attr': {'class': 'form-select', 'placeholder': 'filter.state.placeholder'|trans }}) }}
             </div>
 
-            <!-- Bouton reset -->
+            <!-- Reset Button -->
             <div class="col-md-1">
                 {{ form_row(filterForm.reset, {'attr': {'class': 'btn btn-secondary'}}) }}
             </div>
 
-            <!-- Bouton de recherche -->
+            <!-- Search Button -->
             <div class="col-md-2 d-flex justify-content-end">
                 {{ form_row(filterForm.filter, {'attr': {'class': 'btn btn-primary', 'value': 'filter.buttons.search'|trans }}) }}
             </div>
@@ -52,7 +52,7 @@
 
         <div class="row">
             {% if as|length == 0 %}
-                <!-- Message quand aucun résultat ne correspond aux filtres -->
+                <!-- No Results Message -->
                 <div class="col-12 text-center">
                     <p id="no-match-message" data-add-room-link="{{ path('app_acquisition_system') }}">
                         {{ 'no_match_adjust_filters'|trans|raw }}
@@ -64,20 +64,20 @@
                         <div class="card">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div>
-                                    <!-- Afficher le nom du système et son état -->
+                                    <!-- System Name and State -->
                                     <h5 class="card-title">{{ system.name }}</h5>
                                     <p class="card-text"><strong>{{ 'state'|trans }}:</strong>
                                         <span class="badge-custom-size
                                         {% if system.state.value == 'linked' %}bg-success
                                         {% elseif system.state.value == 'not linked' %}bg-secondary
                                         {% else %}bg-danger{% endif %}">
-                                        {{ ('_sensor_state.' ~ system.state.value | upper) | trans | upper}}
+                                        {{ ('_sensor_state.' ~ system.state.value | upper) | trans | upper }}
                                     </span>
                                     </p>
                                 </div>
 
                                 <div>
-                                    <!-- Actions pour accéder ou afficher la salle liée -->
+                                    <!-- Actions for Linked Room -->
                                     <div class="d-flex gap-2">
                                         {% if system.room is not null %}
                                             <a href="{{ path('app_rooms_details', { name: system.room.name }) }}" class="btn btn-outline-secondary">{{ 'access_to_linked_room'|trans }}</a>

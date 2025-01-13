@@ -1,0 +1,120 @@
+\chapter{readme}
+\hypertarget{md_readme}{}\label{md_readme}\index{readme@{readme}}
+\doxysection*{Stack de développement Symfony de la SAE3}
+
+\DoxyHorRuler{0}
+ Contenu \+:
+\begin{DoxyItemize}
+\item Prérequis
+\item Démarrage
+\begin{DoxyItemize}
+\item 1. Forker le modèle de stack
+\item 2. Cloner la stack du projet
+\item 3. Démarrer la stack du projet
+\end{DoxyItemize}
+\item Initialiser le service \`{}sfapp\`{}
+\item Partager le projet
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{md_readme_autotoc_md2}{}\doxysubsection{\texorpdfstring{Prérequis}{Prérequis}}\label{md_readme_autotoc_md2}
+Sur votre machine Linux ou Mac \+:
+
+
+\begin{DoxyItemize}
+\item Docker 24
+\item Docker Engine sous Linux (ne pas installer Docker Desktop sous Linux)
+\item Docker Desktop sous Mac
+\item PHPStorm ~\newline
+ {\itshape Votre email étudiant vous permet de bénéficier d\textquotesingle{}une licence complète de 12 mois pour tous les produits Jet\+Brains} ~\newline
+
+\end{DoxyItemize}
+
+De manière optionnelle, mais fortement recommandée \+:
+
+
+\begin{DoxyItemize}
+\item Une \href{https://forge.iut-larochelle.fr/help/ssh/index\#generate-an-ssh-key-pair}{\texttt{ clé SSH}} active sur votre machine (perso) et \href{https://forge.iut-larochelle.fr/help/ssh/index\#add-an-ssh-key-to-your-gitlab-account}{\texttt{ ajoutée dans votre compte gitlab}} \+: ~\newline
+ elle vous permettra de ne pas taper votre mot de passe en permanence.
+\end{DoxyItemize}\hypertarget{md_readme_autotoc_md3}{}\doxysubsection{\texorpdfstring{Démarrage}{Démarrage}}\label{md_readme_autotoc_md3}
+\hypertarget{md_readme_autotoc_md4}{}\doxysubsubsection{\texorpdfstring{1. Forker le modèle de stack}{1. Forker le modèle de stack}}\label{md_readme_autotoc_md4}
+{\bfseries{UN.\+E SEUL.\+E}} des développeuses/développeurs de votre équipe va {\bfseries{fork}} le présent dépôt, pour en créer un nouveau, dans le groupe correspondant à votre équipe \+: ~\newline
+ {\itshape Par exemple pour l\textquotesingle{}équipe 1 du groupe de TP K1, le groupe est \+:} {\ttfamily 2024-\/2025-\/BUT-\/\+INFO2-\/\+A-\/\+SAE34/\+K1/\+K11}
+
+{\bfseries{Remarque}} \+: \texorpdfstring{$>$}{>}Il n\textquotesingle{}est pas nécessaire de conserver le lien avec le modèle de stack, vous pouvez donc aller dans ~\newline
+ \begin{quote}
+Settings \texorpdfstring{$>$}{>} General \texorpdfstring{$>$}{>} Advanced (dans Gitlab) pour supprimer le "{}\+Fork relationship"{} de votre projet \end{quote}
+\hypertarget{md_readme_autotoc_md5}{}\doxysubsubsection{\texorpdfstring{2. Cloner la stack du projet}{2. Cloner la stack du projet}}\label{md_readme_autotoc_md5}
+Le membre de l\textquotesingle{}équipe qui a réalisé le fork, doit cloner ce dépôt sur son poste de travail
+
+⚠️ {\bfseries{Si vous êtes sous Linux}} ~\newline
+ \begin{quote}
+Avant de démarrer la stack, il faut renseigner les variables qui se trouvent dans le fichier {\ttfamily .env} à la racine du dépôt ~\newline
+ Vous pouvez obtenir l\textquotesingle{}id de votre user (et de son groupe) en lançant la commande {\ttfamily id -\/u \$\{USER\}} dans un terminal \end{quote}
+\hypertarget{md_readme_autotoc_md6}{}\doxysubsubsection{\texorpdfstring{3. Démarrer la stack du projet}{3. Démarrer la stack du projet}}\label{md_readme_autotoc_md6}
+Dans un terminal positionné dans le dossier de la stack du projet \+:
+
+
+\begin{DoxyItemize}
+\item Créer le dossier {\ttfamily sfapp} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir\ sfapp}
+
+\end{DoxyCode}
+
+\item démarrer la stack ~\newline
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ up\ -\/-\/build}
+
+\end{DoxyCode}
+
+\item inspecter l\textquotesingle{}état des services 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ ps}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}\hypertarget{md_readme_autotoc_md7}{}\doxysubsection{\texorpdfstring{Initialiser le service $<$tt$>$sfapp$<$/tt$>$}{Initialiser le service <tt>sfapp</tt>}}\label{md_readme_autotoc_md7}
+Dans un terminal positionné dans le dossier de la stack du projet \+:
+
+
+\begin{DoxyItemize}
+\item on se connecte au conteneur associé su service {\ttfamily sfapp} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker\ compose\ exec\ sfapp\ bash}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}
+
+après connexion, on doit être dans {\ttfamily /app}, vérifier 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pwd\ }
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item créer le projet {\ttfamily sfapp} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{composer\ create-\/project\ symfony/skeleton:"{}6.3.*"{}\ sfapp}
+
+\end{DoxyCode}
+
+\item vérifier l\textquotesingle{}exécution du service {\ttfamily sfapp} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{localhost:8000}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}\hypertarget{md_readme_autotoc_md8}{}\doxysubsection{\texorpdfstring{Partager le projet}{Partager le projet}}\label{md_readme_autotoc_md8}
+À ce stade, les services {\ttfamily sfapp}, {\ttfamily database} et {\ttfamily nginx} sont créés et démarrés, autrement dit fonctionnels, alors \+:
+\begin{DoxyItemize}
+\item on fait {\ttfamily commit} et {\ttfamily push} pour partager avec les autres membres de l\textquotesingle{}équipe
+\item on déclare tout les membres de l\textquotesingle{}équipe dans le dépôt du projet avec le rôle {\ttfamily Developer} (si ce n\textquotesingle{}est pas déjà fait \+:-\/))
+\item chaque membre de l\textquotesingle{}équipe peut alors
+\begin{DoxyItemize}
+\item cloner ce nouveau dépôt sur son poste de travail
+\item démarrer toute la stack docker du projet 
+\end{DoxyItemize}
+\end{DoxyItemize}

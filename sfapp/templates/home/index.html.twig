@@ -5,8 +5,7 @@
     <div class="container-fluid p-4" style="font-family: Arial, sans-serif;">
         <!-- Titre principal -->
         <div class="text-center mb-4">
-            <h1>{{ 'hello'|trans }} {{ app.user.username }}!</h1>
-            <h3>{{ "now"|format_datetime(pattern='EEEE d MMMM Y') }}</h3>
+            <h1>{{ 'hello'|trans }} {{ app.user.username }}! 👋</h1>
 
         </div>
 
@@ -30,22 +29,19 @@
                 <div class="card p-3 flex-grow-1 d-flex flex-column justify-content-center align-items-center" style="border-radius: 10px;">
                     <h3 class="text-center mb-4">{{ 'infos'|trans }}</h3>
                     <div class="d-flex justify-content-center flex-wrap gap-3">
-                        <!-- Nombre de salles visible pour tous -->
-                        <div class="info-card border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white" style="width: 150px; border-radius: 10px;">
+                        <!-- Nombre de salles -->
+                        <a href="{{ path('app_rooms') }}" class="info-card btn border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white" style="width: 150px; border-radius: 10px;">
                             <h4 class="fw-bold">{{ rooms_count }}</h4>
                             <p class="mb-0">{{ 'rooms'|trans }}</p>
-                        </div>
+                        </a>
 
                         <!-- Nombre d'AS visible uniquement pour les techniciens -->
                         {% if is_granted('ROLE_TECHNICIAN') %}
-                            <div class="col-6 text-center">
-                                <div class="info-card border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white">
-                                    <h4>{{ as_count }}</h4>
-                                    <p>{{ 'systems' | trans }}</p>
-                                </div>
-                            </div>
+                            <a href="{{ path('app_acquisition_system') }}" class="info-card btn border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white" style="width: 150px; border-radius: 10px;">
+                                <h4>{{ as_count }}</h4>
+                                <p>{{ 'systems' | trans }}</p>
+                            </a>
                         {% endif %}
-
                         <!-- États critiques et à risque visibles uniquement pour les managers -->
                         {% if is_granted('ROLE_MANAGER') %}
                             <!-- Nombre de salles critiques -->
@@ -165,4 +161,16 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        /**
+         * @brief Automatically reloads the page every minute to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 60,000 milliseconds (1 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 60000);
+    </script>
 {% endblock %}

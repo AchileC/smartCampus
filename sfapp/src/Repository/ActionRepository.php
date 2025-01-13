@@ -92,4 +92,19 @@ class ActionRepository extends ServiceEntityRepository
     {
         return $this->findBy($criteria);
     }
+
+    public function findOngoingTaskForRoom(int $roomId): ?Action
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.room = :room')
+            ->andWhere('a.state IN (:states)')
+            ->andWhere('a.info IN (:infos)')
+            ->setParameter('room', $roomId)
+            ->setParameter('states', [ActionStateEnum::TO_DO, ActionStateEnum::DOING])
+            ->setParameter('infos', ['assignment', 'unassignment'])
+            ->orderBy('a.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

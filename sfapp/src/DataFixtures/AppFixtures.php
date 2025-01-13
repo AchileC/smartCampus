@@ -30,21 +30,21 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $rooms = [
-            ['nomsa' => 'ESP-004', 'localisation' => 'D205'],
-            ['nomsa' => 'ESP-008', 'localisation' => 'D206'],
-            ['nomsa' => 'ESP-006', 'localisation' => 'D207'],
-            ['nomsa' => 'ESP-014', 'localisation' => 'D204'],
-            ['nomsa' => 'ESP-012', 'localisation' => 'D203'],
-            ['nomsa' => 'ESP-005', 'localisation' => 'D303'],
-            ['nomsa' => 'ESP-011', 'localisation' => 'D304'],
-            ['nomsa' => 'ESP-007', 'localisation' => 'C101'],
-            ['nomsa' => 'ESP-024', 'localisation' => 'D109'],
-            ['nomsa' => 'ESP-026', 'localisation' => 'Secretariat'],
-            ['nomsa' => 'ESP-030', 'localisation' => 'D001'],
-            ['nomsa' => 'ESP-028', 'localisation' => 'D002'],
-            ['nomsa' => 'ESP-020', 'localisation' => 'D004'],
-            ['nomsa' => 'ESP-021', 'localisation' => 'C004'],
-            ['nomsa' => 'ESP-022', 'localisation' => 'C007'],
+            ['nomsa' => 'ESP-004', 'localisation' => 'D205', 'dbname' => 'sae34bdk1eq1'],
+            ['nomsa' => 'ESP-008', 'localisation' => 'D206', 'dbname' => 'sae34bdk1eq2'],
+            ['nomsa' => 'ESP-006', 'localisation' => 'D207', 'dbname' => 'sae34bdk1eq3'],
+            ['nomsa' => 'ESP-014', 'localisation' => 'D204', 'dbname' => 'sae34bdk2eq1'],
+            ['nomsa' => 'ESP-012', 'localisation' => 'D203', 'dbname' => 'sae34bdk2eq2'],
+            ['nomsa' => 'ESP-005', 'localisation' => 'D303', 'dbname' => 'sae34bdk2eq3'],
+            ['nomsa' => 'ESP-011', 'localisation' => 'D304', 'dbname' => 'sae34bdl1eq1'],
+            ['nomsa' => 'ESP-007', 'localisation' => 'C101', 'dbname' => 'sae34bdl1eq2'],
+            ['nomsa' => 'ESP-024', 'localisation' => 'D109', 'dbname' => 'sae34bdl1eq3'],
+            ['nomsa' => 'ESP-026', 'localisation' => 'Secretariat', 'dbname' => 'sae34bdl2eq1'],
+            ['nomsa' => 'ESP-030', 'localisation' => 'D001', 'dbname' => 'sae34bdl2eq2'],
+            ['nomsa' => 'ESP-028', 'localisation' => 'D002', 'dbname' => 'sae34bdl2eq3'],
+            ['nomsa' => 'ESP-020', 'localisation' => 'D004', 'dbname' => 'sae34bdm1eq1'],
+            ['nomsa' => 'ESP-021', 'localisation' => 'C004', 'dbname' => 'sae34bdm1eq2'],
+            ['nomsa' => 'ESP-022', 'localisation' => 'C007', 'dbname' => 'sae34bdm1eq3'],
         ];
 
         $roomEntities = [];
@@ -75,9 +75,9 @@ class AppFixtures extends Fixture
             $room->setNbHeaters(2); // Default value, adjust as needed
             $room->setNbWindows(3); // Default value, adjust as needed
             $room->setSurface(20); // Default value, adjust as needed
-            $room->setSensorState(SensorStateEnum::ASSIGNMENT); // Default value, adjust as needed
+            $room->setSensorState(SensorStateEnum::LINKED); // Default value, adjust as needed
             $room->setCardinalDirection($cardinalDirections[array_rand($cardinalDirections)]);
-            $room->setState(RoomStateEnum::WAITING); // Default value, adjust as needed
+            $room->setState(RoomStateEnum::NO_DATA); // Default value, adjust as needed
 
             $manager->persist($room);
             $roomEntities[$data['nomsa']] = $room;
@@ -88,6 +88,7 @@ class AppFixtures extends Fixture
             $acquisitionSystem = new AcquisitionSystem();
             $acquisitionSystem->setName($data['nomsa']);
             $acquisitionSystem->setState(SensorStateEnum::LINKED); // Default value
+            $acquisitionSystem->setDbName($data['dbname']); // Définir dbName
 
             // Correctly associate the AcquisitionSystem with its corresponding Room
             $room = $roomEntities[$data['nomsa']];

@@ -14,20 +14,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class FilterASType
  *
- * Defines the form used to filter AcquisitionSystem entities.
- * The form includes fields for name, state, and action buttons for filtering or resetting the filters.
- *
- * @package App\Form
+ * Form type for filtering AcquisitionSystem entities by name and state.
  */
 class FilterASType extends AbstractType
 {
     /**
-     * Builds the form for filtering AcquisitionSystem entities.
+     * Builds the filter form.
      *
-     * @param FormBuilderInterface $builder The form builder used to construct the form.
-     * @param array                $options An array of options passed to the form.
-     *
-     * @return void
+     * @param FormBuilderInterface $builder The form builder.
+     * @param array $options The options for the form.
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -87,11 +82,9 @@ class FilterASType extends AbstractType
     }
 
     /**
-     * Configures the options for this form type.
+     * Configures options for the filter form.
      *
-     * @param OptionsResolver $resolver The resolver for the options.
-     *
-     * @return void
+     * @param OptionsResolver $resolver The options resolver.
      */
     public function configureOptions(OptionsResolver $resolver): void
     {

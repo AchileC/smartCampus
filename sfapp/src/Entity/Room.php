@@ -28,12 +28,8 @@ class Room
     private ?FloorEnum $floor = null;
     #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
     private ?RoomStateEnum $state = null;
-    #[ORM\Column(type: 'string', enumType: RoomStateEnum::class, nullable: true)]
-    private ?RoomStateEnum $previousState = null;
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $sensorState = null;
-    #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
-    private ?SensorStateEnum $previousSensorState = null;
     #[ORM\Column(type: 'string', enumType: CardinalEnum::class)]
     private ?CardinalEnum $cardinalDirection;
     #[ORM\Column]
@@ -42,6 +38,8 @@ class Room
     private ?int $nbWindows;
     #[ORM\Column]
     private ?float $surface;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lastUpdatedAt = null;
     #[ORM\OneToOne(mappedBy: 'room', cascade: ['persist'], orphanRemoval: false)]
     private ?AcquisitionSystem $acquisitionSystem = null;
 
@@ -122,17 +120,6 @@ class Room
         return $this;
     }
 
-    public function getPreviousSensorState(): ?SensorStateEnum
-    {
-        return $this->previousSensorState;
-    }
-
-    public function setPreviousSensorState(SensorStateEnum $previousSensorState): static
-    {
-        $this->previousSensorState = $previousSensorState;
-        return $this;
-    }
-
     public function getCardinalDirection(): ?CardinalEnum
     {
         return $this->cardinalDirection;
@@ -177,6 +164,17 @@ class Room
     {
         $this->surface = $surface;
 
+        return $this;
+    }
+
+    public function getLastUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->lastUpdatedAt;
+    }
+
+    public function setLastUpdatedAt(?\DateTimeInterface $dateTime): self
+    {
+        $this->lastUpdatedAt = $dateTime;
         return $this;
     }
 

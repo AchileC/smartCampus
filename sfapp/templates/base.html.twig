@@ -440,13 +440,223 @@
                 margin: 0;
             }
 
+            .threshold-section {
+                background-color: var(--bs-body-bg);
+                border: 1px solid var(--bs-border-color);
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
 
+            .threshold-section h3 {
+                color: var(--bs-primary);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .threshold-visualization {
+                margin-top: 15px;
+                padding: 20px;
+                border-radius: 4px;
+                position: relative;
+            }
+
+            .progress {
+                height: 30px;
+                margin-bottom: 30px;
+                position: relative;
+                background-color: #e9ecef;
+                border-radius: 8px;
+                overflow: visible;
+            }
+
+            .slider-container {
+                position: relative;
+                margin-bottom: 60px;
+                padding: 0 10px;
+            }
+
+            .slider-thumb {
+                width: 0;
+                height: 0;
+                position: absolute;
+                top: 30px;
+                transform: translateX(-50%);
+                cursor: grab;
+                z-index: 10;
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-top: 0;
+                border-bottom: 12px solid var(--bs-blue);
+
+            }
+
+            .slider-thumb::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -12px;
+                right: -12px;
+                bottom: -4px;
+                z-index: -1;
+            }
+
+            .slider-thumb:hover {
+                border-bottom-color: var(--bs-primary);
+                transform: translateX(-50%) scale(1.2);
+                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            }
+
+            .slider-thumb.dragging {
+                cursor: grabbing;
+                border-bottom-color: var(--bs-primary);
+            }
+
+            .slider-value {
+                position: absolute;
+                top: 15px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 2px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                white-space: nowrap;
+                color: white;
+                background-color: var(--bs-blue);
+                font-weight: 500;
+            }
+
+            .slider-thumb:hover .slider-value {
+                background-color: var(--bs-primary);
+                transform: translateX(-50%) scale(1.1);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                transition: all 0.2s ease-in-out;
+            }
+
+            .slider-thumb.dragging .slider-value {
+                background-color: var(--bs-primary);
+            }
+
+            .slider-label {
+                position: absolute;
+                bottom: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 11px;
+                white-space: nowrap;
+                color: var(--bs-secondary);
+                font-weight: 500;
+            }
+
+            .btn-toolbar {
+                margin-top: 20px;
+                gap: 10px;
+            }
+
+            .period-switch {
+                margin-bottom: 20px;
+            }
+
+            .alert {
+                margin-bottom: 20px;
+            }
+
+            /* Zones de couleur pour les seuils */
+            .zone-critical-low {
+                background-color: #dc3545;
+                border-radius: 8px 0 0 8px;
+            }
+            .zone-warning-low { background-color: #ffc107; }
+            .zone-optimal { background-color: #198754; }
+            .zone-warning-high { background-color: #ffc107; }
+            .zone-critical-high {
+                background-color: #dc3545;
+                border-radius: 0 8px 8px 0;
+            }
+
+            /* Style pour les valeurs cachées */
+            .hidden-inputs {
+                display: none;
+            }
+
+            /* Info icons */
+            .info-icon {
+                font-size: 1.2rem;
+                color: var(--bs-primary);
+                cursor: help;
+            }
+
+            /* Tooltip personnalisé */
+            .threshold-tooltip {
+                position: absolute;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 12px;
+                z-index: 1000;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+
+            .threshold-tooltip.visible {
+                opacity: 1;
+            }
+
+            /* Style pour la grille de valeurs recommandées */
+            .recommended-values {
+                margin-top: 10px;
+                padding: 10px;
+                background-color: rgba(var(--bs-info-rgb), 0.1);
+                border-radius: 4px;
+                font-size: 0.9rem;
+            }
+
+            .recommended-values table {
+                width: 100%;
+                margin-bottom: 0;
+            }
+
+            .recommended-values td {
+                padding: 4px 8px;
+            }
+
+            .recommended-values td:first-child {
+                font-weight: 500;
+                color: var(--bs-primary);
+            }
+
+            /* Style for the aberrant values accordion */
+            .aberrant-values-accordion {
+                margin-top: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            .aberrant-values-accordion .accordion-button {
+                background-color: rgba(var(--bs-primary-rgb), 0.1);
+            }
+
+            .aberrant-values-accordion .accordion-button:not(.collapsed) {
+                color: var(--bs-primary);
+                background-color: rgba(var(--bs-primary-rgb), 0.1);
+            }
+
+            .aberrant-values-accordion .accordion-body {
+                background-color: var(--bs-body-bg);
+            }
 
         </style>
     {% endblock %}
 </head>
-<body>
-<div id="sidebar">
+<div>
+{# Récupérer la route actuelle #}
+{% set current_route = app.request.attributes.get('_route') %}
+<div id="sidebar" class="{% if current_route == 'app_home' %}open{% endif %}">
+
     <div class="brand d-flex justify-content-center align-items-center">
         {% if is_granted('ROLE_TECHNICIAN') or is_granted('ROLE_MANAGER') %}
         <a href="{{ path('app_home') }}" class="d-flex align-items-center text-decoration-none text-white">
@@ -458,8 +668,7 @@
     </div>
     <hr>
         <nav class="nav flex-column">
-            {# Récupérer la route actuelle #}
-            {% set current_route = app.request.attributes.get('_route') %}
+
             <a href="{{ path('app_rooms') }}"
                class="nav-link {{ current_route starts with 'app_rooms' ? 'active' : '' }}">
                 <i class="bi bi-box"></i>
@@ -503,10 +712,13 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
                                 <!-- Bouton Logout -->
-                                <form method="post" action="{{ path('app_logout') }}" class="d-flex justify-content-center">
+                                <form method="post" action="{{ path('app_logout', { '_locale': app.request.locale }) }}">
                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
-                                    <button type="submit" class="btn btn-outline-danger">{{ 'logout' | trans }}</button>
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        {{ 'logout'|trans }}
+                                    </button>
                                 </form>
+
                             </li>
                         </ul>
                     </div>
@@ -519,9 +731,10 @@
                         </a>
                         <!-- Utilisateur non connecté -->
                     {% endif %}
-                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="Paramètres">
+                    <button class="btn btn-sm settings-button" data-bs-toggle="modal" data-bs-target="#settingsModal" aria-label="{{ 'settings.parameters_button_label'|trans }}">
                         <i class="bi bi-gear-fill" style="font-size: 1.25rem;"></i>
                     </button>
+
                     {% set unreadNotifications = notifications|filter(notification => not notification.isRead) %}
                     {% if is_granted('ROLE_MANAGER') %}
                         <div class="dropdown position-relative">
@@ -536,8 +749,8 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationButton">
                                 <li class="fw-bold text-center mb-2 sticky-header d-flex justify-content-between align-items-center px-3">
-                                    <span>Notifications</span>
-                                    <button class="btn btn-sm btn-link text-white p-0" id="markAllAsReadButton" title="Mark all as read">
+                                    <span>{{ 'notifications.header'|trans }}</span>
+                                    <button class="btn btn-sm btn-link text-white p-0" id="markAllAsReadButton" title="{{ 'notifications.mark_all_as_read'|trans }}">
                                         <i class="bi bi-check2" style="font-size: 1.25rem;"></i>
                                     </button>
                                 </li>
@@ -550,35 +763,38 @@
                                         </a>
                                     </li>
                                 {% else %}
-                                    <li class="text-center text-muted">No new notifications</li>
+                                    <li class="text-center text-muted">{{ 'notifications.no_new_notifications'|trans }}</li>
                                 {% endfor %}
+
                             </ul>
                         </div>
                     {% endif %}
                 </div>
         </div>
     </div>
+</div>
 
-    <div id="main-content">
-        <button id="toggleSidebarButton" onclick="toggleSidebar()">
-            <i id="sidebarToggleIcon" class="bi bi-list"></i> <!-- Icône hamburger -->
-        </button>
+<div id="main-content">
+    <button id="toggleSidebarButton" onclick="toggleSidebar()">
+        <i id="sidebarToggleIcon" class="bi bi-list"></i> <!-- Icône hamburger -->
+    </button>
 
-        {% block body %}
-            <!-- Contenu spécifique à chaque page -->
-        {% endblock %}
-    </div>
+    {% block body %}
+        <!-- Contenu spécifique à chaque page -->
+    {% endblock %}
+</div>
 
     <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="settingsModalLabel">Parameters</h1>
+                    <h1 class="modal-title fs-5" id="settingsModalLabel">{{ 'settings.parameters'|trans }}</h1>
+
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="d-flex align-items-center">
-                        <span id="theme-label-modal" class="form-label me-3 mb-0">Mode Sombre</span>
+                        <span id="theme-label-modal" class="form-label me-3 mb-0">{{ 'settings.theme_label'|trans }}</span>
                         <i class="bi bi-moon-fill theme-icon moon me-3"></i>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="theme-toggle-switch-modal">
@@ -587,8 +803,8 @@
                     </div>
                     <br>
                     <div class="d-flex align-items-center">
-                        <label for="language-select" class="form-label me-3 mb-0">Langue</label>
-                        <select class="form-select form-select-sm" id="language-select" aria-label="Sélecteur de langue" style="width: 120px;">
+                        <label for="language-select" class="form-label me-3 mb-0">{{ 'settings.language_label'|trans }}</label>
+                        <select class="form-select form-select-sm" id="language-select" aria-label="Language Selector" style="width: 120px;">
                             <option value="en" selected>English</option>
                             <option value="fr">Français</option>
                             <!-- Vous pouvez ajouter d'autres langues ici -->
@@ -596,7 +812,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ 'settings.close_button'|trans }}</button>
                 </div>
             </div>
         </div>
@@ -621,7 +837,17 @@
             const toggleButton = document.getElementById('toggleSidebarButton');
             const toggleIcon = document.getElementById('sidebarToggleIcon');
             const mainContent = document.getElementById('main-content');
+            // Récupération de la route actuelle (déjà définie en haut de votre template, on la repasse en JS)
+            const currentRoute = "{{ current_route }}";
 
+            // Si on est sur app_home, on force la sidebar à être ouverte et on masque le bouton
+            if (currentRoute === "app_home") {
+                sidebar.classList.add("open");
+                mainContent.classList.add("with-sidebar");
+                toggleButton.classList.add("with-sidebar");
+                // On masque le bouton (plus propre de le faire en CSS, mais à titre d’exemple en JS :
+                toggleButton.style.display = "none";
+            }
 
             /**
              * @function toggleSidebar
@@ -677,7 +903,7 @@
             document.documentElement.setAttribute("data-bs-theme", currentTheme);
             if (themeToggleSwitchModal) {
                 themeToggleSwitchModal.checked = currentTheme === "dark";
-                themeLabelModal.innerText = "Mode Sombre";
+                themeLabelModal.innerText = "Dark Mode";
             }
 
             /**
@@ -688,32 +914,55 @@
                     const newTheme = themeToggleSwitchModal.checked ? "dark" : "light";
                     document.documentElement.setAttribute("data-bs-theme", newTheme);
                     localStorage.setItem("theme", newTheme);
-                    themeLabelModal.innerText ="Mode Sombre";
+                    themeLabelModal.innerText ="Dark Mode";
                 });
             }
 
             /**
              * Handle Language Selection in Modal
              */
+                // Sélecteur de langue
             const languageSelect = document.getElementById("language-select");
 
             if (languageSelect) {
-                const savedLanguage = localStorage.getItem("language");
-                if (savedLanguage) {
-                    languageSelect.value = savedLanguage;
+                // 1) On regarde dans l'URL
+                const pathParts = window.location.pathname.split('/').filter(Boolean);
+                let urlLocale = null;
+
+                // pathParts[0] sera 'en' ou 'fr' si l'URL est du type /en/... ou /fr/...
+                if (pathParts[0] === 'en' || pathParts[0] === 'fr') {
+                    urlLocale = pathParts[0];
                 }
 
+                // 2) On regarde dans le localStorage
+                const savedLanguage = localStorage.getItem("language");
+
+                // 3) On décide de la locale "effective"
+                //    Priorité : locale dans l'URL => ensuite localStorage => fallback 'en'
+                let effectiveLocale = urlLocale || savedLanguage || 'en';
+
+                // 4) On affecte la locale "effective" au sélecteur de langue
+                languageSelect.value = effectiveLocale;
+
+                // 5) On écoute le changement de la value du sélecteur
                 languageSelect.addEventListener("change", function () {
                     const selectedLanguage = languageSelect.value;
+                    // On mémorise la nouvelle valeur dans le localStorage
                     localStorage.setItem("language", selectedLanguage);
 
-                    // On récupère le chemin actuel
-                    const pathParts = window.location.pathname.split('/').filter(Boolean);
-                    // pathParts[0] contient la langue actuelle, on la remplace par la nouvelle
-                    pathParts[0] = selectedLanguage;
+                    // On met à jour l’URL en conservant les segments restants
+                    const currentPathParts = window.location.pathname.split('/').filter(Boolean);
 
-                    // Reconstruction de l'URL
-                    const newPath = `/${pathParts.join('/')}`;
+                    // Si le premier segment est déjà 'en' ou 'fr', on le remplace
+                    if (currentPathParts[0] === 'en' || currentPathParts[0] === 'fr') {
+                        currentPathParts[0] = selectedLanguage;
+                    } else {
+                        // Sinon, on l'insère
+                        currentPathParts.unshift(selectedLanguage);
+                    }
+
+                    // Redirection vers la nouvelle URL
+                    const newPath = `/${currentPathParts.join('/')}`;
                     window.location.href = newPath;
                 });
             }
@@ -786,7 +1035,7 @@
         });
 
         /**
-         * @brief Automatically reloads the page every 30 minutes to ensure data is up-to-date.
+         * @brief Automatically reloads the page every 15 minutes to ensure data is up-to-date.
          *
          * Sets an interval that triggers a page reload after 900,000 milliseconds (15 minutes).
          * This helps in keeping the displayed data fresh without requiring manual intervention.

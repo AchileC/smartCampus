@@ -31,48 +31,42 @@ app_rooms:
     requirements:
         _locale: 'en|fr'
 
-app_rooms_no_locale:
-    path: '/rooms'
-    controller: App\Controller\RoomController::index
-
 app_rooms_details:
     path: '/{_locale}/rooms/{name}'
     controller: App\Controller\RoomController::details
     requirements:
         _locale: 'en|fr'
 
-redirect_root_to_locale_rooms:
-    path: /
+root_redirect:
+    path: '/'
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
     defaults:
         route: app_rooms
         permanent: false
         _locale: 'en'
-
-redirect_locale_to_rooms:
-    path: '/{_locale}'
-    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
-    defaults:
-        route: app_rooms
-        permanent: false
-    requirements:
-        _locale: 'en|fr'
 
 rooms_redirect:
-    path: /rooms
+    path: '/{_locale}/rooms'
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
     defaults:
         route: app_rooms
         permanent: false
-        _locale: 'en'
+        _locale: 'en|fr'
 
 rooms_details_redirect:
-    path: /rooms/{name}
+    path: '/{_locale}/rooms/{name}'
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
     defaults:
         route: app_rooms_details
         permanent: false
-        _locale: 'en'
+        _locale: 'en|fr'
+
+app_logout:
+    path: '/{_locale}/logout'
+    controller: Symfony\Bundle\SecurityBundle\Controller\LogoutController
+    requirements:
+        _locale: 'en|fr'
+
 
 app_unauthorized_no_locale:
     path: /unauthorized

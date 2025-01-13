@@ -20,6 +20,9 @@ class AcquisitionSystem
     #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 255, unique: true)]
+    private ?string $dbName = null;
+
     #[ORM\Column(nullable: true)]
     private ?float $temperature = null;
 
@@ -36,10 +39,25 @@ class AcquisitionSystem
     #[ORM\Column(type: 'string', enumType: SensorStateEnum::class, nullable: true)]
     private ?SensorStateEnum $state = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lastCapturedAt = null;
+
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getDbName(): ?string
+    {
+        return $this->dbName;
+    }
+
+    public function setDbName(string $dbName): static
+    {
+        $this->dbName = $dbName;
+
+        return $this;
     }
 
     public function getTemperature(): ?float
@@ -123,14 +141,14 @@ class AcquisitionSystem
         return $this;
     }
 
-    public function getCaptureName(): ?string
+    public function getLastCapturedAt(): ?\DateTimeInterface
     {
-        return $this->captureName;
+        return $this->lastCapturedAt;
     }
 
-    public function setCaptureName(?string $captureName): static
+    public function setLastCapturedAt(?\DateTimeInterface $dateTime): self
     {
-        $this->captureName = $captureName;
+        $this->lastCapturedAt = $dateTime;
         return $this;
     }
 

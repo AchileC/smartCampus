@@ -4,7 +4,6 @@
 hello: "Bonjour"
 room: "Salle"
 rooms: "Salles"
-login: "Connexion"
 logout: "Déconnexion"
 
 dashboard: "Tableau de bord"
@@ -43,7 +42,7 @@ humidity: "Humidité"
 
 # dashboard
 as_list: "Liste des SA"
-my_to_do_list: "Ma To-Do Liste"
+my_to_do_list: "Ma To-Do-Liste"
 configure_thresholds: "Configurer les seuils"
 
 # orientation
@@ -356,3 +355,132 @@ critical_max_humidity_desc: "70% - Risque élevé de formation de moisissures et
 save_changes: "Enregistrer les modifications"
 reset_to_default: "Réinitialiser par défaut"
 reset_confirmation: "Êtes-vous sûr de vouloir réinitialiser tous les seuils à leurs valeurs par défaut ?"
+
+# New Translations Added
+
+# Room Details Page
+room_details:
+  title: "Détails de la salle"
+
+# Buttons and Actions
+view_analytics: "Voir l'évolution des données"
+
+# Update Room Page
+update_room:
+  title: "Modifier la salle"
+  header: "Modifier la salle"
+
+# Analytics Page
+analytics:
+  title: "Graphiques d'évolution des données"
+  summary : "Représentation de l'évolution des données en "
+  temperature_evolution: "Évolution de la Température"
+  humidity_evolution: "Évolution de l'Humidité"
+  co2_concentration_evolution: "Évolution de la Concentration de CO₂"
+  last_30_days: "30 Derniers Jours"
+  last_7_days: "7 Derniers Jours"
+  no_temperature_data: "Aucune donnée de température disponible pour cette période"
+  no_humidity_data: "Aucune donnée d'humidité disponible pour cette période"
+  no_co2_data: "Aucune donnée de CO₂ disponible pour cette période"
+
+# Navigation and Labels
+back_to_room_details: "Retour aux détails de la salle"
+
+# Notifications
+notifications:
+  header: "Notifications"
+  mark_all_as_read: "Marquer tout comme lu"
+  no_new_notifications: "Aucune nouvelle notification"
+
+# Paramètres Modal
+settings:
+  parameters: "Paramètres"
+  parameters_button_label: "Paramètres"
+  theme_label: "Mode Sombre"
+  language_label: "Langue"
+  close_button: "Fermer"
+  language_select_label: "Langue"
+
+# Aberrant Values Accordion
+aberrant_values_information_title: "Informations sur les Seuils de Valeurs Aberrantes Fixées"
+aberrant_values_info_description: "Les seuils suivants sont fixes et ne peuvent pas être modifiés. Lorsque les valeurs sont en dehors de ces plages, le capteur sera marqué comme \"NON FONCTIONNEL\" et une tâche de maintenance sera créée :"
+temperature_fixed: "Température : En dessous de 10°C ou au-dessus de 40°C"
+humidity_fixed: "Humidité : En dessous de 20% ou au-dessus de 100%"
+co2_fixed: "CO₂ : En dessous de 400ppm ou au-dessus de 2000ppm"
+
+# Slider Labels
+slider_label_critical_min: "Min Critique"
+slider_label_warning_min: "Min Avertissement"
+slider_label_warning_max: "Max Avertissement"
+slider_label_critical_max: "Max Critique"
+
+# Security - Login Page
+login:
+  title: "Connexion"
+  header: "Veuillez vous connecter"
+  username_label: "Nom d'utilisateur"
+  username_placeholder: "Nom d'utilisateur"
+  password_label: "Mot de passe"
+  password_placeholder: "Mot de passe"
+  submit_button: "Se connecter"
+
+# Security - Unauthorized Access Page
+access_denied:
+  title: "Accès Refusé"
+  header: "403 - Accès Refusé"
+  message: "Vous n'avez pas les permissions nécessaires pour accéder à cette page."
+  contact_admin: "Veuillez contacter votre administrateur si vous pensez qu'il s'agit d'une erreur."
+  return_button: "Retour à la liste des salles"
+  login_button: "Connexion"
+
+# Action - Edit Task Page
+action_edit:
+  title: "Modifier la Tâche"
+  begin_task: "Commencer la Tâche"
+  validate_task: "Valider la Tâche"
+  of_an_acquisition_system: "d'un Système d'Acquisition"
+  removal_of_acquisition_system: "retrait du Système d'Acquisition"
+  task: "Tâche"
+  on_room: "dans la Salle"
+  begin_task_confirmation: "Êtes-vous sûr de vouloir commencer cette tâche ?"
+  no_as_available: "Aucun Système d'Acquisition n'est disponible."
+  add_acquisition_system: "Ajouter un Système d'Acquisition"
+  begin: "Commencer"
+  not_now: "Pas Maintenant"
+
+  # Validation Section
+  validate_task_confirmation: "Êtes-vous sûr de vouloir valider cette tâche ?"
+
+  # Maintenance Section
+  repaired?: "Réparé ?"
+  yes_repaired: "Oui, Réparé"
+  indicate_as: "Veuillez indiquer le statut de la réparation."
+
+  # General Buttons
+  confirm: "Confirmer"
+  cancel: "Annuler"
+
+  # Installation and Uninstallation
+  installation: "Installation"
+  uninstallation: "Désinstallation"
+  maintenance: "Maintenance"
+
+# Action - To-Do List Page
+action_index:
+  todolist: "Liste des Tâches"
+  awaiting_tasks: "tâches en attente"
+  view_completed_tasks: "Voir les Tâches Complétées"
+  flash_close_label: "Fermer"
+  no_pending: "Aucune tâche en attente."
+  last_updated: "Dernière Mise à Jour"
+
+  # Action States
+  _action_info_state:
+    ASSIGNMENT: "Assignation"
+    UNASSIGNMENT: "Désassignation"
+    MAINTENANCE: "Maintenance"
+
+  _action_state:
+    TO_DO: "À FAIRE"
+    DOING: "EN COURS"
+    DONE: "TERMINÉ"
