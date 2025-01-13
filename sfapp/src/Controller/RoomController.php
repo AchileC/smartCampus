@@ -28,17 +28,18 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 /**
  * @brief Manages room-related operations.
  *
- * The RoomController handles listing, adding, updating, deleting, and managing assignments/unassignments of rooms.
+ * Handles listing, adding, updating, deleting, and managing room assignments.
  */
 class RoomController extends AbstractController
 {
     private WeatherApiService $weatherApiService;
     private RoomSensorService $roomSensorService;
 
-    /**
+     /**
      * @brief Constructs the RoomController with required services.
      *
      * @param WeatherApiService $weatherApiService Service to fetch weather data.
+     * @param RoomSensorService $roomSensorService Service to manage room sensor data.
      */
     public function __construct(
         WeatherApiService $weatherApiService,
@@ -71,11 +72,9 @@ class RoomController extends AbstractController
     /**
      * @brief Displays the list of rooms with filtering options.
      *
-     * Retrieves rooms based on filter criteria and updates room states based on sensor data.
-     *
-     * @param RoomRepository   $roomRepository   Repository to manage Room entities.
+     * @param RoomRepository $roomRepository Repository to manage Room entities.
      * @param ActionRepository $actionRepository Repository to manage Action entities.
-     * @param Request          $request          The current HTTP request.
+     * @param Request $request The current HTTP request.
      *
      * @return Response The rendered rooms listing page.
      */
@@ -183,17 +182,13 @@ class RoomController extends AbstractController
     }
 
 
-    /**
+     /**
      * @brief Adds a new room.
      *
-     * Allows managers to create a new room with default sensor and room states.
+     * @param Request $request The current HTTP request.
+     * @param EntityManagerInterface $entityManager The entity manager for database operations.
      *
-     * @param Request                 $request        The current HTTP request.
-     * @param EntityManagerInterface  $entityManager   The entity manager for database operations.
-     *
-     * @return Response The rendered add room form or a redirect to the rooms listing.
-     *
-     * @throws AccessDeniedHttpException If the user does not have the ROLE_MANAGER.
+     * @return Response The rendered form page or a redirect to the rooms listing.
      */
     #[Route('/rooms/add', name: 'app_rooms_add')]
     public function add(

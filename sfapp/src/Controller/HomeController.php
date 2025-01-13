@@ -39,7 +39,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 /**
  * @brief Serves as the main controller for the application's home functionalities.
  *
- * The HomeController manages the dashboard, threshold settings, and notification handling.
+ * Manages the dashboard, threshold settings, and notification handling.
  */
 class HomeController extends AbstractController
 {
@@ -72,18 +72,16 @@ class HomeController extends AbstractController
         $this->twig = $twig;
     }
 
-    /**
+     /**
      * @brief Displays the home dashboard.
      *
-     * Shows counts of rooms, acquisition systems, critical and at-risk rooms, weather forecasts, pending actions, and notifications.
-     *
-     * @param RoomRepository              $roomRepository              Repository to manage Room entities.
+     * @param RoomRepository $roomRepository Repository to manage Room entities.
      * @param AcquisitionSystemRepository $acquisitionSystemRepository Repository to manage AcquisitionSystem entities.
-     * @param ActionRepository            $actionRepository            Repository to manage Action entities.
-     * @param WeatherApiService           $weatherApiService           Service to fetch weather data.
-     * @param NotificationRepository      $notificationRepository      Repository to manage Notification entities.
+     * @param ActionRepository $actionRepository Repository to manage Action entities.
+     * @param WeatherApiService $weatherApiService Service to fetch weather data.
+     * @param NotificationRepository $notificationRepository Repository to manage Notification entities.
      *
-     * @return Response The rendered home dashboard.
+     * @return Response The rendered home dashboard page.
      */
     #[Route('/home', name: 'app_home')]
     public function index(

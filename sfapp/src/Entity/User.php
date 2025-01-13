@@ -13,26 +13,37 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    /**
+     * @var int|null The unique identifier of the user.
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+
+    /**
+     * @var string|null The username of the user.
+     */
     #[ORM\Column(length: 180, unique: true)]
     private ?string $username = null;
 
-    /**
-     * @var list<string> The user roles
+     /**
+     * @var string[] The roles assigned to the user.
      */
     #[ORM\Column]
     private array $roles = [];
 
     /**
-     * @var string The hashed password
+     * @var string|null The hashed password of the user.
      */
     #[ORM\Column]
     private ?string $password = null;
 
+
+    /**
+     * @var Collection<int, Notification> Notifications associated with the user.
+     */
     #[ORM\OneToMany(mappedBy: 'recipient', targetEntity: Notification::class, cascade: ['persist', 'remove'])]
     private Collection $notifications;
 

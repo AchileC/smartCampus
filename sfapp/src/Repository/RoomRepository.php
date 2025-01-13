@@ -7,7 +7,13 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-
+/**
+ * Repository class for managing Room entities.
+ *
+ * Provides methods to query and manage Room entities in the database,
+ * including filtering by various criteria, handling JSON directories,
+ * and counting or retrieving specific rooms.
+ */
 class RoomRepository extends ServiceEntityRepository
 {
     /** @var ThresholdRepository */
@@ -144,9 +150,6 @@ class RoomRepository extends ServiceEntityRepository
      */
     public function countByState(string $state): int
     {
-        // NOTE: This method seems to be counting actions, but it's in RoomRepository.
-        // Potentially, it belongs in ActionRepository.
-        // We'll keep it here as is, for demonstration.
         return $this->createQueryBuilder('a')
             ->select('COUNT(a.id)')
             ->where('a.state = :state')

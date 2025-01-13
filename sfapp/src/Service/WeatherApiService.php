@@ -7,9 +7,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
- * WeatherApiService
- * This service handles the interaction with the weather API, including building signed URLs,
- * fetching weather data, and providing access to processed weather forecasts.
+ * Service to interact with the weather API.
  */
 class WeatherApiService
 {
@@ -59,13 +57,13 @@ class WeatherApiService
 
 
     /**
-     * Fetches weather data from the API and stores it in the service.
+     * Fetches weather data for a given location.
      *
-     * @param string $lat Latitude of the location
-     * @param string $lon Longitude of the location
-     * @param string $apiKey API key for authentication
+     * @param string $lat Latitude of the location.
+     * @param string $lon Longitude of the location.
+     * @param string $apiKey API key for authentication.
      *
-     * @throws \RuntimeException if the API request fails
+     * @throws \RuntimeException If the API request fails.
      */
     public function fetchWeatherData(string $lat, string $lon, string $apiKey): void
     {
@@ -98,11 +96,13 @@ class WeatherApiService
     }
 
     /**
-     * Retrieves the weather forecast for a specified number of days.
+     * Retrieves the weather forecast.
      *
-     * @param int $days Number of days to include in the forecast (default: 4)
+     * @param int $days Number of days for the forecast (default is 4).
      *
-     * @return array Processed forecast data for the specified number of days
+     * @return array The forecasted weather data.
+     *
+     * @throws \RuntimeException If the weather data is not loaded.
      */
     public function getForecast(int $days = 4): array
     {

@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['removeaction_0',['removeAction',['../d7/db3/classApp_1_1Entity_1_1Room.html#a2700e2a166e8d0aba5ba460c5ed8109c',1,'App::Entity::Room']]],
+  ['removenotification_1',['removenotification',['../d7/db3/classApp_1_1Entity_1_1Room.html#a7dcb23f6244ea774cfe8bbfe6c28c706',1,'App::Entity::Room::removeNotification()'],['../d9/d74/classApp_1_1Entity_1_1User.html#a6f014adffefe424936af37f6d98385f8',1,'App::Entity::User::removeNotification()']]],
+  ['removepreviousaction_2',['removePreviousAction',['../d7/db3/classApp_1_1Entity_1_1Room.html#a5ecc27c5c901989ccb5add688d70b933',1,'App::Entity::Room']]],
+  ['requestassignment_3',['requestAssignment',['../dd/db3/classApp_1_1Controller_1_1RoomController.html#a3dbcb500b276d55d9234acb9c2ee7693',1,'App::Controller::RoomController']]],
+  ['requestunassignment_4',['requestUnassignment',['../dd/db3/classApp_1_1Controller_1_1RoomController.html#a711fdbc8957d1ddf582f08f3adea3a9f',1,'App::Controller::RoomController']]],
+  ['resetthresholds_5',['resetThresholds',['../db/dca/classApp_1_1Controller_1_1HomeController.html#a05a94e92ed3660397109b42cbe8db759',1,'App::Controller::HomeController']]],
+  ['resettodefault_6',['resetToDefault',['../d7/d60/classApp_1_1Repository_1_1ThresholdRepository.html#a91bf801db669cb9bc06b7f093a414b76',1,'App::Repository::ThresholdRepository']]],
+  ['role_5fuser_7',['ROLE_USER',['../d1/dc5/namespaceApp_1_1Utils.html#a0f5ea9634d414c77d26986b3aa89e798a49fb54ecd9d058c4392c61f8ce9ab637',1,'App::Utils']]],
+  ['room_8',['Room',['../d7/db3/classApp_1_1Entity_1_1Room.html',1,'App::Entity']]],
+  ['room_2ephp_9',['Room.php',['../d3/d13/Room_8php.html',1,'']]],
+  ['roomcontroller_10',['RoomController',['../dd/db3/classApp_1_1Controller_1_1RoomController.html',1,'App::Controller']]],
+  ['roomcontroller_2ephp_11',['RoomController.php',['../d5/d97/RoomController_8php.html',1,'']]],
+  ['roomrepository_12',['RoomRepository',['../d5/da7/classApp_1_1Repository_1_1RoomRepository.html',1,'App::Repository']]],
+  ['roomrepository_2ephp_13',['RoomRepository.php',['../d0/d32/RoomRepository_8php.html',1,'']]],
+  ['roomsensorservice_14',['RoomSensorService',['../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html',1,'App::Service']]],
+  ['roomsensorservice_2ephp_15',['RoomSensorService.php',['../d0/dc4/RoomSensorService_8php.html',1,'']]],
+  ['roomstateenum_16',['RoomStateEnum',['../d1/dc5/namespaceApp_1_1Utils.html#a0f8800f171481a6059746fa9010931a5',1,'App::Utils']]],
+  ['roomstateenum_2ephp_17',['RoomStateEnum.php',['../d4/da4/RoomStateEnum_8php.html',1,'']]]
+];
