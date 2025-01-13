@@ -30,6 +30,10 @@ services:
             $sharedSecret: '%weather_api_shared_secret%'
             $baseUrl: '%weather_api_base_url%'
 
+    App\Service\RoomSensorService:
+        arguments:
+            $jsonDirectory: '%app.json_directory%'
+
     App\EventListener\AuthenticationExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }

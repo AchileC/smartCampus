@@ -6,23 +6,24 @@ use App\Entity\Room;
 use App\Entity\Action;
 use App\Repository\ActionRepository;
 use App\Repository\AcquisitionSystemRepository;
-use App\Form\FilterRoomType;
-use App\Form\AddRoomType;
 use App\Repository\RoomRepository;
+use App\Repository\ThresholdRepository;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use App\Utils\ActionInfoEnum;
 use App\Utils\ActionStateEnum;
 use App\Service\WeatherApiService;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\RoomSensorService;
+use App\Form\FilterRoomType;
+use App\Form\AddRoomType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\ThresholdRepository;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @brief Manages room-related operations.
@@ -32,16 +33,21 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 class RoomController extends AbstractController
 {
     private WeatherApiService $weatherApiService;
+    private RoomSensorService $roomSensorService;
 
     /**
      * @brief Constructs the RoomController with required services.
      *
      * @param WeatherApiService $weatherApiService Service to fetch weather data.
      */
-    public function __construct(WeatherApiService $weatherApiService)
-    {
+    public function __construct(
+        WeatherApiService $weatherApiService,
+        RoomSensorService $roomSensorService
+    ) {
         $this->weatherApiService = $weatherApiService;
+        $this->roomSensorService = $roomSensorService;
     }
+
 
     /**
      * @brief Creates a form for deleting a room.
@@ -60,6 +66,7 @@ class RoomController extends AbstractController
             ])
             ->getForm();
     }
+
 
     /**
      * @brief Displays the list of rooms with filtering options.
@@ -99,7 +106,7 @@ class RoomController extends AbstractController
                 ) {
                     // => on met à jour la salle (updateRoomState)
                     try {
-                        $roomRepository->updateRoomState($room);
+                        $this->roomSensorService->updateRoomState($room);
                     } catch (\Exception $e) {
                         // Gérer ou logger l’erreur
                         continue;
@@ -107,7 +114,7 @@ class RoomController extends AbstractController
                 } else {
                     // Sinon, on ne fait qu'un "load" local pour ne pas surcharger
                     try {
-                        $roomRepository->loadSensorData($room->getAcquisitionSystem());
+                        $this->roomSensorService->loadSensorData($room->getAcquisitionSystem());
                     } catch (\Exception $e) {
                         // Gérer ou logger l’erreur
                     }
@@ -232,7 +239,6 @@ class RoomController extends AbstractController
      *
      * @throws NotFoundException If the room is not found.
      * @throws AccessDeniedHttpException If access is denied based on sensor state.
-     * @throws \DateMalformedStringException
      */
     #[Route('/rooms/{name}', name: 'app_rooms_details')]
     public function details(
@@ -241,10 +247,9 @@ class RoomController extends AbstractController
         string $name
     ): Response
     {
-        $room = $roomRepository->findOneBy(['name' => $name]);
-
+        $room = $roomRepository->findByName($name);
         if (!$room) {
-            throw $this->createNotFoundException('The room does not exist');
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
         if (!$this->getUser() && $room->getSensorState() === SensorStateEnum::NOT_LINKED) {
@@ -252,7 +257,7 @@ class RoomController extends AbstractController
         }
 
         // Update the room's state based on JSON and sensor data
-        $roomRepository->updateRoomState($room);
+        $this->roomSensorService->updateRoomState($room);
 
         try {
             // Call the service to get weather forecasts
@@ -297,9 +302,9 @@ class RoomController extends AbstractController
         EntityManagerInterface  $entityManager
     ): Response
     {
-        $room = $roomRepository->findOneBy(['name' => $name]);
+        $room = $roomRepository->findByName($name);
         if (!$room) {
-            throw $this->createNotFoundException('Room not found');
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
         // Récupérer la (ou les) tâche(s) en cours sur la salle
@@ -352,10 +357,9 @@ class RoomController extends AbstractController
             throw $this->createAccessDeniedException('Invalid CSRF token.');
         }
 
-        $room = $roomRepository->findOneBy(['name' => $name]);
-
+        $room = $roomRepository->findByName($name);
         if (!$room) {
-            throw $this->createNotFoundException('Room not found');
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
         $acquisitionSystem = $room->getAcquisitionSystem();
@@ -394,10 +398,10 @@ class RoomController extends AbstractController
         ActionRepository            $actionRepository,
         EntityManagerInterface      $entityManager
     ): Response {
-        $room = $roomRepository->findOneBy(['name' => $name]);
 
+        $room = $roomRepository->findByName($name);
         if (!$room) {
-            throw $this->createNotFoundException('Room not found');
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
         // Vérifier s’il existe déjà une tâche en cours (ASSIGNMENT ou UNASSIGNMENT)
@@ -443,10 +447,9 @@ class RoomController extends AbstractController
         EntityManagerInterface  $entityManager
     ): Response
     {
-        $room = $roomRepository->findOneBy(['name' => $name]);
-
+        $room = $roomRepository->findByName($name);
         if (!$room) {
-            throw $this->createNotFoundException('Room not found');
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
         // Vérifier s’il existe déjà une tâche en cours
@@ -492,19 +495,19 @@ class RoomController extends AbstractController
         ActionRepository $actionRepository,
         EntityManagerInterface $entityManager
     ): Response {
-        $room = $roomRepository->findOneBy(['name' => $name]);
+
+        $room = $roomRepository->findByName($name);
         if (!$room) {
-            throw $this->createNotFoundException('Room not found');
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
-        $ongoingTasks = $actionRepository->findOngoingTaskForRoom($room);
+        $ongoingTasks = $actionRepository->findOngoingTaskForRoom($room->getId());
 
         if (empty($ongoingTasks)) {
             $this->addFlash('info', 'Aucune tâche d’installation/désinstallation en cours pour cette salle.');
             return $this->redirectToRoute('app_rooms');
         }
 
-        // Si vous préférez vraiment "supprimer" la tâche de la base :
         foreach ($ongoingTasks as $task) {
             $entityManager->remove($task);
         }
@@ -515,67 +518,54 @@ class RoomController extends AbstractController
         return $this->redirectToRoute('app_rooms');
     }
 
+    /**
+     * Displays analytics for a specific room.
+     *
+     * @param string $name The name of the room
+     * @param string $dbname The database name associated with the room's acquisition system
+     * @param RoomRepository $roomRepository The repository to fetch room data
+     * @param Request $request The HTTP request
+     * @return Response The response rendering the analytics page
+     */
+    #[Route('/rooms/{name}/analytics/{dbname}', name: 'app_rooms_analytics')]
+    public function analytics(
+        string $name,
+        string $dbname,
+        RoomRepository $roomRepository,
+        Request $request
+    ): Response {
 
+        $room = $roomRepository->findByName($name);
+        if (!$room) {
+            throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
+        }
 
+        $acquisitionSystem = $room->getAcquisitionSystem();
 
+        if (!$acquisitionSystem) {
+            throw $this->createNotFoundException('This room has no acquisition system');
+        }
 
+        if ($acquisitionSystem->getDbName() !== $dbname) {
+            throw $this->createNotFoundException('Invalid dbname for this room');
+        }
 
+        $range = $request->query->get('range', 'month'); // Default to 'month'
 
+        // Fetch data from the API
+        try {
+            $historicalData = $this->roomSensorService->fetchHistoricalDataFromApi($acquisitionSystem, $range);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Failed to fetch data: ' . $e->getMessage());
+            $historicalData = [];
+        }
 
-
-
-
-
-
-/**
- * Displays analytics for a specific room.
- *
- * @param string $name The name of the room
- * @param string $dbname The database name associated with the room's acquisition system
- * @param RoomRepository $roomRepository The repository to fetch room data
- * @param Request $request The HTTP request
- * @return Response The response rendering the analytics page
- */
-#[Route('/rooms/{name}/analytics/{dbname}', name: 'app_rooms_analytics')]
-public function analytics(
-    string $name,
-    string $dbname,
-    RoomRepository $roomRepository,
-    Request $request
-): Response {
-    // Récupérer la salle par nom
-    $room = $roomRepository->findOneBy(['name' => $name]);
-
-    if (!$room) {
-        throw $this->createNotFoundException('Room not found');
+        return $this->render('rooms/analytics.html.twig', [
+            'room' => $room,
+            'historicalData' => $historicalData,
+            'range' => $range,
+        ]);
     }
-
-    // Vérifier que le dbname correspond à l'AcquisitionSystem de la salle
-    $acquisitionSystem = $room->getAcquisitionSystem();
-    if (!$acquisitionSystem || $acquisitionSystem->getDbName() !== $dbname) {
-        throw $this->createNotFoundException('Invalid dbname for this room');
-    }
-
-    if (!$acquisitionSystem) {
-        throw $this->createNotFoundException('This room has no acquisition system');
-    }
-
-    $range = $request->query->get('range', 'month'); // Default to 'month'
-
-    // Fetch data from the API
-    try {
-        $historicalData = $roomRepository->fetchHistoricalDataFromApi($acquisitionSystem, $range);
-    } catch (\Exception $e) {
-        $this->addFlash('error', 'Failed to fetch data: ' . $e->getMessage());
-        $historicalData = [];
-    }
-
-    return $this->render('rooms/analytics.html.twig', [
-        'room' => $room,
-        'historicalData' => $historicalData,
-        'range' => $range,
-    ]);
-}
 
 
 }
