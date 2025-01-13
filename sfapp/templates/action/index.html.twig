@@ -46,7 +46,7 @@
                                 <!-- Badge État -->
                                 <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-dark{% else %}bg-success{% endif %} me-2">
                                 {{ ('_action_state.' ~ action.state.value | upper) | trans | upper }}
-                            </span>
+                                </span>
 
                                 <!-- Boutons d'Action -->
                                 <a href="{{ path('app_todolist_edit', {id: action.id}) }}" class="btn btn-outline-warning btn-sm me-2">

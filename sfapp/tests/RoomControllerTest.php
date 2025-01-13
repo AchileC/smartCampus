@@ -1,0 +1,186 @@
+<?php
+
+namespace App\Tests\Functional\Controller;
+
+use App\DataFixtures\AppFixtures;
+use App\Entity\Room;
+use App\Repository\UserRepository;
+use App\Utils\CardinalEnum;
+use App\Utils\FloorEnum;
+use App\Utils\RoomStateEnum;
+use App\Utils\SensorStateEnum;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Service\WeatherApiService;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+class RoomControllerTest extends WebTestCase
+{
+    private KernelBrowser $client;
+    private EntityManagerInterface $entityManager;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Créer le client et configurer les paramètres du serveur
+        $this->client = static::createClient();
+        $this->client->setServerParameter('HTTP_ACCEPT_LANGUAGE', 'en');
+
+        // Récupérer l'EntityManager depuis le container
+        $this->entityManager = static::getContainer()->get('doctrine')->getManager();
+
+        // Purger la base de données
+        $purger = new ORMPurger($this->entityManager);
+        $purger->purge();
+
+        // Charger les fixtures
+        $loader = new Loader();
+        $loader->addFixture(new AppFixtures(static::getContainer()->get('security.password_hasher')));
+
+        $executor = new ORMExecutor($this->entityManager, $purger);
+        $executor->execute($loader->getFixtures());
+
+        // Vérifier que les fixtures sont chargées correctement
+        $rooms = $this->entityManager->getRepository(Room::class)->findAll();
+        $this->assertNotEmpty($rooms, 'Les fixtures n\'ont pas été chargées correctement.');
+    }
+
+    protected function login(string $username): void
+    {
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByUsername($username);
+
+        if (!$testUser) {
+            throw new \InvalidArgumentException(sprintf('User with username "%s" not found.', $username));
+        }
+
+        $this->client->loginUser($testUser);
+    }
+
+    protected function createRoom(
+        string          $name,
+        RoomStateEnum   $state,
+        SensorStateEnum $sensorState
+    ): Room
+    {
+        $room = new Room();
+        $room->setName($name)
+            ->setFloor(FloorEnum::FIRST)
+            ->setState($state)
+            ->setSensorState($sensorState)
+            ->setCardinalDirection(CardinalEnum::NORTH)
+            ->setNbHeaters(2)
+            ->setNbWindows(3)
+            ->setSurface(20);
+
+        $this->entityManager->persist($room);
+        $this->entityManager->flush();
+
+        return $room;
+    }
+
+    public function testAddRoomAsManagerSuccess(): void
+    {
+        $this->login('manager');
+
+        // 2) Accéder à la page /rooms/add
+        $crawler = $this->client->request('GET', '/en/rooms/add');
+        $this->assertResponseIsSuccessful(); // 200 OK
+        $this->assertSelectorTextContains('h1', 'Add a room');
+
+        // 3) Remplir le formulaire et soumettre
+        $form = $crawler->selectButton('Add')->form([
+            'add_room[name]'               => 'A123',
+            'add_room[floor]'              => FloorEnum::GROUND->value,
+            'add_room[nbWindows]'          => 2,
+            'add_room[nbHeaters]'          => 1,
+            'add_room[surface]'            => 20.0,
+            'add_room[cardinalDirection]'  => 'north',
+        ]);
+        $this->client->submit($form);
+
+        // 4) Vérifier qu’on est bien redirigé vers la liste des salles avec un flash
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('.alert.alert-success', 'Room added successfully.');
+
+        // 5) Vérifier que la salle est en base
+        // On peut récupérer l’EntityManager et vérifier l’existence en BDD
+        $roomRepository = static::getContainer()->get('doctrine')->getRepository(Room::class);
+        $room = $roomRepository->findOneBy(['name' => 'A123']);
+        $this->assertNotNull($room);
+    }
+
+
+
+    public function testAddRoomAsNonManagerDenied(): void
+    {
+        // On indique à PHPUnit qu'on s'attend à une exception HttpException :
+        $this->expectException(HttpException::class);
+
+        // ... et si vous voulez vérifier le message précis :
+        $this->expectExceptionMessage('Full authentication is required to access this resource.');
+
+        $this->client->request('GET', '/en/rooms/add');
+
+    }
+
+    public function testDeleteRoomNonManager(): void
+    {
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\HttpException::class);
+
+        $this->expectExceptionMessage('Full authentication is required to access this resource.');
+
+        $room = $this->createRoom('TEST_DELETE_DENIED', RoomStateEnum::STABLE, SensorStateEnum::LINKED);
+
+        $this->client->request('POST', '/en/rooms/'.$room->getName().'/delete', [
+            '_token' => 'any'
+        ]);
+
+    }
+
+    public function testDetailsPageShowsWeatherAdvice(): void
+    {
+        // 1) Mock du service
+        $mockWeatherService = $this->createMock(WeatherApiService::class);
+        // On fait un "stub" pour fetchWeatherData() => ne rien faire
+        $mockWeatherService->method('fetchWeatherData')
+            ->will($this->returnCallback(function () {
+            }));
+
+        // On renvoie un forecast factice
+        $mockWeatherService->method('getForecast')->willReturn([
+            [
+                'temperature_min' => 30,
+                'temperature_max' => 34,  // => “very_hot_advice”
+                'precipitation'   => 60,  // => “moderate_rainfall_advice”
+                'pictocode'       => 8,   // => de la pluie
+            ]
+        ]);
+        static::getContainer()->set(WeatherApiService::class, $mockWeatherService);
+
+        // 2) Créer une salle
+        $uniqueName = 'WEATHER_TEST_' . uniqid();
+        $room = $this->createRoom($uniqueName,
+            RoomStateEnum::CRITICAL,
+            SensorStateEnum::LINKED
+        );
+
+        // 3) Aller sur la page detail
+        $this->client->request('GET', '/en/rooms/'.$room->getName());
+        $this->assertResponseIsSuccessful();
+
+        // 4) Vérifier que la page contient des conseils
+        $html = $this->client->getResponse()->getContent();
+        $this->assertStringContainsString("Moderate rainfall expected. Keep windows closed and use doors to ventilate the classroom as needed while avoiding excess humidity.", $html);
+        $this->assertStringContainsString("Very hot today. Consider lowering the radiator settings and ventilate the classroom by opening windows or doors to maintain a comfortable environment.", $html);
+        $this->assertStringContainsString("Wet conditions anticipated. Ensure proper ventilation to avoid humidity buildup by using doors if opening windows is not ideal.", $html);
+    }
+
+}

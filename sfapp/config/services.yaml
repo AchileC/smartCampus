@@ -59,9 +59,4 @@ services:
         tags:
             - { name: 'kernel.event_subscriber' }
 
-    App\Repository\RoomRepository:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-            $jsonDirectory: '%app.json_directory%'
-
     # ... other services

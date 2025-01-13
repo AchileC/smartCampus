@@ -293,6 +293,7 @@ class ActionController extends AbstractController
         $actionTypes = [
             ActionInfoEnum::ASSIGNMENT->value => 'info',
             ActionInfoEnum::UNASSIGNMENT->value => 'warning',
+            ActionInfoEnum::MAINTENANCE->value => 'danger',
         ];
 
         return $this->render('action/history.html.twig', [
