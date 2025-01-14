@@ -356,3 +356,7 @@ critical_max_humidity_desc: "70% - Risque élevé de formation de moisissures et
 save_changes: "Enregistrer les modifications"
 reset_to_default: "Réinitialiser par défaut"
 reset_confirmation: "Êtes-vous sûr de vouloir réinitialiser tous les seuils à leurs valeurs par défaut ?"
+
+# Last Updated At
+last_updated_at: "Dernière mise à jour :"
+not_available: "Données non disponible"

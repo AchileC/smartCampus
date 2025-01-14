@@ -1,0 +1,29 @@
+[
+    {
+        "id": 13534,
+        "nom": "temp",
+        "valeur": "18",
+        "dateCapture": "2025-01-14 09:57:59",
+        "localisation": "D001",
+        "description": "Donn\u00e9e de temp\u00e9rature",
+        "nomsa": "ESP-030"
+    },
+    {
+        "id": 13535,
+        "nom": "hum",
+        "valeur": "35",
+        "dateCapture": "2025-01-14 09:57:59",
+        "localisation": "D001",
+        "description": "Donn\u00e9e d'humidit\u00e9",
+        "nomsa": "ESP-030"
+    },
+    {
+        "id": 13536,
+        "nom": "co2",
+        "valeur": "400",
+        "dateCapture": "2025-01-14 09:57:59",
+        "localisation": "D001",
+        "description": "Donn\u00e9e de CO2",
+        "nomsa": "ESP-030"
+    }
+]

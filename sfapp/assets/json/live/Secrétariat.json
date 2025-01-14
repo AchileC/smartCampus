@@ -1,0 +1,29 @@
+[
+    {
+        "id": 4090,
+        "nom": "temp",
+        "valeur": "20.40",
+        "dateCapture": "2025-01-14 09:57:28",
+        "localisation": "Secr\u00e9tariat",
+        "description": "envoi des donn\u00e9es capteurs Temp",
+        "nomsa": "ESP-026"
+    },
+    {
+        "id": 4091,
+        "nom": "hum",
+        "valeur": "33.00",
+        "dateCapture": "2025-01-14 09:57:29",
+        "localisation": "Secr\u00e9tariat",
+        "description": "envoi des donn\u00e9es capteurs Hum",
+        "nomsa": "ESP-026"
+    },
+    {
+        "id": 4089,
+        "nom": "co2",
+        "valeur": "615",
+        "dateCapture": "2025-01-14 09:57:20",
+        "localisation": "Secr\u00e9tariat",
+        "description": "envoi des donn\u00e9es capteurs CO2",
+        "nomsa": "ESP-026"
+    }
+]

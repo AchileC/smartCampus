@@ -1,0 +1,29 @@
+[
+    {
+        "id": 11091,
+        "nom": "temp",
+        "valeur": "19.80",
+        "dateCapture": "2025-01-14 09:56:32",
+        "localisation": "D206",
+        "description": "Temp\u00e9rature de la salle",
+        "nomsa": "ESP-008"
+    },
+    {
+        "id": 11092,
+        "nom": "hum",
+        "valeur": "50.50",
+        "dateCapture": "2025-01-14 09:56:32",
+        "localisation": "D206",
+        "description": "Humidit\u00e9 de la salle",
+        "nomsa": "ESP-008"
+    },
+    {
+        "id": 11093,
+        "nom": "co2",
+        "valeur": "816",
+        "dateCapture": "2025-01-14 09:56:32",
+        "localisation": "D206",
+        "description": "CO2 de la salle",
+        "nomsa": "ESP-008"
+    }
+]

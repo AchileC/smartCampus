@@ -344,3 +344,7 @@ critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
 save_changes: "Save Changes"
 reset_to_default: "Reset to Default"
 reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"
+
+# Last Updated At
+last_updated_at: "Last updated at :"
+not_available: "Data not available"

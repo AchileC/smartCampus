@@ -12,4 +12,17 @@
     .position-relative {
         overflow: visible;
     }
+
+    .constants-block {
+        position: relative;
+    }
+    .constants-block .last-updated {
+        position: absolute;
+        top: 0;
+        right: 0;
+        text-align: right; /* Facultatif, si vous souhaitez aligner le texte à droite */
+    }
+    .constants-block .last-updated .not-available {
+        color: red;
+    }
 }

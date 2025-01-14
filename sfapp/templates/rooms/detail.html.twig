@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid px-0">
+    <div class="container-fuid">
         <div class="row">
             <div class="col-12 col-md-10 offset-md-1
     {% if room.state.value == 'none' %}bg-secondary
@@ -23,7 +23,7 @@
         </div>
 
         <!-- Room Information Card -->
-        <div class="card w-100 w-md-75 mx-auto mt-4 shadow-lg">
+        <div class="card w-75 mx-auto mt-4 shadow-lg">
         <div class="card-body">
                 <h5 class="card-title">{{ 'room_constants'|trans }}</h5>
                 <p class="card-text"><strong>{{ 'ambient_room_state'|trans}} </strong>
@@ -32,6 +32,43 @@
                         {{ ('_room_state.' ~ room.state.value | upper) | trans | upper }}
                     </span>
                 </p>
+
+                <div class="last-updated">
+                    <p>
+                        {{ 'last_updated_at' | trans }}
+                        {% if room.lastUpdatedAt %}
+                            {{ room.lastUpdatedAt|date('d/m/Y H:i:s') }}
+                            {% set now = "now"|date("U") %}
+                            {% set last = room.lastUpdatedAt|date("U") %}
+                            {% set diff = now - last %}
+                            {% set days = (diff / 86400)|round(0, 'floor') %}
+                            {% set hours = ((diff % 86400) / 3600)|round(0, 'floor') %}
+                            {% set minutes = ((diff % 3600) / 60)|round(0, 'floor') %}
+                            {% set seconds = (diff % 60)|round(0, 'floor') %}
+
+                            <small>
+                                ({% trans %}il y a{% endtrans %}
+                                {% if days > 0 %}
+                                    {{ days }} jour{{ days > 1 ? 's' : '' }}
+                                {% elseif hours > 0 %}
+                                    {{ hours }} heure{{ hours > 1 ? 's' : '' }}
+                                    {% if minutes > 0 %}
+                                        {{ minutes }} minute{{ minutes > 1 ? 's' : '' }}
+                                    {% endif %}
+                                {% elseif minutes > 0 %}
+                                    {{ minutes }} minute{{ minutes > 1 ? 's' : '' }}
+                                {% else %}
+                                    {{ seconds }} seconde{{ seconds > 1 ? 's' : '' }}
+                                {% endif %}
+                                )
+                            </small>
+                        {% else %}
+                            <span class="not-available" style="color: red;">
+                    {{ 'not_available' | trans }}
+                </span>
+                        {% endif %}
+                    </p>
+                </div>
 
                 {% if room.acquisitionSystem %}
                     <ul class="list-group">
@@ -117,9 +154,16 @@
                                             {% endif %}
                                         </div>
                                         {% if temp %}
-                                            <div class="position-absolute" style="left: calc({{ currentTempPercentage }}% - 10px); top: 15px;">
-                                                <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid {% if tempCritical %}var(--bs-danger){% elseif tempWarning %}var(--bs-warning){% else %}var(--bs-success){% endif %};"></div>
-                                                <span class="badge rounded-pill {% if tempCritical %}bg-danger{% elseif tempWarning %}bg-warning{% else %}bg-success{% endif %}" style="transform: translateX(-50%);">{{ temp }}°C</span>
+                                            <div class="position-absolute" style="left: calc({{ currentTempPercentage }}% - 10px); top: 15px; z-index: 9999;">
+                                                <div style="width: 0; height: 0;
+                                                        border-left: 8px solid transparent;
+                                                        border-right: 8px solid transparent;
+                                                        border-bottom: 12px solid {% if tempCritical %}var(--bs-danger){% elseif tempWarning %}var(--bs-warning){% else %}var(--bs-success){% endif %};">
+                                                </div>
+                                                <span class="badge rounded-pill {% if tempCritical %}bg-danger{% elseif tempWarning %}bg-warning{% else %}bg-success{% endif %}"
+                                                      style="transform: translateX(-50%);">
+        {{ temp }}°C
+    </span>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -181,9 +225,15 @@
                                             <div class="progress-bar bg-danger" role="progressbar" style="width: {{ criticalMaxWidth }}%" data-bs-toggle="tooltip" title="Critical (> {{ thresholds.humCriticalMax }}%)"></div>
                                         </div>
                                         {% if hum %}
-                                            <div class="position-absolute" style="left: calc({{ currentHumPercentage }}% - 10px); top: 15px;">
-                                                <div style="width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid {% if humCritical %}var(--bs-danger){% elseif humWarning %}var(--bs-warning){% else %}var(--bs-success){% endif %};"></div>
-                                                <span class="badge rounded-pill {% if humCritical %}bg-danger{% elseif humWarning %}bg-warning{% else %}bg-success{% endif %}" style="transform: translateX(-50%);">{{ hum }}%</span>
+                                            <div class="position-absolute" style="left: calc({{ currentHumPercentage }}% - 10px); top: 15px; z-index: 9999;">
+                                                <div style="width: 0; height: 0;
+                                                        border-left: 8px solid transparent;
+                                                        border-right: 8px solid transparent;
+                                                        border-bottom: 12px solid {% if humCritical %}var(--bs-danger){% elseif humWarning %}var(--bs-warning){% else %}var(--bs-success){% endif %};">
+                                                </div>
+                                                <span class="badge rounded-pill {% if humCritical %}bg-danger{% elseif humWarning %}bg-warning{% else %}bg-success{% endif %}" style="transform: translateX(-50%);">
+            {{ hum }}%
+        </span>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -285,7 +335,7 @@
                 17: '🌨️'
             } %}
 
-            <div class="card w-100 w-md-75 mx-auto mt-4 shadow-lg">
+            <div class="card w-75 mx-auto mt-4 shadow-lg">
                 <div class="card-body">
                     <h5 class="card-title">{{ 'today_weather_forecast'|trans }}</h5>
                     <div class="row">
@@ -366,7 +416,7 @@
                 </div>
             </div>
         {% else %}
-            <div class="card w-100 w-md-75 mx-auto mt-4 shadow-lg">
+            <div class="card w-75 mx-auto mt-4 shadow-lg">
                 <div class="card-body">
                     <p class="text-muted">{{ 'weather_unavailable'|trans }}</p>
                 </div>
@@ -375,7 +425,7 @@
 
 
         <!-- Description Card -->
-        <div class="card w-100 w-md-75 mx-auto mt-4 shadow-lg">
+        <div class="card w-75 mx-auto mt-4">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                 <button class="btn btn-link text-white text-decoration-none w-100 d-flex justify-content-between align-items-center"
                         data-bs-toggle="collapse" data-bs-target="#generalInfo" aria-expanded="false">

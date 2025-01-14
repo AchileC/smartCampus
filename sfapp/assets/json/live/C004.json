@@ -1,0 +1,29 @@
+[
+    {
+        "id": 50213,
+        "nom": "temp",
+        "valeur": "22.3",
+        "dateCapture": "2025-01-14 09:00:00",
+        "localisation": "C004",
+        "description": "Capture de temp",
+        "nomsa": "ESP-021"
+    },
+    {
+        "id": 50214,
+        "nom": "hum",
+        "valeur": "44.0",
+        "dateCapture": "2025-01-14 09:00:00",
+        "localisation": "C004",
+        "description": "Capture de hum",
+        "nomsa": "ESP-021"
+    },
+    {
+        "id": 50215,
+        "nom": "co2",
+        "valeur": "434",
+        "dateCapture": "2025-01-14 09:00:00",
+        "localisation": "C004",
+        "description": "Capture de co2",
+        "nomsa": "ESP-021"
+    }
+]

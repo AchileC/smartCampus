@@ -1,0 +1,29 @@
+[
+    {
+        "id": 35885,
+        "nom": "temp",
+        "valeur": "18.80",
+        "dateCapture": "2025-01-14 09:52:40",
+        "localisation": "D203",
+        "description": "Valeur de la temp\u00e9rature",
+        "nomsa": "ESP-012"
+    },
+    {
+        "id": 35886,
+        "nom": "hum",
+        "valeur": "52.00",
+        "dateCapture": "2025-01-14 09:52:40",
+        "localisation": "D203",
+        "description": "Pourcentage d'humidit\u00e9",
+        "nomsa": "ESP-012"
+    },
+    {
+        "id": 35887,
+        "nom": "co2",
+        "valeur": "1033.00",
+        "dateCapture": "2025-01-14 09:52:40",
+        "localisation": "D203",
+        "description": "Taux de CO2 en ppm",
+        "nomsa": "ESP-012"
+    }
+]

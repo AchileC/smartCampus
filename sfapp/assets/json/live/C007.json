@@ -1,0 +1,29 @@
+[
+    {
+        "id": 7083,
+        "nom": "temp",
+        "valeur": "23",
+        "dateCapture": "2025-01-10 17:35:11",
+        "localisation": "C007",
+        "description": "Envoie de donn\u00e9es depuis le SA",
+        "nomsa": "ESP-022"
+    },
+    {
+        "id": 7085,
+        "nom": "hum",
+        "valeur": "57",
+        "dateCapture": "2025-01-10 17:35:11",
+        "localisation": "C007",
+        "description": "Envoie de donn\u00e9es depuis le SA",
+        "nomsa": "ESP-022"
+    },
+    {
+        "id": 7084,
+        "nom": "co2",
+        "valeur": "400",
+        "dateCapture": "2025-01-10 17:35:11",
+        "localisation": "C007",
+        "description": "Envoie de donn\u00e9es depuis le SA",
+        "nomsa": "ESP-022"
+    }
+]

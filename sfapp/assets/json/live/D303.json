@@ -1,0 +1,29 @@
+[
+    {
+        "id": 21645,
+        "nom": "temp",
+        "valeur": "24",
+        "dateCapture": "2025-01-14 09:59:01",
+        "localisation": "D303",
+        "description": "Test d'envois apr\u00e8s refactor",
+        "nomsa": "ESP-005"
+    },
+    {
+        "id": 21646,
+        "nom": "hum",
+        "valeur": "39.2",
+        "dateCapture": "2025-01-14 09:59:01",
+        "localisation": "D303",
+        "description": "Test d'envois apr\u00e8s refactor",
+        "nomsa": "ESP-005"
+    },
+    {
+        "id": 21644,
+        "nom": "co2",
+        "valeur": "400",
+        "dateCapture": "2025-01-14 09:59:01",
+        "localisation": "D303",
+        "description": "Test d'envois apr\u00e8s refactor",
+        "nomsa": "ESP-005"
+    }
+]

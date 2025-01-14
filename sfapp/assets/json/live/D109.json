@@ -1,0 +1,29 @@
+[
+    {
+        "id": 7316,
+        "nom": "temp",
+        "valeur": "21.1",
+        "dateCapture": "2025-01-14 09:53:43",
+        "localisation": "D109",
+        "description": " ",
+        "nomsa": "ESP-024"
+    },
+    {
+        "id": 7317,
+        "nom": "hum",
+        "valeur": "48.7",
+        "dateCapture": "2025-01-14 09:53:43",
+        "localisation": "D109",
+        "description": " ",
+        "nomsa": "ESP-024"
+    },
+    {
+        "id": 7318,
+        "nom": "co2",
+        "valeur": "400",
+        "dateCapture": "2025-01-14 09:53:43",
+        "localisation": "D109",
+        "description": " ",
+        "nomsa": "ESP-024"
+    }
+]

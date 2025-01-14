@@ -1,0 +1,29 @@
+[
+    {
+        "id": 28390,
+        "nom": "temp",
+        "valeur": "22.5",
+        "dateCapture": "2025-01-14 09:58:03",
+        "localisation": "D204",
+        "description": "temp sensor reading",
+        "nomsa": "ESP-014"
+    },
+    {
+        "id": 28391,
+        "nom": "hum",
+        "valeur": "40.0",
+        "dateCapture": "2025-01-14 09:58:05",
+        "localisation": "D204",
+        "description": "hum sensor reading",
+        "nomsa": "ESP-014"
+    },
+    {
+        "id": 28392,
+        "nom": "co2",
+        "valeur": "471",
+        "dateCapture": "2025-01-14 09:58:05",
+        "localisation": "D204",
+        "description": "co2 sensor reading",
+        "nomsa": "ESP-014"
+    }
+]
