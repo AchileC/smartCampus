@@ -11,7 +11,6 @@ use App\Utils\ActionStateEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -19,16 +18,37 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+/**
+ * Service responsible for handling sensor data and updating Room states.
+ * 
+ * This version no longer writes the "live" data to a JSON file; instead,
+ * it directly persists the fetched data into the database.
+ */
 class RoomSensorService
 {
+    /** @var ThresholdRepository */
     private ThresholdRepository $thresholdRepository;
+
+    /** @var HttpClientInterface */
     private HttpClientInterface $httpClient;
+
+    /** @var EntityManagerInterface */
     private EntityManagerInterface $entityManager;
 
-    /** @var string Path to the JSON directory in config/services.yaml (assets/json/...) */
+    /**
+     * @var string Path to the JSON directory (used only for historical data).
+     *             The "live" usage has been removed.
+     */
     private string $jsonDirectory;
 
-
+    /**
+     * Constructor.
+     *
+     * @param ThresholdRepository     $thresholdRepository
+     * @param HttpClientInterface     $httpClient
+     * @param EntityManagerInterface  $entityManager
+     * @param string                  $jsonDirectory   Path to the assets/json directory (only used for history now)
+     */
     public function __construct(
         ThresholdRepository $thresholdRepository,
         HttpClientInterface $httpClient,
@@ -41,96 +61,39 @@ class RoomSensorService
         $this->jsonDirectory       = $jsonDirectory;
     }
 
+    /**
+     * Returns the EntityManager.
+     *
+     * @return EntityManagerInterface
+     */
     private function getEntityManager(): EntityManagerInterface
     {
         return $this->entityManager;
     }
 
-
-
     /* ======================================================
-     *                 PARTIE GESTION DES CAPTEURS
+     *                SENSOR MANAGEMENT (LIVE)
        ====================================================== */
 
     /**
-     * @brief Fetches "live" sensor data from the external API for the given AcquisitionSystem,
-     *        then writes data to both the live JSON file and the history JSON file.
+     * Fetches sensor data from the external API and directly updates
+     * the given AcquisitionSystem entity with the latest values.
      *
      * @param AcquisitionSystem $acquisitionSystem
-     *
-     * @throws \RuntimeException if unable to retrieve data or no data
      */
-    public function fetchAndStoreLiveDataForAS(AcquisitionSystem $acquisitionSystem): void
+    public function updateAcquisitionSystemFromApi(AcquisitionSystem $acquisitionSystem): void
     {
-        // 1. Récupération depuis l’API
+        // 1. Fetch "live" data from the external API
         $sensorData = $this->fetchSensorDataFromApi($acquisitionSystem);
 
-        // 3. Construction des paths (live et history)
-        $localisation = $sensorData[0]['localisation'] ?? 'unknown';
-        $liveFilePath = $this->jsonDirectory . '/live/' . $localisation . '.json';
-
-        // 4. Écrire le "live"
-        $this->writeLiveDataToFile($liveFilePath, $sensorData);
-    }
-
-    /**
-     * @brief Loads sensor data from the local "live" JSON file for the given AcquisitionSystem.
-     *
-     * @param AcquisitionSystem $acquisitionSystem
-     * @return array Decoded sensor data (empty array if file not found)
-     *
-     * @throws \RuntimeException If the JSON file is invalid
-     */
-    public function loadSensorData(AcquisitionSystem $acquisitionSystem): array
-    {
-        $room = $acquisitionSystem->getRoom();
-        $filePath = $this->jsonDirectory . '/live/' . $room->getName() . '.json';
-
-        if (!file_exists($filePath)) {
-            return []; // Fichier non trouvé => on renvoie un tableau vide
-        }
-
-        $json = file_get_contents($filePath);
-        $data = json_decode($json, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \RuntimeException('Invalid JSON format in ' . $filePath);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @brief Updates the AcquisitionSystem’s temperature, humidity, and CO2 from the JSON file.
-     *
-     * @param AcquisitionSystem $acquisitionSystem
-     */
-    public function updateAcquisitionSystemFromJson(AcquisitionSystem $acquisitionSystem): void
-    {
-        // 1. Récupération live depuis l’API et stockage local
-        $this->fetchAndStoreLiveDataForAS($acquisitionSystem);
-
-        // 2. Lecture du JSON "live"
-        try {
-            $data = $this->loadSensorData($acquisitionSystem);
-        } catch (
-        ClientExceptionInterface|
-        DecodingExceptionInterface|
-        RedirectionExceptionInterface|
-        TransportExceptionInterface|
-        ServerExceptionInterface $e
-        ) {
-            $data = [];
-        }
-
-        if (empty($data)) {
+        if (empty($sensorData)) {
             return;
         }
 
-        // 3. Mettre à jour l’AcquisitionSystem avec les données
+        // 2. Update the AcquisitionSystem with the fetched data
         $lastCapturedAt = null;
 
-        foreach ($data as $entry) {
+        foreach ($sensorData as $entry) {
             if (isset($entry['nom'], $entry['valeur'])) {
                 switch ($entry['nom']) {
                     case 'temp':
@@ -145,7 +108,7 @@ class RoomSensorService
                 }
             }
 
-            // Gestion de la date de capture la plus récente
+            // Handle the most recent capture date
             if (isset($entry['dateCapture'])) {
                 try {
                     $captureDate = new \DateTime($entry['dateCapture']);
@@ -153,7 +116,7 @@ class RoomSensorService
                         $lastCapturedAt = $captureDate;
                     }
                 } catch (\Exception $e) {
-                    // Possibilité de logguer les erreurs de conversion
+                    // Log or handle conversion errors if necessary
                 }
             }
         }
@@ -162,24 +125,26 @@ class RoomSensorService
             $acquisitionSystem->setLastCapturedAt($lastCapturedAt);
         }
 
-        // 4. Sauvegarder en BDD
+        // 3. Persist changes to the database
         $em = $this->getEntityManager();
         $em->persist($acquisitionSystem);
         $em->flush();
     }
 
     /**
-     * @brief Fetches sensor data from the external API for "temp", "hum", and "co2".
-     *
+     * Fetches sensor data ("temp", "hum", and "co2") from the external API.
+     * 
      * @param AcquisitionSystem $acquisitionSystem
      * @return array Combined sensor data from the API
+     *
+     * @throws \RuntimeException if the external API returns a non-200 status code
      */
     private function fetchSensorDataFromApi(AcquisitionSystem $acquisitionSystem): array
     {
         $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
         $sensorTypes = ['temp', 'hum', 'co2'];
         $sensorName = $acquisitionSystem->getName();
-        $dbName = $acquisitionSystem->getDbName(); // Récupérer dbName dynamique
+        $dbName = $acquisitionSystem->getDbName(); // Retrieve dynamic dbName
         $combinedData = [];
 
         foreach ($sensorTypes as $type) {
@@ -196,32 +161,25 @@ class RoomSensorService
             ]);
 
             if (200 !== $response->getStatusCode()) {
-                throw new \RuntimeException("Impossible de récupérer les données du capteur $sensorName ($type).");
+                throw new \RuntimeException(
+                    "Unable to fetch sensor data for sensor $sensorName ($type)."
+                );
             }
+
+            // Merge new data into a single array
             $combinedData = array_merge($combinedData, $response->toArray());
         }
 
         return $combinedData;
     }
 
-    /**
-     * @brief Writes the "live" sensor data to a specified JSON file (overwrite).
-     *
-     * @param string $filePath Path to the live JSON file
-     * @param array  $data     Data to write
-     */
-    private function writeLiveDataToFile(string $filePath, array $data): void
-    {
-        file_put_contents($filePath, json_encode($data, JSON_PRETTY_PRINT));
-    }
-
     /* ======================================================
-     *         PARTIE MISE À JOUR DE L'ÉTAT DES ROOMS
+     *           ROOM STATE UPDATE & MAINTENANCE
        ====================================================== */
 
     /**
-     * @brief Updates the state of the given room based on sensor data and thresholds.
-     *        Also handles the creation of maintenance tasks if sensor data is not working.
+     * Updates the state of the given room based on sensor data and thresholds.
+     * Also handles the creation of a maintenance task if sensor data is not working.
      *
      * Heating Period: November (11) to April (4)
      * Non-Heating Period: May (5) to October (10)
@@ -232,32 +190,31 @@ class RoomSensorService
     {
         $acquisitionSystem = $room->getAcquisitionSystem();
         if (!$acquisitionSystem) {
-            // Pas d’AcquisitionSystem => On peut décider de faire autre chose
+            // No AcquisitionSystem => Do nothing or handle differently if needed
             return;
         }
 
-        // Met à jour l’AcquisitionSystem depuis le JSON
-        $this->updateAcquisitionSystemFromJson($acquisitionSystem);
+        // Update the AcquisitionSystem directly from the API (no JSON file)
+        $this->updateAcquisitionSystemFromApi($acquisitionSystem);
 
-        // Par défaut, on considère qu’on n’a pas de data
+        // Default state is NO_DATA until proven otherwise
         $state = RoomStateEnum::NO_DATA;
 
-        // Récupérer les données capteur
+        // Retrieve sensor values
         $temperature = $acquisitionSystem->getTemperature();
         $humidity    = $acquisitionSystem->getHumidity();
         $co2         = $acquisitionSystem->getCo2();
 
-        // Vérifier si on est en période de chauffage
+        // Determine if we are in the heating period (month >= 11 or <= 4)
         $currentMonth = (int)(new \DateTime())->format('m');
-        // Si le mois est >= 11 OU <= 4 => période de chauffage
         $isHeatingPeriod = ($currentMonth >= 11 || $currentMonth <= 4);
 
         $thresholds = $this->thresholdRepository->getDefaultThresholds();
 
-        // 1. Déterminer l’état des capteurs
-        $sensorState = SensorStateEnum::LINKED; // Valeur par défaut
+        // 1. Determine sensor state
+        $sensorState = SensorStateEnum::LINKED; // default
         if (
-            $temperature === null && $humidity === null && $co2 === null
+            ($temperature === null && $humidity === null && $co2 === null)
             || $thresholds->isTemperatureAberrant($temperature)
             || $thresholds->isHumidityAberrant($humidity)
             || $thresholds->isCo2Aberrant($co2)
@@ -265,9 +222,10 @@ class RoomSensorService
             $sensorState = SensorStateEnum::NOT_WORKING;
         }
 
-        // 2. Évaluer la température
+        // 2. Evaluate temperature
         if ($temperature !== null && !$thresholds->isTemperatureAberrant($temperature)) {
             if ($isHeatingPeriod) {
+                // Check critical vs warning for heating period
                 if (
                     $temperature < $thresholds->getHeatingTempCriticalMin() ||
                     $temperature > $thresholds->getHeatingTempCriticalMax()
@@ -277,7 +235,6 @@ class RoomSensorService
                     $temperature < $thresholds->getHeatingTempWarningMin() ||
                     $temperature > $thresholds->getHeatingTempWarningMax()
                 ) {
-                    // Ne passer en AT_RISK que si pas déjà CRITICAL
                     if ($state !== RoomStateEnum::CRITICAL) {
                         $state = RoomStateEnum::AT_RISK;
                     }
@@ -300,7 +257,7 @@ class RoomSensorService
             }
         }
 
-        // 3. Évaluer le CO2
+        // 3. Evaluate CO2
         if ($co2 !== null && !$thresholds->isCo2Aberrant($co2)) {
             if ($co2 < $thresholds->getCo2CriticalMin() || $co2 > $thresholds->getCo2ErrorMax()) {
                 $state = RoomStateEnum::CRITICAL;
@@ -311,13 +268,13 @@ class RoomSensorService
             }
         }
 
-        // 4. Évaluer l’humidité
+        // 4. Evaluate humidity
         if ($humidity !== null && !$thresholds->isHumidityAberrant($humidity)) {
             if ($humidity < $thresholds->getHumCriticalMin()) {
                 $state = RoomStateEnum::CRITICAL;
             } elseif (
-                $humidity < $thresholds->getHumWarningMin() ||
-                ($humidity > $thresholds->getHumWarningMax() && $humidity <= $thresholds->getHumCriticalMax())
+                $humidity < $thresholds->getHumWarningMin()
+                || ($humidity > $thresholds->getHumWarningMax() && $humidity <= $thresholds->getHumCriticalMax())
             ) {
                 if ($state !== RoomStateEnum::CRITICAL) {
                     $state = RoomStateEnum::AT_RISK;
@@ -327,6 +284,8 @@ class RoomSensorService
             }
         }
 
+        // If we actually have sensor data (temp/hum/co2) but haven't triggered any risk,
+        // set the state to STABLE
         if (
             $state === RoomStateEnum::NO_DATA &&
             ($temperature !== null || $humidity !== null || $co2 !== null)
@@ -334,12 +293,12 @@ class RoomSensorService
             $state = RoomStateEnum::STABLE;
         }
 
-        // 5. Créer une tâche de maintenance si capteur KO et qu’on n’est pas dans NO_DATA
+        // 5. If sensor is NOT_WORKING but we do have data, create a maintenance task
         if ($sensorState === SensorStateEnum::NOT_WORKING && $state !== RoomStateEnum::NO_DATA) {
             $this->createTaskForTechnician($room);
         }
 
-        // 6. Mise à jour finale du Room et de l’AcquisitionSystem
+        // 6. Final update of the Room and AcquisitionSystem
         $utcDateTime = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
         $room->setLastUpdatedAt($utcDateTime);
         $room->setSensorState($sensorState);
@@ -352,7 +311,8 @@ class RoomSensorService
     }
 
     /**
-     * @brief Creates a maintenance task for a technician if none exists for the given room.
+     * Creates a maintenance task for a technician if none already exists
+     * (i.e., if there's no existing TO_DO maintenance task).
      *
      * @param Room $room
      */
@@ -360,7 +320,6 @@ class RoomSensorService
     {
         $em = $this->getEntityManager();
 
-        // On vérifie si une Action de maintenance est déjà en TO_DO
         $existingTask = $em->getRepository(Action::class)->findOneBy([
             'room'  => $room,
             'info'  => ActionInfoEnum::MAINTENANCE,
@@ -368,10 +327,11 @@ class RoomSensorService
         ]);
 
         if ($existingTask) {
-            return; // Une tâche existe déjà
+            // A maintenance task is already present
+            return;
         }
 
-        // Sinon, on la crée
+        // Otherwise, create a new one
         $action = new Action();
         $action->setRoom($room);
         $action->setInfo(ActionInfoEnum::MAINTENANCE);
@@ -383,18 +343,18 @@ class RoomSensorService
     }
 
     /* ======================================================
-     *      PARTIE HISTORIQUE
+     *                    HISTORICAL DATA
        ====================================================== */
 
     /**
-     * @brief Fetch historical data from the external API for a specific range (week, month).
-     *        Then store it in a local JSON file.
+     * Fetches historical data (week or month) from the external API
+     * and stores it in a local JSON file (in the /history directory).
      *
      * @param AcquisitionSystem $acquisitionSystem
      * @param string            $range
      * @return array            The array of data fetched
      *
-     * @throws \RuntimeException if any API error
+     * @throws \RuntimeException if any API error occurs
      */
     public function fetchHistoricalDataFromApi(AcquisitionSystem $acquisitionSystem, string $range): array
     {
@@ -403,7 +363,7 @@ class RoomSensorService
         $now = new \DateTime();
         $startDate = clone $now;
 
-        // Déterminer la plage de dates
+        // Determine date range (7 days for 'week', 30 days for 'month' or default)
         switch ($range) {
             case 'week':
                 $startDate->modify('-7 days');
@@ -417,7 +377,8 @@ class RoomSensorService
         }
 
         $data = [];
-        $dbName = $acquisitionSystem->getDbName(); // Récupérer dbName dynamique
+        $dbName = $acquisitionSystem->getDbName();
+
         foreach ($sensorTypes as $type) {
             try {
                 $response = $this->httpClient->request('GET', $url, [
@@ -444,10 +405,10 @@ class RoomSensorService
             }
         }
 
+        // We keep the history functionality as-is
         $historyFile = $this->jsonDirectory . '/history/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
         file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));
 
         return $data;
     }
-
 }
