@@ -4,11 +4,15 @@ namespace App\Tests\Functional\Controller;
 
 use App\DataFixtures\AppFixtures;
 use App\Entity\Room;
+use App\Entity\Action;
 use App\Repository\UserRepository;
+use App\Repository\ActionRepository;
 use App\Utils\CardinalEnum;
 use App\Utils\FloorEnum;
 use App\Utils\RoomStateEnum;
 use App\Utils\SensorStateEnum;
+use App\Utils\ActionStateEnum;
+use App\Utils\ActionInfoEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
@@ -181,6 +185,117 @@ class RoomControllerTest extends WebTestCase
         $this->assertStringContainsString("Moderate rainfall expected. Keep windows closed and use doors to ventilate the classroom as needed while avoiding excess humidity.", $html);
         $this->assertStringContainsString("Very hot today. Consider lowering the radiator settings and ventilate the classroom by opening windows or doors to maintain a comfortable environment.", $html);
         $this->assertStringContainsString("Wet conditions anticipated. Ensure proper ventilation to avoid humidity buildup by using doors if opening windows is not ideal.", $html);
+    }
+
+
+    public function testRequestAssignmentCreatesAction(): void
+    {
+        // 1. Se connecter en tant que manager
+        $this->login('manager');
+
+        // 2. Créer une salle en état NOT_LINKED et NO_DATA
+        $roomName = 'TEST_ASSIGNMENT_ROOM';
+        $room = $this->createRoom($roomName, RoomStateEnum::NO_DATA, SensorStateEnum::NOT_LINKED);
+
+        // 3. Accéder à la page de mise à jour de la salle
+        $crawler = $this->client->request('GET', '/en/rooms/' . $room->getName() . '/update');
+        $this->assertResponseIsSuccessful();
+
+        // 4. Trouver et soumettre le formulaire de demande d'assignation
+        $form = $crawler->selectButton('Request assignment')->form(); // Assurez-vous que le bouton a bien ce label
+        $this->client->submit($form);
+
+        // 7. Vérifier que la tâche a bien été créée en base
+        /** @var ActionRepository $actionRepository */
+        $actionRepository = $this->entityManager->getRepository(Action::class);
+        $action = $actionRepository->findOneBy([
+            'info' => ActionInfoEnum::ASSIGNMENT,
+            'state' => ActionStateEnum::TO_DO,
+            'room' => $room,
+        ]);
+
+        $this->assertNotNull($action, 'La tâche d\'assignment n\'a pas été créée.');
+        $this->assertEquals(ActionInfoEnum::ASSIGNMENT, $action->getInfo());
+        $this->assertEquals(ActionStateEnum::TO_DO, $action->getState());
+        $this->assertEquals($roomName, $action->getRoom()->getName());
+    }
+
+    /**
+     * Teste la création d'une tâche d'UNASSIGNMENT pour une salle en état LINKED et STABLE.
+     */
+    public function testRequestUnassignmentCreatesAction(): void
+    {
+        // 1. Se connecter en tant que manager
+        $this->login('manager');
+
+        // 2. Créer une salle en état LINKED et STABLE
+        $roomName = 'TEST_UNASSIGNMENT_ROOM';
+        $room = $this->createRoom($roomName, RoomStateEnum::STABLE, SensorStateEnum::LINKED);
+
+        // 3. Accéder à la page de mise à jour de la salle
+        $crawler = $this->client->request('GET', '/en/rooms/' . $room->getName() . '/update');
+        $this->assertResponseIsSuccessful();
+
+        // 4. Trouver et soumettre le formulaire de demande de désassignation
+        $form = $crawler->selectButton('Request unassignment')->form(); // Assurez-vous que le bouton a bien ce label
+        $this->client->submit($form);
+
+        // 7. Vérifier que la tâche a bien été créée en base
+        /** @var ActionRepository $actionRepository */
+        $actionRepository = $this->entityManager->getRepository(Action::class);
+        $action = $actionRepository->findOneBy([
+            'info' => ActionInfoEnum::UNASSIGNMENT,
+            'state' => ActionStateEnum::TO_DO,
+            'room' => $room,
+        ]);
+
+        $this->assertNotNull($action, 'La tâche de désassignment n\'a pas été créée.');
+        $this->assertEquals(ActionInfoEnum::UNASSIGNMENT, $action->getInfo());
+        $this->assertEquals(ActionStateEnum::TO_DO, $action->getState());
+        $this->assertEquals($roomName, $action->getRoom()->getName());
+    }
+
+    /**
+     * Teste l'annulation d'une tâche d'installation ou de désinstallation en cours.
+     */
+    public function testCancelInstallationDeletesAction(): void
+    {
+        // 1. Se connecter en tant que manager
+        $this->login('manager');
+
+        // 2. Créer une salle en état NOT_LINKED et NO_DATA
+        $roomName = 'TEST_CANCEL_INSTALLATION_ROOM';
+        $room = $this->createRoom($roomName, RoomStateEnum::NO_DATA, SensorStateEnum::NOT_LINKED);
+
+        // 3. Créer une tâche d'ASSIGNMENT en état TO_DO
+        $action = new Action();
+        $action->setInfo(ActionInfoEnum::ASSIGNMENT);
+        $action->setState(ActionStateEnum::TO_DO);
+        $action->setCreatedAt(new \DateTime());
+        $action->setRoom($room);
+
+        $this->entityManager->persist($action);
+        $this->entityManager->flush();
+
+        // Vérifier que la tâche existe avant annulation
+        $actionRepository = $this->entityManager->getRepository(Action::class);
+        $existingAction = $actionRepository->find($action->getId());
+        $this->assertNotNull($existingAction, 'La tâche d\'assignment devrait exister avant l\'annulation.');
+
+        // 4. Accéder à la page de mise à jour de la salle
+        $crawler = $this->client->request('GET', '/en/rooms/' . $room->getName() . '/update');
+        $this->assertResponseIsSuccessful();
+
+        // 5. Trouver et soumettre le formulaire d'annulation de l'installation
+        $form = $crawler->selectButton('Cancel installation')->form(); // Assurez-vous que le bouton a bien ce label
+        $this->client->submit($form);
+
+        // 8. Vérifier que la tâche a bien été supprimée de la base
+        /** @var ActionRepository $actionRepository */
+        $actionRepository = $this->entityManager->getRepository(Action::class);
+        $deletedAction = $actionRepository->find($action->getId());
+
+        $this->assertNull($deletedAction, 'La tâche d\'installation/désinstallation n\'a pas été supprimée.');
     }
 
 }
