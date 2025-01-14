@@ -10,7 +10,11 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250111173343 extends AbstractMigration
+<<<<<<<< HEAD:sfapp/migrations/Version20250114091949.php
+final class Version20250114091949 extends AbstractMigration
+========
+final class Version20250113152524 extends AbstractMigration
+>>>>>>>> v3-TestsUsAcornill:sfapp/migrations/Version20250113152524.php
 {
     public function getDescription(): string
     {
@@ -20,14 +24,12 @@ final class Version20250111173343 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE room DROP last_loaded_at');
         $this->addSql('ALTER TABLE user CHANGE roles roles JSON NOT NULL COMMENT \'(DC2Type:json)\'');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE room ADD last_loaded_at DATETIME DEFAULT NULL');
         $this->addSql('ALTER TABLE user CHANGE roles roles JSON NOT NULL COMMENT \'(DC2Type:json)\'');
     }
 }

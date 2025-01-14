@@ -2,7 +2,6 @@
 hello: "Hello"
 room: "Room"
 rooms: "Rooms"
-login: "Login"
 logout: "Logout"
 
 dashboard: "Dashboard"
@@ -38,7 +37,6 @@ humidity: "Humidity"
 # Dashboard
 as_list: "AS List"
 my_to_do_list: "To-Do-List"
-configure_thresholds: "Configure thresholds"
 
 # Orientation
 _cardinal_direction:
@@ -86,8 +84,6 @@ number_of_heaters: "Number of heaters"
 surface: "Surface"
 cardinal_direction: "Orientation"
 room_monitoring: "Heating periods"
-heating: "Heating"
-non_heating: "Non-heating"
 optimal_temp: "Optimal temperature"
 as_assigned_to_room: "An acquisition system is assigned to this room."
 no_as_assigned_to_room: "No acquisition system assigned to this room."
@@ -145,7 +141,6 @@ no_acquisition_system: "No acquisition system linked to this task."
 
 # Addas.html.twig
 add_acquisition_system: "Add an acquisition system"
-cancel: "Cancel"
 number: "Number"
 add_as:
   number:
@@ -305,46 +300,6 @@ actionable_advice: "Actionable Advice"
 no_specific_advice: "No specific advice for today."
 weather_unavailable: "Weather forecasts are currently unavailable."
 
-# Threshold Configuration
-period: "Period"
-nov_apr: "November-April"
-may_oct: "May-October"
-temperature_thresholds: "Temperature Thresholds"
-humidity_thresholds: "Humidity Thresholds"
-recommended_heating_period: "Recommended temperature ranges for the heating period (November to April)"
-recommended_non_heating_period: "Recommended temperature ranges for the non-heating period (May to October)"
-recommended_humidity_ranges: "Recommended humidity ranges for optimal comfort and air quality"
-recommended_values_heating: "Recommended Values (Heating Period)"
-recommended_values_non_heating: "Recommended Values (Non-Heating Period)"
-recommended_humidity_values: "Recommended Humidity Values"
-critical_min: "Critical Min"
-warning_min: "Warning Min"
-warning_max: "Warning Max"
-critical_max: "Critical Max"
-
-# Descriptions for Heating Period
-critical_min_heating_desc: "16°C - Too cold, risk of discomfort and health issues"
-warning_min_heating_desc: "18°C - Minimum comfortable temperature for the heating season"
-warning_max_heating_desc: "22°C - Maximum recommended temperature for the heating season"
-critical_max_heating_desc: "24°C - Too warm, excessive energy consumption"
-
-# Descriptions for Non-Heating Period
-critical_min_non_heating_desc: "20°C - Too cold for comfort in summer"
-warning_min_non_heating_desc: "22°C - Lower bound of summer comfort zone"
-warning_max_non_heating_desc: "26°C - Upper bound of summer comfort zone"
-critical_max_non_heating_desc: "28°C - Too warm, risk of discomfort"
-
-# Descriptions for Humidity
-critical_min_humidity_desc: "20% - Very dry, risk of respiratory issues and static electricity"
-warning_min_humidity_desc: "30% - Minimum for comfort and health"
-warning_max_humidity_desc: "60% - Maximum for comfort and mold prevention"
-critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
-
-# Buttons
-save_changes: "Save Changes"
-reset_to_default: "Reset to Default"
-reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"
-
 # Room Details Page
 room_details:
   title: "Room Details"
@@ -388,78 +343,79 @@ settings:
   close_button: "Close"
   language_select_label: "Language"
 
-  # Configure Thresholds Page
-  configure_thresholds: "Configure Thresholds"
+# Configure Thresholds Page
+configure_thresholds: "Configure Thresholds"
 
-  # Period Switch
-  period: "Period"
-  nov_apr: "November-April"
-  may_oct: "May-October"
+# Period Switch
+period: "Period"
+nov_apr: "November-April"
+may_oct: "May-October"
 
-  # Temperature Thresholds
-  temperature_thresholds: "Temperature Thresholds"
-  heating: "Heating"
-  non_heating: "Non-Heating"
-  recommended_heating_period: "Recommended temperature ranges for the heating period (November to April)"
-  recommended_non_heating_period: "Recommended temperature ranges for the non-heating period (May to October)"
-  critical_min: "Critical Min"
-  warning_min: "Warning Min"
-  warning_max: "Warning Max"
-  critical_max: "Critical Max"
-  critical_min_heating_desc: "16°C - Too cold, risk of discomfort and health issues"
-  warning_min_heating_desc: "18°C - Minimum comfortable temperature for the heating season"
-  warning_max_heating_desc: "22°C - Maximum recommended temperature for the heating season"
-  critical_max_heating_desc: "24°C - Too warm, excessive energy consumption"
-  critical_min_non_heating_desc: "20°C - Too cold for comfort in summer"
-  warning_min_non_heating_desc: "22°C - Lower bound of summer comfort zone"
-  warning_max_non_heating_desc: "26°C - Upper bound of summer comfort zone"
-  critical_max_non_heating_desc: "28°C - Too warm, risk of discomfort"
+# Temperature Thresholds
+temperature_thresholds: "Temperature Thresholds"
+heating: "Heating"
+non_heating: "Non-Heating"
+recommended_heating_period: "Recommended temperature ranges for the heating period (November to April)"
+recommended_non_heating_period: "Recommended temperature ranges for the non-heating period (May to October)"
+critical_min: "Critical Min"
+warning_min: "Warning Min"
+warning_max: "Warning Max"
+critical_max: "Critical Max"
+critical_min_heating_desc: "16°C - Too cold, risk of discomfort and health issues"
+warning_min_heating_desc: "18°C - Minimum comfortable temperature for the heating season"
+warning_max_heating_desc: "22°C - Maximum recommended temperature for the heating season"
+critical_max_heating_desc: "24°C - Too warm, excessive energy consumption"
+critical_min_non_heating_desc: "20°C - Too cold for comfort in summer"
+warning_min_non_heating_desc: "22°C - Lower bound of summer comfort zone"
+warning_max_non_heating_desc: "26°C - Upper bound of summer comfort zone"
+critical_max_non_heating_desc: "28°C - Too warm, risk of discomfort"
 
-  # Humidity Thresholds
-  humidity_thresholds: "Humidity Thresholds"
-  recommended_humidity_ranges: "Recommended humidity ranges for optimal comfort and air quality"
-  critical_min_humidity_desc: "20% - Very dry, risk of respiratory issues and static electricity"
-  warning_min_humidity_desc: "30% - Minimum for comfort and health"
-  warning_max_humidity_desc: "60% - Maximum for comfort and mold prevention"
-  critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
+# Humidity Thresholds
+humidity_thresholds: "Humidity Thresholds"
+recommended_humidity_ranges: "Recommended humidity ranges for optimal comfort and air quality"
+critical_min_humidity_desc: "20% - Very dry, risk of respiratory issues and static electricity"
+warning_min_humidity_desc: "30% - Minimum for comfort and health"
+warning_max_humidity_desc: "60% - Maximum for comfort and mold prevention"
+critical_max_humidity_desc: "70% - High risk of mold growth and discomfort"
 
-  # Buttons
-  save_changes: "Save Changes"
-  reset_to_default: "Reset to Default"
-  reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"
-  cancel: "Cancel"
+# Buttons
+save_changes: "Save Changes"
+reset_to_default: "Reset to Default"
+reset_confirmation: "Are you sure you want to reset all thresholds to their default values?"
+cancel: "Cancel"
 
-  # Aberrant Values Accordion
-  aberrant_values_information_title: "Fixed Aberrant Value Thresholds Information"
-  aberrant_values_info_description: "The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as \"NOT WORKING\" and a maintenance task will be created:"
-  temperature_fixed: "Temperature: Below 10°C or above 40°C"
-  humidity_fixed: "Humidity: Below 20% or above 100%"
-  co2_fixed: "CO₂: Below 400ppm or above 2000ppm"
+# Aberrant Values Accordion
+aberrant_values_information_title: "Fixed Aberrant Value Thresholds Information"
+aberrant_values_info_description: "The following thresholds are fixed and cannot be modified. When values are outside these ranges, the sensor will be marked as \"NOT WORKING\" and a maintenance task will be created:"
+temperature_fixed: "Temperature: Below 10°C or above 40°C"
+humidity_fixed: "Humidity: Below 20% or above 100%"
+co2_fixed: "CO₂: Below 400ppm or above 2000ppm"
 
-  # Slider Labels
-  slider_label_critical_min: "Critical Min"
-  slider_label_warning_min: "Warning Min"
-  slider_label_warning_max: "Warning Max"
-  slider_label_critical_max: "Critical Max"
+# Slider Labels
+slider_label_critical_min: "Critical Min"
+slider_label_warning_min: "Warning Min"
+slider_label_warning_max: "Warning Max"
+slider_label_critical_max: "Critical Max"
 
-  # Security - Login Page
-  login:
-    title: "Log In"
-    header: "Please Sign In"
-    username_label: "Username"
-    username_placeholder: "Username"
-    password_label: "Password"
-    password_placeholder: "Password"
-    submit_button: "Sign in"
+# Security - Login Page
+login:
+  login: "Login"
+  title: "Log In"
+  header: "Please Sign In"
+  username_label: "Username"
+  username_placeholder: "Username"
+  password_label: "Password"
+  password_placeholder: "Password"
+  submit_button: "Sign in"
 
-  # Security - Unauthorized Access Page
-  access_denied:
-    title: "Access Denied"
-    header: "403 - Access Denied"
-    message: "You do not have the necessary permissions to access this page."
-    contact_admin: "Please contact your administrator if you believe this is an error."
-    return_button: "Return to Rooms List"
-    login_button: "Login"
+# Security - Unauthorized Access Page
+access_denied:
+  title: "Access Denied"
+  header: "403 - Access Denied"
+  message: "You do not have the necessary permissions to access this page."
+  contact_admin: "Please contact your administrator if you believe this is an error."
+  return_button: "Return to Rooms List"
+  login_button: "Login"
 
 # Action - Edit Task Page
 action_edit:

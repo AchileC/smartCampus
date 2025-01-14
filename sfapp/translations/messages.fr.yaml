@@ -416,6 +416,7 @@ slider_label_critical_max: "Max Critique"
 
 # Security - Login Page
 login:
+  login: "Se connecter"
   title: "Connexion"
   header: "Veuillez vous connecter"
   username_label: "Nom d'utilisateur"

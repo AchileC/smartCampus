@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Action;
 use App\Utils\ActionStateEnum;
+use App\Utils\ActionInfoEnum;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -101,10 +102,11 @@ class ActionRepository extends ServiceEntityRepository
             ->andWhere('a.info IN (:infos)')
             ->setParameter('room', $roomId)
             ->setParameter('states', [ActionStateEnum::TO_DO, ActionStateEnum::DOING])
-            ->setParameter('infos', ['assignment', 'unassignment'])
+            ->setParameter('infos', [ActionInfoEnum::ASSIGNMENT, ActionInfoEnum::UNASSIGNMENT, ActionInfoEnum::MAINTENANCE])
             ->orderBy('a.createdAt', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }
+
 }

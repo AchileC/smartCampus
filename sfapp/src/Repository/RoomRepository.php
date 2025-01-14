@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Room;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Repository class for managing Room entities.
@@ -16,59 +15,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 class RoomRepository extends ServiceEntityRepository
 {
-    /** @var ThresholdRepository */
-    private ThresholdRepository $thresholdRepository;
-
-    /** @var HttpClientInterface */
-    private HttpClientInterface $httpClient;
-
-    /** @var string Path to the project directory */
-    private string $projectDir;
-
-    /** @var string Path to the JSON directory (assets/json/...) */
-    private string $jsonDirectory;
-
-    /**
-     * @param ManagerRegistry      $registry
-     * @param ThresholdRepository  $thresholdRepository
-     * @param HttpClientInterface  $httpClient
-     * @param string               $projectDir       The project directory path
-     * @param string               $jsonDirectory    The directory path for JSON files
-     */
-    public function __construct(
-        ManagerRegistry $registry,
-        ThresholdRepository $thresholdRepository,
-        HttpClientInterface $httpClient,
-        string $projectDir,
-        string $jsonDirectory
-    ) {
+    public function __construct(ManagerRegistry $registry)
+    {
         parent::__construct($registry, Room::class);
-        $this->thresholdRepository = $thresholdRepository;
-        $this->httpClient = $httpClient;
-        $this->projectDir = $projectDir;
-        $this->jsonDirectory = $jsonDirectory;
-
-
-        $liveDir = $this->jsonDirectory . '/live';
-        if (!is_dir($liveDir)) {
-            if (!mkdir($liveDir, 0755, true) && !is_dir($liveDir)) {
-                throw new \RuntimeException(sprintf('Le dossier "%s" n\'a pas pu être créé.', $liveDir));
-            }
-        }
-
-        // Assurer que le dossier 'history' existe
-        $historyDir = $this->jsonDirectory . '/history';
-        if (!is_dir($historyDir)) {
-            if (!mkdir($historyDir, 0755, true) && !is_dir($historyDir)) {
-                throw new \RuntimeException(sprintf('Le dossier "%s" n\'a pas pu être créé.', $historyDir));
-            }
-        }
     }
-
-
-
-
-
 
     /* ======================================================
      *                 PARTIE REQUÊTES BASIQUES

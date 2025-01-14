@@ -279,22 +279,21 @@ class RoomController extends AbstractController
      *
      * @param string                  $name              The name of the room to update.
      * @param RoomRepository          $roomRepository    Repository to manage Room entities.
-     * @param Request                 $request            The current HTTP request.
-     * @param EntityManagerInterface  $entityManager      The entity manager for database operations.
+     * @param ActionRepository        $actionRepository  Repository to manage Action entities.
+     * @param Request                 $request           The current HTTP request.
+     * @param EntityManagerInterface  $entityManager     The entity manager for database operations.
      *
      * @return Response The rendered update form or a redirect to the rooms listing.
      *
      * @throws NotFoundException If the room is not found.
      */
-    // RoomController.php
-
     #[Route('/rooms/{name}/update', name: 'app_rooms_update')]
     public function update(
-        string                  $name,
-        RoomRepository          $roomRepository,
-        ActionRepository        $actionRepository,
-        Request                 $request,
-        EntityManagerInterface  $entityManager
+        string $name,
+        RoomRepository $roomRepository,
+        ActionRepository $actionRepository,
+        Request $request,
+        EntityManagerInterface $entityManager
     ): Response
     {
         $room = $roomRepository->findByName($name);
@@ -302,7 +301,7 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
-        // Récupérer la (ou les) tâche(s) en cours sur la salle
+        // Récupérer la tâche en cours sur la salle
         $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
 
         $form = $this->createForm(AddRoomType::class, $room);
@@ -320,6 +319,7 @@ class RoomController extends AbstractController
             'ongoingTask' => $ongoingTask, // On passe la tâche en cours
         ]);
     }
+
 
 
     /**
@@ -401,6 +401,7 @@ class RoomController extends AbstractController
 
         // Vérifier s’il existe déjà une tâche en cours (ASSIGNMENT ou UNASSIGNMENT)
         $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
+
         if ($ongoingTask) {
             $this->addFlash('warning', 'Une tâche d’(dés)installation est déjà en cours pour cette salle.');
             return $this->redirectToRoute('app_rooms');
@@ -449,6 +450,7 @@ class RoomController extends AbstractController
 
         // Vérifier s’il existe déjà une tâche en cours
         $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
+
         if ($ongoingTask) {
             $this->addFlash('warning', 'Une tâche d’(dés)installation est déjà en cours pour cette salle.');
             return $this->redirectToRoute('app_rooms');
@@ -476,8 +478,8 @@ class RoomController extends AbstractController
      *
      * @param string                  $name                The name of the room.
      * @param RoomRepository          $roomRepository      Repository to manage Room entities.
-     * @param EntityManagerInterface  $entityManager       The entity manager for database operations.
      * @param ActionRepository        $actionRepository    Repository to manage Action entities.
+     * @param EntityManagerInterface  $entityManager       The entity manager for database operations.
      *
      * @return Response A redirect response to the rooms listing.
      *
@@ -485,8 +487,8 @@ class RoomController extends AbstractController
      */
     #[Route('/rooms/{name}/cancel-installation', name: 'app_rooms_cancel_installation', methods: ['POST'])]
     public function cancelInstallation(
-        string           $name,
-        RoomRepository   $roomRepository,
+        string $name,
+        RoomRepository $roomRepository,
         ActionRepository $actionRepository,
         EntityManagerInterface $entityManager
     ): Response {
@@ -496,22 +498,20 @@ class RoomController extends AbstractController
             throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
-        $ongoingTasks = $actionRepository->findOngoingTaskForRoom($room->getId());
+        $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
 
-        if (empty($ongoingTasks)) {
+        if (!$ongoingTask) {
             $this->addFlash('info', 'Aucune tâche d’installation/désinstallation en cours pour cette salle.');
             return $this->redirectToRoute('app_rooms');
         }
 
-        foreach ($ongoingTasks as $task) {
-            $entityManager->remove($task);
-        }
-
+        $entityManager->remove($ongoingTask);
         $entityManager->flush();
 
         $this->addFlash('success', 'Tâche d’installation/désinstallation annulée avec succès.');
         return $this->redirectToRoute('app_rooms');
     }
+
 
     /**
      * Displays analytics for a specific room.

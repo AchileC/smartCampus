@@ -73,4 +73,28 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return null;
     }
+
+
+    /**
+     * @brief Finds users with the specified role.
+     *
+     * Searches for all users who possess the specified role.
+     *
+     * @param string $role The role to search for (e.g., 'ROLE_MANAGER').
+     *
+     * @return User[] Array of User entities having the given role.
+     */
+    public function findByRole(string $role): array
+    {
+        $users = $this->findAll();
+        $result = [];
+
+        foreach ($users as $user) {
+            if (in_array($role, $user->getRoles(), true)) {
+                $result[] = $user;
+            }
+        }
+
+        return $result;
+    }
 }

@@ -52,7 +52,7 @@
                     <p class="text-muted mt-2">{{ 'last_updated'|trans }}: {{ "now"|date("d/m/Y - H:i:s", "Europe/Paris") }}</p>
                 </small>
                 {% if is_granted('ROLE_MANAGER') %}
-                    <a href="{{ path('app_rooms_add') }}" class="btn btn-success">
+                    <a href="{{ path('app_rooms_add') }}" class="btn btn-success" id="add_room_button">
                         <i class="bi bi-plus-lg"></i> {{ '_add_room' | trans }}
                     </a>
                 {% endif %}
@@ -150,7 +150,7 @@
                                     </p>
                                     {% if is_granted('ROLE_TECHNICIAN') %}
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
-                                            <span class="badge-custom-size
+                                            <span id="sensor_card_state" class="badge-custom-size
                             {% if room.sensorState.value == 'linked' %}bg-success
                             {% elseif room.sensorState.value == 'not linked' %}bg-secondary
                             {% elseif room.sensorState.value == 'not working' %}bg-danger
@@ -163,11 +163,12 @@
 
                                 <div class="mt-3">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary">
+                                        <a href="{{ path('app_rooms_details', { name: room.name }) }}" class="btn btn-outline-primary" id="details-button">
                                             <i class="bi bi-info-circle"></i> {{ 'details' | trans }}
                                         </a>
+
                                         {% if is_granted('ROLE_MANAGER') %}
-                                            <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary">
+                                            <a href="{{ path('app_rooms_update', { name: room.name }) }}" class="btn btn-outline-secondary" id="update_button">
                                                 <i class="bi bi-pencil-square"></i> {{ 'edit' | trans }}
                                             </a>
                                             <button type="button" class="btn btn-outline-danger delete-room-button"
@@ -175,7 +176,8 @@
                                                     data-delete-url="{{ path('app_rooms_delete', {'name': room.name}) }}"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#deleteRoomModal"
-                                                    aria-label="{{ '_delete_room' | trans }}">
+                                                    aria-label="{{ '_delete_room' | trans }}"
+                                                    id="delete_button">
                                                 <i class="bi bi-trash"></i> {{ 'delete' | trans }}
                                             </button>
                                         {% endif %}
@@ -213,7 +215,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 {% endblock %}
 
@@ -301,6 +302,12 @@
             }
 
         });
-
+        /**
+         * @brief Automatically reloads the page every minute to ensure data is up-to-date.
+         *
+         * Sets an interval that triggers a page reload after 60,000 milliseconds (1 minutes).
+         * This helps in keeping the displayed data fresh without requiring manual intervention.
+         */
+        setInterval(() => { location.reload(); }, 60000);
     </script>
 {% endblock %}

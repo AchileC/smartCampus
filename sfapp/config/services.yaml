@@ -10,6 +10,11 @@ parameters:
     app.json_history_directory: '%kernel.project_dir%/assets/json/history'
     locale: 'en'
 
+framework:
+    default_locale: '%locale%'
+    translator:
+        paths: []
+
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -53,10 +58,5 @@ services:
     App\Security\LogoutSubscriber:
         tags:
             - { name: 'kernel.event_subscriber' }
-
-    App\Repository\RoomRepository:
-        arguments:
-            $projectDir: '%kernel.project_dir%'
-            $jsonDirectory: '%app.json_directory%'
 
     # ... other services

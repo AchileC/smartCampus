@@ -6,7 +6,6 @@
         <!-- Titre principal -->
         <div class="text-center mb-4">
             <h1>{{ 'hello'|trans }} {{ app.user.username }}! 👋</h1>
-
         </div>
 
         <!-- Flash Messages -->
@@ -31,17 +30,18 @@
                     <div class="d-flex justify-content-center flex-wrap gap-3">
                         <!-- Nombre de salles -->
                         <a href="{{ path('app_rooms') }}" class="info-card btn border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white" style="width: 150px; border-radius: 10px;">
-                            <h4 class="fw-bold">{{ rooms_count }}</h4>
+                            <h4 class="fw-bold" data-test="rooms-count">{{ rooms_count }}</h4>
                             <p class="mb-0">{{ 'rooms'|trans }}</p>
                         </a>
 
                         <!-- Nombre d'AS visible uniquement pour les techniciens -->
                         {% if is_granted('ROLE_TECHNICIAN') %}
                             <a href="{{ path('app_acquisition_system') }}" class="info-card btn border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-dark text-white" style="width: 150px; border-radius: 10px;">
-                                <h4>{{ as_count }}</h4>
+                                <h4 data-test="as-count">{{ as_count }}</h4>
                                 <p>{{ 'systems' | trans }}</p>
                             </a>
                         {% endif %}
+
                         <!-- États critiques et à risque visibles uniquement pour les managers -->
                         {% if is_granted('ROLE_MANAGER') %}
                             <!-- Nombre de salles critiques -->
@@ -49,7 +49,7 @@
                                class="info-card btn border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-danger text-white"
                                style="width: 150px; border-radius: 10px;">
                                 <i class="bi bi-exclamation-triangle-fill mb-2" style="font-size: 1.5rem;"></i>
-                                <h4 class="fw-bold">{{ critical_count }}</h4>
+                                <h4 class="fw-bold" data-test="critical-count">{{ critical_count }}</h4>
                                 <p class="mb-0">{{ 'critical'|trans }}</p>
                             </a>
 
@@ -58,7 +58,7 @@
                                class="info-card btn border rounded d-flex flex-column justify-content-center align-items-center p-3 bg-warning text-dark"
                                style="width: 150px; border-radius: 10px;">
                                 <i class="bi bi-info-circle-fill mb-2" style="font-size: 1.5rem;"></i>
-                                <h4 class="fw-bold">{{ at_risk_count }}</h4>
+                                <h4 class="fw-bold" data-test="at-risk-count">{{ at_risk_count }}</h4>
                                 <p class="mb-0">{{ 'at_risk'|trans }}</p>
                             </a>
                         {% endif %}
@@ -128,7 +128,7 @@
                         {% for action in actions %}
                             <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
                                 <div>
-                                    <p class="mb-1">
+                                    <p class="mb-1" data-test="action-{{ action.id }}">
                                         <strong>{{ ('_action_info_state.' ~ action.info.value | upper) | trans }}</strong> {{ 'on_room'|trans }} {{ action.room.name }}.
                                     </p>
                                     <p class="mb-1 small text-muted">
@@ -143,8 +143,8 @@
                                     </p>
                                 </div>
                                 <span class="badge {% if action.state.value == 'to do' %}bg-warning text-dark{% elseif action.state.value == 'doing' %}bg-primary text-light{% endif %}">
-                                {{ ('_action_state.' ~ action.state.value | upper) | trans }}
-                            </span>
+                                    {{ ('_action_state.' ~ action.state.value | upper) | trans }}
+                                </span>
                             </div>
                         {% endfor %}
                         {% if actions is empty %}
@@ -168,7 +168,7 @@
         /**
          * @brief Automatically reloads the page every minute to ensure data is up-to-date.
          *
-         * Sets an interval that triggers a page reload after 60,000 milliseconds (1 minutes).
+         * Sets an interval that triggers a page reload after 60,000 milliseconds (1 minute).
          * This helps in keeping the displayed data fresh without requiring manual intervention.
          */
         setInterval(() => { location.reload(); }, 60000);

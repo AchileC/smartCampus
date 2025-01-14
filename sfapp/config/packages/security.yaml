@@ -24,14 +24,15 @@ security:
             custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
+                target: /rooms
+                csrf_token_manager: security.csrf.token_manager
                 csrf_token_generator: security.csrf.token_manager
 
             remember_me:
                 secret: '%kernel.secret%'
 
-
     access_control:
-        # Routes publiques spécifiques
+        # Public Routes
         - { path: "^/$", roles: PUBLIC_ACCESS }
         - { path: "^/[a-z]{2}$", roles: PUBLIC_ACCESS }
         - { path: "^/[a-z]{2}/login$", roles: PUBLIC_ACCESS }
@@ -40,14 +41,17 @@ security:
         - { path: "^/[a-z]{2}/rooms$", roles: PUBLIC_ACCESS }
         - { path: "^/[a-z]{2}/rooms/[a-zA-Z0-9]+$", roles: PUBLIC_ACCESS }
 
-        # Routes protégées
+        # Protected Routes
         - { path: "^/[a-z]{2}/rooms/[a-zA-Z0-9]+/update$", roles: ROLE_MANAGER }
         - { path: "^/[a-z]{2}/rooms/[a-zA-Z0-9]+/delete$", roles: ROLE_MANAGER }
+        - { path: "^/[a-z]{2}/rooms/add", roles: ROLE_MANAGER }
         - { path: "^/[a-z]{2}/as", roles: ROLE_TECHNICIAN }
         - { path: "^/[a-z]{2}/todolist", roles: ROLE_TECHNICIAN }
+        - { path: "^/[a-z]{2}/home", roles: IS_AUTHENTICATED_FULLY }
 
-        # Par défaut, toutes les autres routes nécessitent au moins ROLE_USER
-       # - { path: "^/[a-z]{2}/", roles: IS_AUTHENTICATED_FULLY }
+        # Default: All other routes require at least ROLE_USER
+        # - { path: "^/[a-z]{2}/", roles: IS_AUTHENTICATED_FULLY }
+
 
 
 when@test:
