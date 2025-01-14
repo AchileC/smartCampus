@@ -98,17 +98,6 @@ class Room
         return $this;
     }
 
-    public function getPreviousState(): ?RoomStateEnum
-    {
-        return $this->previousState;
-    }
-
-    public function setPreviousState(?RoomStateEnum $previousState): static
-    {
-        $this->previousState = $previousState;
-        return $this;
-    }
-
     public function getSensorState(): ?SensorStateEnum
     {
         return $this->sensorState;
