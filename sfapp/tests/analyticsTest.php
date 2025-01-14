@@ -104,7 +104,6 @@ class AnalyticsTest extends WebTestCase
     }
 }
 
-    
 
     /**
      * Test that a Manager can load the analytics page successfully.
@@ -177,8 +176,6 @@ public function testAnalyticsHistoricalDataRendered(): void
         'Expected a JS variable "historicalData" to be injected in the analytics page.'
     );
 }
-
-
 
     
 

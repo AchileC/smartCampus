@@ -20,7 +20,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * Service responsible for handling sensor data and updating Room states.
- * 
+ *
  * This version no longer writes the "live" data to a JSON file; instead,
  * it directly persists the fetched data into the database.
  */
@@ -83,16 +83,14 @@ class RoomSensorService
      */
     public function updateAcquisitionSystemFromApi(AcquisitionSystem $acquisitionSystem): void
     {
-        // 1. Fetch "live" data from the external API
+        //Fetch live data from the  API
         $sensorData = $this->fetchSensorDataFromApi($acquisitionSystem);
 
         if (empty($sensorData)) {
-            return;
+            throw new \RuntimeException("No sensor data fetched for acquisition system: " . $acquisitionSystem->getName());
         }
-
-        // 2. Update the AcquisitionSystem with the fetched data
+        // Update the AcquisitionSystem with the fetched data
         $lastCapturedAt = null;
-
         foreach ($sensorData as $entry) {
             if (isset($entry['nom'], $entry['valeur'])) {
                 switch ($entry['nom']) {
@@ -107,7 +105,6 @@ class RoomSensorService
                         break;
                 }
             }
-
             // Handle the most recent capture date
             if (isset($entry['dateCapture'])) {
                 try {
@@ -116,24 +113,23 @@ class RoomSensorService
                         $lastCapturedAt = $captureDate;
                     }
                 } catch (\Exception $e) {
-                    // Log or handle conversion errors if necessary
+                    throw new \RuntimeException("Invalid date format in entry: " . json_encode($entry) . ". Error: " . $e->getMessage());
                 }
             }
         }
-
         if ($lastCapturedAt !== null) {
             $acquisitionSystem->setLastCapturedAt($lastCapturedAt);
         }
-
-        // 3. Persist changes to the database
         $em = $this->getEntityManager();
         $em->persist($acquisitionSystem);
         $em->flush();
+
     }
+
 
     /**
      * Fetches sensor data ("temp", "hum", and "co2") from the external API.
-     * 
+     *
      * @param AcquisitionSystem $acquisitionSystem
      * @return array Combined sensor data from the API
      *
@@ -144,7 +140,7 @@ class RoomSensorService
         $url = 'https://sae34.k8s.iut-larochelle.fr/api/captures/last';
         $sensorTypes = ['temp', 'hum', 'co2'];
         $sensorName = $acquisitionSystem->getName();
-        $dbName = $acquisitionSystem->getDbName(); // Retrieve dynamic dbName
+        $dbName = $acquisitionSystem->getDbName();
         $combinedData = [];
 
         foreach ($sensorTypes as $type) {
@@ -190,11 +186,9 @@ class RoomSensorService
     {
         $acquisitionSystem = $room->getAcquisitionSystem();
         if (!$acquisitionSystem) {
-            // No AcquisitionSystem => Do nothing or handle differently if needed
             return;
         }
-
-        // Update the AcquisitionSystem directly from the API (no JSON file)
+        // Update the AcquisitionSystem directly from the API
         $this->updateAcquisitionSystemFromApi($acquisitionSystem);
 
         // Default state is NO_DATA until proven otherwise
@@ -212,7 +206,7 @@ class RoomSensorService
         $thresholds = $this->thresholdRepository->getDefaultThresholds();
 
         // 1. Determine sensor state
-        $sensorState = SensorStateEnum::LINKED; // default
+        $sensorState = SensorStateEnum::LINKED;
         if (
             ($temperature === null && $humidity === null && $co2 === null)
             || $thresholds->isTemperatureAberrant($temperature)
@@ -362,6 +356,7 @@ class RoomSensorService
         $sensorTypes = ['temp', 'hum', 'co2'];
         $now = new \DateTime();
         $startDate = clone $now;
+        $now->modify('+1 day');
 
         // Determine date range (7 days for 'week', 30 days for 'month' or default)
         switch ($range) {
