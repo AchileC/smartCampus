@@ -234,6 +234,8 @@ class RoomController extends AbstractController
         ThresholdRepository $thresholdRepository,
         string             $name
     ): Response {
+        date_default_timezone_set('Europe/Paris');
+
         $room = $roomRepository->findByName($name);
         if (!$room) {
             throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
@@ -243,8 +245,32 @@ class RoomController extends AbstractController
             throw new AccessDeniedHttpException('This room is not yet equipped.');
         }
 
-        // Update the room's state directly from API/sensor data
-        $this->roomSensorService->updateRoomState($room);
+
+        // --------------------------------------
+        // Check freshness of lastUpdatedAt
+        // and update if necessary (only if older than 3 minutes)
+        // ------------------------------
+        // We only handle rooms that are actually equipped (LINKED)
+        if ($room->getSensorState() === SensorStateEnum::LINKED) {
+            $lastUpdatedAt = $room->getLastUpdatedAt();
+            $now           = new \DateTimeImmutable('now');
+
+            // If lastUpdatedAt is null or older than 3 minutes
+            if (
+                null === $lastUpdatedAt
+                || ($now->getTimestamp() - $lastUpdatedAt->getTimestamp()) >= 180
+            ) {
+                // => Update the room (updateRoomState)
+                try {
+                    $this->roomSensorService->updateRoomState($room);
+                } catch (\Exception $e) {
+                    // Handle or log the error
+                }
+            } else {
+                // Otherwise, do nothing to avoid too many API calls
+            }
+        }
+
 
         try {
             // Get weather forecast
@@ -469,32 +495,31 @@ class RoomController extends AbstractController
      */
     #[Route('/rooms/{name}/cancel-installation', name: 'app_rooms_cancel_installation', methods: ['POST'])]
     public function cancelInstallation(
-        string                  $name,
-        RoomRepository          $roomRepository,
-        ActionRepository        $actionRepository,
-        EntityManagerInterface  $entityManager
+        string $name,
+        RoomRepository $roomRepository,
+        ActionRepository $actionRepository,
+        EntityManagerInterface $entityManager
     ): Response {
+
         $room = $roomRepository->findByName($name);
         if (!$room) {
             throw $this->createNotFoundException(sprintf('Room "%s" not found', $name));
         }
 
-        $ongoingTasks = $actionRepository->findOngoingTaskForRoom($room->getId());
+        $ongoingTask = $actionRepository->findOngoingTaskForRoom($room->getId());
 
-        if (empty($ongoingTasks)) {
+        if (!$ongoingTask) {
             $this->addFlash('info', 'No ongoing installation/uninstallation task for this room.');
             return $this->redirectToRoute('app_rooms');
         }
 
-        foreach ($ongoingTasks as $task) {
-            $entityManager->remove($task);
-        }
-
+        $entityManager->remove($ongoingTask);
         $entityManager->flush();
 
         $this->addFlash('success', 'Installation/uninstallation task canceled successfully.');
         return $this->redirectToRoute('app_rooms');
     }
+
 
     /**
      * @brief Displays analytics for a specific room.

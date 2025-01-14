@@ -10,11 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-<<<<<<<< HEAD:sfapp/migrations/Version20250114091949.php
-final class Version20250114091949 extends AbstractMigration
-========
-final class Version20250113152524 extends AbstractMigration
->>>>>>>> v3-TestsUsAcornill:sfapp/migrations/Version20250113152524.php
+final class Version20250114231530 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -24,12 +20,16 @@ final class Version20250113152524 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_13C61622628DE0D9 ON acquisition_system (db_name)');
+        $this->addSql('ALTER TABLE room DROP previous_state, DROP previous_sensor_state');
         $this->addSql('ALTER TABLE user CHANGE roles roles JSON NOT NULL COMMENT \'(DC2Type:json)\'');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('DROP INDEX UNIQ_13C61622628DE0D9 ON acquisition_system');
+        $this->addSql('ALTER TABLE room ADD previous_state VARCHAR(255) DEFAULT NULL, ADD previous_sensor_state VARCHAR(255) DEFAULT NULL');
         $this->addSql('ALTER TABLE user CHANGE roles roles JSON NOT NULL COMMENT \'(DC2Type:json)\'');
     }
 }

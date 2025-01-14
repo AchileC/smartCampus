@@ -31,6 +31,46 @@
                     </span>
                 </p>
 
+                <div class="last-updated">
+                    <p>
+                        Last Updated :
+                        {% if room.acquisitionSystem and room.acquisitionSystem.lastCapturedAt %}
+                            {% set now = "now"|date("U") %}
+                            {% set last = room.acquisitionSystem.lastCapturedAt|date("U") %}
+                            {% set diff = now - last %}
+
+                            {# Assurer que diff est positif #}
+                            {% if diff < 0 %}
+                                {% set diff = 0 %}
+                            {% endif %}
+
+                            {% set days = (diff / 86400)|round(0, 'floor') %}
+                            {% set hours = ((diff % 86400) / 3600)|round(0, 'floor') %}
+                            {% set minutes = ((diff % 3600) / 60)|round(0, 'floor') %}
+                            {% set seconds = (diff % 60)|round(0, 'floor') %}
+
+                            <strong>
+                                {% if days > 0 %}
+                                    {{ days }} day{{ days > 1 ? 's' : '' }}
+                                {% elseif hours > 0 %}
+                                    {{ hours }} hour{{ hours > 1 ? 's' : '' }}
+                                    {% if minutes > 0 %}
+                                        and {{ minutes }} minute{{ minutes > 1 ? 's' : '' }}
+                                    {% endif %}
+                                {% elseif minutes > 0 %}
+                                    {{ minutes }} minute{{ minutes > 1 ? 's' : '' }}
+                                {% else %}
+                                    {{ seconds }} second{{ seconds > 1 ? 's' : '' }}
+                                {% endif %}
+                            </strong> ago
+                        {% else %}
+                            <span class="not-available text-danger">
+                {{ 'not_available' | trans }}
+            </span>
+                        {% endif %}
+                    </p>
+                </div>
+
                 {% if room.acquisitionSystem %}
                     <ul class="list-group">
                         <!-- Temperature -->

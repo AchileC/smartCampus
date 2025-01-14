@@ -96,6 +96,7 @@ class AcquisitionSystemController extends AbstractController
         // Initialize a new acquisition system with a default state
         $as = new AcquisitionSystem();
         $as->setState(SensorStateEnum::NOT_LINKED);
+        $as->setDbName("temp_dbName");
 
         // Create and process the form
         $form = $this->createForm(AddASType::class, $as, ['validation_groups' => ['Default', 'add']]);
