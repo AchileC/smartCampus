@@ -150,7 +150,7 @@
                                     </p>
                                     {% if is_granted('ROLE_TECHNICIAN') %}
                                         <p class="card-text"><strong>{{ 'sensor' | trans }}:</strong>
-                                            <span class="badge-custom-size
+                                            <span id="sensor_card_state" class="badge-custom-size
                             {% if room.sensorState.value == 'linked' %}bg-success
                             {% elseif room.sensorState.value == 'not linked' %}bg-secondary
                             {% elseif room.sensorState.value == 'not working' %}bg-danger

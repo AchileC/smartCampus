@@ -89,6 +89,226 @@ class RoomControllerTest extends WebTestCase
         return $room;
     }
 
+    protected function assertRoomExists(string $roomName): void
+    {
+        $crawler = $this->client->request('GET', '/en/rooms');
+        $this->assertGreaterThan(
+            0,
+            $crawler->filter('h5.card-title:contains("' . $roomName . '")')->count());
+    }
+
+    protected function assertRoomDoesNotExist(string $roomName): void
+    {
+        $crawler = $this->client->request('GET', '/en/rooms');
+        $this->assertEquals(
+            0,
+            $crawler->filter('h5.card-title:contains("' . $roomName . '")')->count());
+    }
+
+    public function testRoomElementsVisibleForUsersOnly(): void
+    {
+        $this->createRoom(
+            'Not linked room test',
+            RoomStateEnum::NO_DATA,
+            SensorStateEnum::NOT_LINKED
+        );
+
+        $this->createRoom(
+            'Linked room test',
+            RoomStateEnum::STABLE,
+            SensorStateEnum::LINKED
+        );
+
+        $crawler = $this->client->request('GET', '/en/rooms');
+
+        $this->assertSelectorExists('a#details-button');
+        $this->assertSelectorNotExists('a#update_button');
+        $this->assertSelectorNotExists('button#delete_button');
+        $this->assertSelectorNotExists('a#add_room_button');
+        $this->assertSelectorNotExists('span#sensor_card_state');
+
+        $this->assertRoomExists('Linked room test');
+        $this->assertRoomDoesNotExist('Not linked room test');
+
+    }
+
+    public function testRoomElementsVisibleForManagerOnly(): void
+    {
+        $this->createRoom(
+            'Not linked room test',
+            RoomStateEnum::NO_DATA,
+            SensorStateEnum::NOT_LINKED
+        );
+
+        $this->createRoom(
+            'Linked room test',
+            RoomStateEnum::STABLE,
+            SensorStateEnum::LINKED
+        );
+
+        $this->login('manager');
+
+        $crawler = $this->client->request('GET', '/en/rooms');
+
+        $this->assertSelectorExists('a#details-button');
+        $this->assertSelectorExists('a#update_button');
+        $this->assertSelectorExists('button#delete_button');
+        $this->assertSelectorExists('a#add_room_button');
+
+        $this->assertSelectorNotExists('span#sensor_card_state');
+
+        $this->assertRoomExists('Linked room test');
+        $this->assertRoomExists('Not linked room test');
+    }
+
+    public function testRoomElementsVisibleForTechnicianOnly(): void
+    {
+        {
+            $this->createRoom(
+                'Not linked room test',
+                RoomStateEnum::NO_DATA,
+                SensorStateEnum::NOT_LINKED
+            );
+
+            $this->createRoom(
+                'Linked room test',
+                RoomStateEnum::STABLE,
+                SensorStateEnum::LINKED
+            );
+
+            $this->login('technician');
+
+            $crawler = $this->client->request('GET', '/en/rooms');
+
+            $this->assertSelectorExists('a#details-button');
+            $this->assertSelectorExists('span#sensor_card_state');
+
+            $this->assertSelectorNotExists('a#update_button');
+            $this->assertSelectorNotExists('button#delete_button');
+            $this->assertSelectorNotExists('a#add_room_button');
+
+            $this->assertRoomExists('Linked room test');
+            $this->assertRoomExists('Not linked room test');
+        }
+    }
+
+    public function testRoomNameAndStateDisplayed(): void
+    {
+
+        // login
+
+        $this->login('technician');
+
+        // Create rooms
+        $this->createRoom(
+            'At risk room',
+            RoomStateEnum::AT_RISK,
+            SensorStateEnum::LINKED
+        );
+
+        $this->createRoom(
+            'Stable room',
+            RoomStateEnum::STABLE,
+            SensorStateEnum::LINKED
+        );
+
+        $this->createRoom(
+            'Critical room',
+            RoomStateEnum::CRITICAL,
+            SensorStateEnum::LINKED
+        );
+
+        $this->createRoom(
+            'No Data room',
+            RoomStateEnum::NO_DATA,
+            SensorStateEnum::NOT_LINKED
+        );
+
+        $crawler = $this->client->request('GET', '/en/rooms');
+
+        // Find the cards
+        $riskRoom = $crawler->filterXPath("//div[contains(@class, 'card') and .//h5[contains(text(), 'At risk room')]]");
+        $stableRoom = $crawler->filterXPath("//div[contains(@class, 'card') and .//h5[contains(text(), 'Stable room')]]");
+        $criticalRoom = $crawler->filterXPath("//div[contains(@class, 'card') and .//h5[contains(text(), 'Critical room')]]");
+        $noneRoom = $crawler->filterXPath("//div[contains(@class, 'card') and .//h5[contains(text(), 'No Data room')]]");
+
+        // Verify the presence of the rooms
+        $this->assertGreaterThan(
+            0,
+            $riskRoom->count(),
+            'The "At risk room" was not displayed.'
+        );
+
+        $this->assertGreaterThan(
+            0,
+            $stableRoom->count(),
+            'The "Stable room" was not displayed.'
+        );
+
+        $this->assertGreaterThan(
+            0,
+            $criticalRoom->count(),
+            'The "Critical room" was not displayed.'
+        );
+
+        $this->assertGreaterThan(
+            0,
+            $noneRoom->count(),
+            'The "No Data room" was not displayed.'
+        );
+
+        // Verify the names
+        $this->assertEquals(
+            'At risk room',
+            $riskRoom->filter('h5.card-title')->text(),
+            'The displayed name for the "At risk room" is not correct.'
+        );
+
+        $this->assertEquals(
+            'Stable room',
+            $stableRoom->filter('h5.card-title')->text(),
+            'The displayed name for the "Stable room" is not correct.'
+        );
+
+        $this->assertEquals(
+            'Critical room',
+            $criticalRoom->filter('h5.card-title')->text(),
+            'The displayed name for the "Critical room" is not correct.'
+        );
+
+        $this->assertEquals(
+            'No Data room',
+            $noneRoom->filter('h5.card-title')->text(),
+            'The displayed name for the "No Data room" is not correct.'
+        );
+
+        // Verify the states
+        $this->assertEquals(
+            'AT RISK',
+            trim($riskRoom->filter('span.badge-custom-size')->text()),
+            'The displayed state for the "At risk room" is not correct.'
+        );
+
+        // Get the correct rooms URL using the router
+        $this->assertEquals(
+            'STABLE',
+            trim($stableRoom->filter('span.badge-custom-size')->text()),
+            'The displayed state for the "Stable room" is not correct.'
+        );
+
+        $this->assertEquals(
+            'CRITICAL',
+            trim($criticalRoom->filter('span.badge-custom-size')->text()),
+            'The displayed state for the "Critical room" is not correct.'
+        );
+
+        $this->assertEquals(
+            'NO DATA',
+            trim($noneRoom->filter('span.badge-custom-size')->text()),
+            'The displayed state for the "No Data room" is not correct.'
+        );
+    }
+
     public function testAddRoomAsManagerSuccess(): void
     {
         $this->login('manager');
