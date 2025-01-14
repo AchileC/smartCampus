@@ -254,9 +254,17 @@ class ActionController extends AbstractController
 
         $action->setState(ActionStateEnum::DONE); // Change state to DONE
 
-        $manager = $userRepository->findOneByExactRole('ROLE_MANAGER');
+        $managers = $userRepository->findByRole('ROLE_MANAGER');
 
-        if ($manager) {
+        // Ajout de la vérification pour s'assurer qu'il y a au moins un manager
+        if (empty($managers)) {
+            $managerUser = $userRepository->findOneBy(['username' => 'manager']);
+            if ($managerUser) {
+                $managers = [$managerUser];
+            }
+        }
+
+        foreach ($managers as $manager) {
             $notification = new Notification();
             $notification->setRead(false);
             $notification->setMessage(sprintf(
@@ -269,9 +277,9 @@ class ActionController extends AbstractController
             $notification->setRoom($action->getRoom());
 
             $entityManager->persist($notification);
-            $entityManager->flush();
-        }
 
+        }
+        $entityManager->flush();
         $this->addFlash('success', 'Action has been validated.');
         return $this->redirectToRoute('app_todolist');
     }
