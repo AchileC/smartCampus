@@ -48,6 +48,8 @@ security:
         - { path: "^/[a-z]{2}/as", roles: ROLE_TECHNICIAN }
         - { path: "^/[a-z]{2}/todolist", roles: ROLE_TECHNICIAN }
         - { path: "^/[a-z]{2}/home", roles: IS_AUTHENTICATED_FULLY }
+        - { path: "^/[a-z]{2}/rooms/[a-zA-Z0-9]+/analytics/[a-zA-Z0-9]+$", roles: ROLE_MANAGER }
+
 
         # Default: All other routes require at least ROLE_USER
         # - { path: "^/[a-z]{2}/", roles: IS_AUTHENTICATED_FULLY }
