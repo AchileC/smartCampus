@@ -101,7 +101,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00023">23</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00024">24</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a9f9d021cf216a17be83bd26bfaa4c760" name="a9f9d021cf216a17be83bd26bfaa4c760"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9f9d021cf216a17be83bd26bfaa4c760">&#9670;&#160;</a></span>__construct()</h2>
@@ -129,11 +129,11 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00028">28</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   29</span>    {</div>
-<div class="line"><span class="lineno">   30</span>        $this-&gt;userRepository = $userRepository;</div>
-<div class="line"><span class="lineno">   31</span>        $this-&gt;router = $router;</div>
-<div class="line"><span class="lineno">   32</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00029">29</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   30</span>{</div>
+<div class="line"><span class="lineno">   31</span>    $this-&gt;userRepository = $userRepository;</div>
+<div class="line"><span class="lineno">   32</span>    $this-&gt;router = $router;</div>
+<div class="line"><span class="lineno">   33</span>}</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -153,30 +153,34 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00039">39</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   39</span>                                                  : Passport</div>
-<div class="line"><span class="lineno">   40</span>    {</div>
-<div class="line"><span class="lineno">   41</span>        $username = $request-&gt;request-&gt;get(<span class="stringliteral">&#39;username&#39;</span>);</div>
-<div class="line"><span class="lineno">   42</span>        $password = $request-&gt;request-&gt;get(<span class="stringliteral">&#39;password&#39;</span>);</div>
-<div class="line"><span class="lineno">   43</span> </div>
-<div class="line"><span class="lineno">   44</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Passport(</div>
-<div class="line"><span class="lineno">   45</span>            <span class="keyword">new</span> UserBadge($username, function($userIdentifier) {</div>
-<div class="line"><span class="lineno">   46</span>                <span class="comment">// optionally pass a callback to load the User manually</span></div>
-<div class="line"><span class="lineno">   47</span>                $user = $this-&gt;userRepository-&gt;findOneBy([<span class="stringliteral">&#39;username&#39;</span> =&gt; $userIdentifier]);</div>
-<div class="line"><span class="lineno">   48</span>                <span class="keywordflow">if</span> (!$user) {</div>
-<div class="line"><span class="lineno">   49</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> UserNotFoundException();</div>
-<div class="line"><span class="lineno">   50</span>                }</div>
-<div class="line"><span class="lineno">   51</span>                <span class="keywordflow">return</span> $user;</div>
-<div class="line"><span class="lineno">   52</span>            }),</div>
-<div class="line"><span class="lineno">   53</span>            <span class="keyword">new</span> PasswordCredentials($password),</div>
-<div class="line"><span class="lineno">   54</span>            [</div>
-<div class="line"><span class="lineno">   55</span>                <span class="keyword">new</span> CsrfTokenBadge(</div>
-<div class="line"><span class="lineno">   56</span>                    <span class="stringliteral">&#39;authenticate&#39;</span>,</div>
-<div class="line"><span class="lineno">   57</span>                    $request-&gt;request-&gt;get(<span class="stringliteral">&#39;_csrf_token&#39;</span>)</div>
-<div class="line"><span class="lineno">   58</span>                ),</div>
-<div class="line"><span class="lineno">   59</span>            ]</div>
-<div class="line"><span class="lineno">   60</span>        );</div>
-<div class="line"><span class="lineno">   61</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00040">40</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   40</span>                                                  : Passport</div>
+<div class="line"><span class="lineno">   41</span>    {</div>
+<div class="line"><span class="lineno">   42</span>        $username = $request-&gt;request-&gt;get(<span class="stringliteral">&#39;username&#39;</span>);</div>
+<div class="line"><span class="lineno">   43</span>        $password = $request-&gt;request-&gt;get(<span class="stringliteral">&#39;password&#39;</span>);</div>
+<div class="line"><span class="lineno">   44</span> </div>
+<div class="line"><span class="lineno">   45</span>        <span class="keywordflow">if</span> (empty($username) || empty($password)) {</div>
+<div class="line"><span class="lineno">   46</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> AuthenticationException(<span class="stringliteral">&#39;Invalid username or password.&#39;</span>);</div>
+<div class="line"><span class="lineno">   47</span>        }</div>
+<div class="line"><span class="lineno">   48</span> </div>
+<div class="line"><span class="lineno">   49</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> Passport(</div>
+<div class="line"><span class="lineno">   50</span>            <span class="keyword">new</span> UserBadge($username, function($userIdentifier) {</div>
+<div class="line"><span class="lineno">   51</span>                <span class="comment">// optionally pass a callback to load the User manually</span></div>
+<div class="line"><span class="lineno">   52</span>                $user = $this-&gt;userRepository-&gt;findOneBy([<span class="stringliteral">&#39;username&#39;</span> =&gt; $userIdentifier]);</div>
+<div class="line"><span class="lineno">   53</span>                <span class="keywordflow">if</span> (!$user) {</div>
+<div class="line"><span class="lineno">   54</span>                    <span class="keywordflow">throw</span> <span class="keyword">new</span> UserNotFoundException();</div>
+<div class="line"><span class="lineno">   55</span>                }</div>
+<div class="line"><span class="lineno">   56</span>                <span class="keywordflow">return</span> $user;</div>
+<div class="line"><span class="lineno">   57</span>            }),</div>
+<div class="line"><span class="lineno">   58</span>            <span class="keyword">new</span> PasswordCredentials($password),</div>
+<div class="line"><span class="lineno">   59</span>            [</div>
+<div class="line"><span class="lineno">   60</span>                <span class="keyword">new</span> CsrfTokenBadge(</div>
+<div class="line"><span class="lineno">   61</span>                    <span class="stringliteral">&#39;authenticate&#39;</span>,</div>
+<div class="line"><span class="lineno">   62</span>                    $request-&gt;request-&gt;get(<span class="stringliteral">&#39;_csrf_token&#39;</span>)</div>
+<div class="line"><span class="lineno">   63</span>                ),</div>
+<div class="line"><span class="lineno">   64</span>            ]</div>
+<div class="line"><span class="lineno">   65</span>        );</div>
+<div class="line"><span class="lineno">   66</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -206,15 +210,15 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00073">73</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   73</span>                                                                                                 : ?Response</div>
-<div class="line"><span class="lineno">   74</span>    {</div>
-<div class="line"><span class="lineno">   75</span>        $locale = $request-&gt;getSession()-&gt;get(<span class="stringliteral">&#39;_locale&#39;</span>, <span class="stringliteral">&#39;en&#39;</span>);</div>
-<div class="line"><span class="lineno">   76</span>        $request-&gt;getSession()-&gt;set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);</div>
-<div class="line"><span class="lineno">   77</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> RedirectResponse(</div>
-<div class="line"><span class="lineno">   78</span>            $this-&gt;router-&gt;generate(<span class="stringliteral">&#39;login&#39;</span>, [<span class="stringliteral">&#39;_locale&#39;</span> =&gt; $locale])</div>
-<div class="line"><span class="lineno">   79</span>        );</div>
-<div class="line"><span class="lineno">   80</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00078">78</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   78</span>                                                                                                 : ?Response</div>
+<div class="line"><span class="lineno">   79</span>    {</div>
+<div class="line"><span class="lineno">   80</span>        $locale = $request-&gt;getSession()-&gt;get(<span class="stringliteral">&#39;_locale&#39;</span>, <span class="stringliteral">&#39;en&#39;</span>);</div>
+<div class="line"><span class="lineno">   81</span>        $request-&gt;getSession()-&gt;set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);</div>
+<div class="line"><span class="lineno">   82</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> RedirectResponse(</div>
+<div class="line"><span class="lineno">   83</span>            $this-&gt;router-&gt;generate(<span class="stringliteral">&#39;app_login&#39;</span>, [<span class="stringliteral">&#39;_locale&#39;</span> =&gt; $locale])</div>
+<div class="line"><span class="lineno">   84</span>        );</div>
+<div class="line"><span class="lineno">   85</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -250,16 +254,16 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00063">63</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   63</span>                                                                                                          : ?Response</div>
-<div class="line"><span class="lineno">   64</span>    {</div>
-<div class="line"><span class="lineno">   65</span>        <span class="comment">// Récupère la locale depuis la session</span></div>
-<div class="line"><span class="lineno">   66</span>        $locale = $request-&gt;getSession()-&gt;get(<span class="stringliteral">&#39;_locale&#39;</span>, <span class="stringliteral">&#39;en&#39;</span>);</div>
-<div class="line"><span class="lineno">   67</span>        <span class="comment">// Redirige vers la route app_home en passant la locale</span></div>
-<div class="line"><span class="lineno">   68</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> RedirectResponse(</div>
-<div class="line"><span class="lineno">   69</span>            $this-&gt;router-&gt;generate(<span class="stringliteral">&#39;app_home&#39;</span>, [<span class="stringliteral">&#39;_locale&#39;</span> =&gt; $locale])</div>
-<div class="line"><span class="lineno">   70</span>        );</div>
-<div class="line"><span class="lineno">   71</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00068">68</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   68</span>                                                                                                          : ?Response</div>
+<div class="line"><span class="lineno">   69</span>    {</div>
+<div class="line"><span class="lineno">   70</span>        <span class="comment">// Récupère la locale depuis la session</span></div>
+<div class="line"><span class="lineno">   71</span>        $locale = $request-&gt;getSession()-&gt;get(<span class="stringliteral">&#39;_locale&#39;</span>, <span class="stringliteral">&#39;en&#39;</span>);</div>
+<div class="line"><span class="lineno">   72</span>        <span class="comment">// Redirige vers la route app_home en passant la locale</span></div>
+<div class="line"><span class="lineno">   73</span>        <span class="keywordflow">return</span> <span class="keyword">new</span> RedirectResponse(</div>
+<div class="line"><span class="lineno">   74</span>            $this-&gt;router-&gt;generate(<span class="stringliteral">&#39;app_home&#39;</span>, [<span class="stringliteral">&#39;_locale&#39;</span> =&gt; $locale])</div>
+<div class="line"><span class="lineno">   75</span>        );</div>
+<div class="line"><span class="lineno">   76</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -279,11 +283,11 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00034">34</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   34</span>                                              : ?<span class="keywordtype">bool</span></div>
-<div class="line"><span class="lineno">   35</span>    {</div>
-<div class="line"><span class="lineno">   36</span>        <span class="keywordflow">return</span> (preg_match(<span class="stringliteral">&#39;#^/[a-z]{2}/login$#&#39;</span>, $request-&gt;getPathInfo()) &amp;&amp; $request-&gt;isMethod(<span class="stringliteral">&#39;POST&#39;</span>));</div>
-<div class="line"><span class="lineno">   37</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html#l00035">35</a> of file <a class="el" href="../../d7/dce/LoginFormAuthenticator_8php_source.html">LoginFormAuthenticator.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   35</span>                                              : ?<span class="keywordtype">bool</span></div>
+<div class="line"><span class="lineno">   36</span>    {</div>
+<div class="line"><span class="lineno">   37</span>        <span class="keywordflow">return</span> ($request-&gt;getPathInfo() === <span class="stringliteral">&#39;/login&#39;</span> || preg_match(<span class="stringliteral">&#39;#^/[a-z]{2}/login$#&#39;</span>, $request-&gt;getPathInfo()) &amp;&amp; $request-&gt;isMethod(<span class="stringliteral">&#39;POST&#39;</span>));</div>
+<div class="line"><span class="lineno">   38</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>

@@ -79,30 +79,38 @@ $(function() {
   <div class="headertitle"><div class="title">App::Service::RoomSensorService Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><a class="el" href="../../dd/d89/namespaceApp_1_1Service.html">Service</a> responsible for handling sensor data and updating Room states.  
+ <a href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af68f6cd4c26a8aadea851f723614ae04" id="r_af68f6cd4c26a8aadea851f723614ae04"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#af68f6cd4c26a8aadea851f723614ae04">__construct</a> (<a class="el" href="../../d7/d60/classApp_1_1Repository_1_1ThresholdRepository.html">ThresholdRepository</a> $thresholdRepository, HttpClientInterface $httpClient, EntityManagerInterface $entityManager, string $jsonDirectory)</td></tr>
+<tr class="memdesc:af68f6cd4c26a8aadea851f723614ae04"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html" title="Service responsible for handling sensor data and updating Room states.">RoomSensorService</a> constructor.  <br /></td></tr>
 <tr class="separator:af68f6cd4c26a8aadea851f723614ae04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12898da04b72d6327b9bbbcd00857882" id="r_a12898da04b72d6327b9bbbcd00857882"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a12898da04b72d6327b9bbbcd00857882">fetchAndStoreLiveDataForAS</a> (<a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a> $acquisitionSystem)</td></tr>
-<tr class="memdesc:a12898da04b72d6327b9bbbcd00857882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches "live" sensor data from the external API for the given AcquisitionSystem, then writes data to both the live JSON file and the history JSON file.  <br /></td></tr>
-<tr class="separator:a12898da04b72d6327b9bbbcd00857882"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95f4c8d66a1e020e4dc3a302245b7bb2" id="r_a95f4c8d66a1e020e4dc3a302245b7bb2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a95f4c8d66a1e020e4dc3a302245b7bb2">loadSensorData</a> (<a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a> $acquisitionSystem)</td></tr>
-<tr class="memdesc:a95f4c8d66a1e020e4dc3a302245b7bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loads sensor data from the local "live" JSON file for the given AcquisitionSystem.  <br /></td></tr>
-<tr class="separator:a95f4c8d66a1e020e4dc3a302245b7bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff79b2e11f513cda9ccd2e49226d8997" id="r_aff79b2e11f513cda9ccd2e49226d8997"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#aff79b2e11f513cda9ccd2e49226d8997">updateAcquisitionSystemFromJson</a> (<a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a> $acquisitionSystem)</td></tr>
-<tr class="memdesc:aff79b2e11f513cda9ccd2e49226d8997"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the AcquisitionSystem’s temperature, humidity, and CO2 from the JSON file.  <br /></td></tr>
-<tr class="separator:aff79b2e11f513cda9ccd2e49226d8997"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ddbd0ebe77b0a4c7c1be9931a3e0cd4" id="r_a8ddbd0ebe77b0a4c7c1be9931a3e0cd4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a8ddbd0ebe77b0a4c7c1be9931a3e0cd4">updateAcquisitionSystemFromApi</a> (<a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a> $acquisitionSystem)</td></tr>
+<tr class="memdesc:a8ddbd0ebe77b0a4c7c1be9931a3e0cd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the given AcquisitionSystem entity with the latest sensor data from the external API.  <br /></td></tr>
+<tr class="separator:a8ddbd0ebe77b0a4c7c1be9931a3e0cd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0295c01d0459bf2679ac6e9512bbadd" id="r_ac0295c01d0459bf2679ac6e9512bbadd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#ac0295c01d0459bf2679ac6e9512bbadd">updateRoomState</a> (<a class="el" href="../../d7/db3/classApp_1_1Entity_1_1Room.html">Room</a> $room)</td></tr>
-<tr class="memdesc:ac0295c01d0459bf2679ac6e9512bbadd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the state of the given room based on sensor data and thresholds. Also handles the creation of maintenance tasks if sensor data is not working.  <br /></td></tr>
+<tr class="memdesc:ac0295c01d0459bf2679ac6e9512bbadd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates the state of the given room based on sensor data and thresholds. Also handles creation of maintenance tasks if sensor data is invalid.  <br /></td></tr>
 <tr class="separator:ac0295c01d0459bf2679ac6e9512bbadd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d7931766e6eeeaf1b56a0bfc91c2b69" id="r_a0d7931766e6eeeaf1b56a0bfc91c2b69"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a0d7931766e6eeeaf1b56a0bfc91c2b69">fetchHistoricalDataFromApi</a> (<a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a> $acquisitionSystem, string $range)</td></tr>
-<tr class="memdesc:a0d7931766e6eeeaf1b56a0bfc91c2b69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetch historical data from the external API for a specific range (week, month). Then store it in a local JSON file.  <br /></td></tr>
+<tr class="memdesc:a0d7931766e6eeeaf1b56a0bfc91c2b69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetches historical data (week or month) from the external API and stores it in a local JSON file (in the /history directory).  <br /></td></tr>
 <tr class="separator:a0d7931766e6eeeaf1b56a0bfc91c2b69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00022">22</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
+<div class="textblock"><p><a class="el" href="../../dd/d89/namespaceApp_1_1Service.html">Service</a> responsible for handling sensor data and updating Room states. </p>
+<p>This service performs the following tasks:</p><ul>
+<li>Fetches sensor data from an external API</li>
+<li>Updates the AcquisitionSystem entity with the fetched data</li>
+<li>Determines the state of a Room based on thresholds and heating periods</li>
+<li>Creates maintenance tasks when necessary</li>
+</ul>
+<dl class="section author"><dt>Author</dt><dd></dd></dl>
+<dl class="section version"><dt>Version</dt><dd>1.0 </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>1.0 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00035">35</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="af68f6cd4c26a8aadea851f723614ae04" name="af68f6cd4c26a8aadea851f723614ae04"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af68f6cd4c26a8aadea851f723614ae04">&#9670;&#160;</a></span>__construct()</h2>
@@ -142,60 +150,24 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00032">32</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   37</span>      {</div>
-<div class="line"><span class="lineno">   38</span>        $this-&gt;thresholdRepository = $thresholdRepository;</div>
-<div class="line"><span class="lineno">   39</span>        $this-&gt;httpClient          = $httpClient;</div>
-<div class="line"><span class="lineno">   40</span>        $this-&gt;entityManager       = $entityManager;</div>
-<div class="line"><span class="lineno">   41</span>        $this-&gt;jsonDirectory       = $jsonDirectory;</div>
-<div class="line"><span class="lineno">   42</span>    }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="a12898da04b72d6327b9bbbcd00857882" name="a12898da04b72d6327b9bbbcd00857882"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12898da04b72d6327b9bbbcd00857882">&#9670;&#160;</a></span>fetchAndStoreLiveDataForAS()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">App::Service::RoomSensorService::fetchAndStoreLiveDataForAS </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a>&#160;</td>
-          <td class="paramname"><em>$acquisitionSystem</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Fetches "live" sensor data from the external API for the given AcquisitionSystem, then writes data to both the live JSON file and the history JSON file. </p>
+<p><a class="el" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html" title="Service responsible for handling sensor data and updating Room states.">RoomSensorService</a> constructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramtype">AcquisitionSystem</td><td class="paramname">$acquisitionSystem</td><td></td></tr>
+    <tr><td class="paramtype">ThresholdRepository</td><td class="paramname">$thresholdRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> for thresholds </td></tr>
+    <tr><td class="paramtype">HttpClientInterface</td><td class="paramname">$httpClient</td><td>Symfony HTTP client </td></tr>
+    <tr><td class="paramtype">EntityManagerInterface</td><td class="paramname">$entityManager</td><td><a class="el" href="../../d8/da9/namespaceApp_1_1Entity.html">Entity</a> manager </td></tr>
+    <tr><td class="paramtype">string</td><td class="paramname">$jsonDirectory</td><td>Path to the JSON directory (for history) </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname"></td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<p>RuntimeException if unable to retrieve data or no data </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00063">63</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   63</span>                                                                                    : <span class="keywordtype">void</span></div>
-<div class="line"><span class="lineno">   64</span>    {</div>
-<div class="line"><span class="lineno">   65</span>        <span class="comment">// 1. Récupération depuis l’API</span></div>
-<div class="line"><span class="lineno">   66</span>        $sensorData = $this-&gt;fetchSensorDataFromApi($acquisitionSystem);</div>
-<div class="line"><span class="lineno">   67</span> </div>
-<div class="line"><span class="lineno">   68</span>        <span class="comment">// 3. Construction des paths (live et history)</span></div>
-<div class="line"><span class="lineno">   69</span>        $localisation = $sensorData[0][<span class="stringliteral">&#39;localisation&#39;</span>] ?? <span class="stringliteral">&#39;unknown&#39;</span>;</div>
-<div class="line"><span class="lineno">   70</span>        $liveFilePath = $this-&gt;jsonDirectory . <span class="stringliteral">&#39;/live/&#39;</span> . $localisation . <span class="stringliteral">&#39;.json&#39;</span>;</div>
-<div class="line"><span class="lineno">   71</span> </div>
-<div class="line"><span class="lineno">   72</span>        <span class="comment">// 4. Écrire le &quot;live&quot;</span></div>
-<div class="line"><span class="lineno">   73</span>        $this-&gt;writeLiveDataToFile($liveFilePath, $sensorData);</div>
-<div class="line"><span class="lineno">   74</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00069">69</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   74</span>      {</div>
+<div class="line"><span class="lineno">   75</span>        $this-&gt;thresholdRepository = $thresholdRepository;</div>
+<div class="line"><span class="lineno">   76</span>        $this-&gt;httpClient          = $httpClient;</div>
+<div class="line"><span class="lineno">   77</span>        $this-&gt;entityManager       = $entityManager;</div>
+<div class="line"><span class="lineno">   78</span>        $this-&gt;jsonDirectory       = $jsonDirectory;</div>
+<div class="line"><span class="lineno">   79</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -225,90 +197,87 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Fetch historical data from the external API for a specific range (week, month). Then store it in a local JSON file. </p>
+<p>Fetches historical data (week or month) from the external API and stores it in a local JSON file (in the /history directory). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramtype">AcquisitionSystem</td><td class="paramname">$acquisitionSystem</td><td></td></tr>
-    <tr><td class="paramtype">string</td><td class="paramname">$range</td><td></td></tr>
+    <tr><td class="paramtype">AcquisitionSystem</td><td class="paramname">$acquisitionSystem</td><td>The AcquisitionSystem entity containing connection info </td></tr>
+    <tr><td class="paramtype">string</td><td class="paramname">$range</td><td>The range of data to fetch ("week" or "month")</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>array The array of data fetched</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"></td><td></td></tr>
   </table>
   </dd>
 </dl>
-<p>RuntimeException if any API error </p>
+<p>RuntimeException If any API error occurs </p><dl class="section return"><dt>Returns</dt><dd>array The array of fetched data </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00399">399</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  399</span>                                                                                                   : array</div>
-<div class="line"><span class="lineno">  400</span>    {</div>
-<div class="line"><span class="lineno">  401</span>        $url = <span class="stringliteral">&#39;https://sae34.k8s.iut-larochelle.fr/api/captures/interval&#39;</span>;</div>
-<div class="line"><span class="lineno">  402</span>        $sensorTypes = [<span class="stringliteral">&#39;temp&#39;</span>, <span class="stringliteral">&#39;hum&#39;</span>, <span class="stringliteral">&#39;co2&#39;</span>];</div>
-<div class="line"><span class="lineno">  403</span>        $now = new \DateTime();</div>
-<div class="line"><span class="lineno">  404</span>        $startDate = clone $now;</div>
-<div class="line"><span class="lineno">  405</span> </div>
-<div class="line"><span class="lineno">  406</span>        <span class="comment">// Déterminer la plage de dates</span></div>
-<div class="line"><span class="lineno">  407</span>        <span class="keywordflow">switch</span> ($range) {</div>
-<div class="line"><span class="lineno">  408</span>            <span class="keywordflow">case</span> <span class="stringliteral">&#39;week&#39;</span>:</div>
-<div class="line"><span class="lineno">  409</span>                $startDate-&gt;modify(<span class="stringliteral">&#39;-7 days&#39;</span>);</div>
-<div class="line"><span class="lineno">  410</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  411</span>            <span class="keywordflow">case</span> <span class="stringliteral">&#39;month&#39;</span>:</div>
-<div class="line"><span class="lineno">  412</span>                $startDate-&gt;modify(<span class="stringliteral">&#39;-30 days&#39;</span>);</div>
-<div class="line"><span class="lineno">  413</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  414</span>            <span class="keywordflow">default</span>:</div>
-<div class="line"><span class="lineno">  415</span>                $startDate-&gt;modify(<span class="stringliteral">&#39;-30 days&#39;</span>);</div>
-<div class="line"><span class="lineno">  416</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  417</span>        }</div>
-<div class="line"><span class="lineno">  418</span> </div>
-<div class="line"><span class="lineno">  419</span>        $data = [];</div>
-<div class="line"><span class="lineno">  420</span>        $dbName = $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a9ca9b593c235803eb63e94cc43599527">getDbName</a>(); <span class="comment">// Récupérer dbName dynamique</span></div>
-<div class="line"><span class="lineno">  421</span>        <span class="keywordflow">foreach</span> ($sensorTypes as $type) {</div>
-<div class="line"><span class="lineno">  422</span>            <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  423</span>                $response = $this-&gt;httpClient-&gt;request(<span class="stringliteral">&#39;GET&#39;</span>, $url, [</div>
-<div class="line"><span class="lineno">  424</span>                    <span class="stringliteral">&#39;headers&#39;</span> =&gt; [</div>
-<div class="line"><span class="lineno">  425</span>                        <span class="stringliteral">&#39;dbname&#39;</span>   =&gt; $dbName,</div>
-<div class="line"><span class="lineno">  426</span>                        <span class="stringliteral">&#39;username&#39;</span> =&gt; <span class="stringliteral">&#39;m1eq2&#39;</span>,</div>
-<div class="line"><span class="lineno">  427</span>                        <span class="stringliteral">&#39;userpass&#39;</span> =&gt; <span class="stringliteral">&#39;kabxaq-4qopra-quXvit&#39;</span>,</div>
-<div class="line"><span class="lineno">  428</span>                    ],</div>
-<div class="line"><span class="lineno">  429</span>                    <span class="stringliteral">&#39;query&#39;</span> =&gt; [</div>
-<div class="line"><span class="lineno">  430</span>                        <span class="stringliteral">&#39;nom&#39;</span>   =&gt; $type,</div>
-<div class="line"><span class="lineno">  431</span>                        <span class="stringliteral">&#39;date1&#39;</span> =&gt; $startDate-&gt;format(<span class="stringliteral">&#39;Y-m-d&#39;</span>),</div>
-<div class="line"><span class="lineno">  432</span>                        <span class="stringliteral">&#39;date2&#39;</span> =&gt; $now-&gt;format(<span class="stringliteral">&#39;Y-m-d&#39;</span>),</div>
-<div class="line"><span class="lineno">  433</span>                    ],</div>
-<div class="line"><span class="lineno">  434</span>                ]);</div>
-<div class="line"><span class="lineno">  435</span> </div>
-<div class="line"><span class="lineno">  436</span>                <span class="keywordflow">if</span> ($response-&gt;getStatusCode() === 200) {</div>
-<div class="line"><span class="lineno">  437</span>                    $responseData = $response-&gt;toArray();</div>
-<div class="line"><span class="lineno">  438</span>                    $data[$type] = $responseData;</div>
-<div class="line"><span class="lineno">  439</span>                } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  440</span>                    <span class="keywordflow">throw</span> new \RuntimeException(<span class="stringliteral">&quot;API error: {$response-&gt;getStatusCode()}&quot;</span>);</div>
-<div class="line"><span class="lineno">  441</span>                }</div>
-<div class="line"><span class="lineno">  442</span>            } <span class="keywordflow">catch</span> (\Exception $e) {</div>
-<div class="line"><span class="lineno">  443</span>                <span class="keywordflow">throw</span> new \RuntimeException(<span class="stringliteral">&#39;Error fetching data: &#39;</span> . $e-&gt;getMessage());</div>
-<div class="line"><span class="lineno">  444</span>            }</div>
-<div class="line"><span class="lineno">  445</span>        }</div>
-<div class="line"><span class="lineno">  446</span> </div>
-<div class="line"><span class="lineno">  447</span>        $historyFile = $this-&gt;jsonDirectory . <span class="stringliteral">&#39;/history/&#39;</span> . $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a87966a38d44cabbad9c3ff8dc44ececd">getRoom</a>()-&gt;getName() . <span class="stringliteral">&#39;_history.json&#39;</span>;</div>
-<div class="line"><span class="lineno">  448</span>        file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));</div>
-<div class="line"><span class="lineno">  449</span> </div>
-<div class="line"><span class="lineno">  450</span>        <span class="keywordflow">return</span> $data;</div>
-<div class="line"><span class="lineno">  451</span>    }</div>
-<div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a87966a38d44cabbad9c3ff8dc44ececd"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a87966a38d44cabbad9c3ff8dc44ececd">App::Entity::AcquisitionSystem::getRoom</a></div><div class="ttdeci">getRoom()</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00099">AcquisitionSystem.php:99</a></div></div>
+<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00377">377</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  377</span>                                                                                                   : array</div>
+<div class="line"><span class="lineno">  378</span>    {</div>
+<div class="line"><span class="lineno">  379</span>        $url = <span class="stringliteral">&#39;https://sae34.k8s.iut-larochelle.fr/api/captures/interval&#39;</span>;</div>
+<div class="line"><span class="lineno">  380</span>        $sensorTypes = [<span class="stringliteral">&#39;temp&#39;</span>, <span class="stringliteral">&#39;hum&#39;</span>, <span class="stringliteral">&#39;co2&#39;</span>];</div>
+<div class="line"><span class="lineno">  381</span>        $now = new \DateTime();</div>
+<div class="line"><span class="lineno">  382</span>        $startDate = clone $now;</div>
+<div class="line"><span class="lineno">  383</span>        $now-&gt;modify(<span class="stringliteral">&#39;+1 day&#39;</span>);</div>
+<div class="line"><span class="lineno">  384</span> </div>
+<div class="line"><span class="lineno">  385</span>        <span class="comment">// Determine date range (7 days for &quot;week&quot;, 30 days for &quot;month&quot;)</span></div>
+<div class="line"><span class="lineno">  386</span>        <span class="keywordflow">switch</span> ($range) {</div>
+<div class="line"><span class="lineno">  387</span>            <span class="keywordflow">case</span> <span class="stringliteral">&#39;week&#39;</span>:</div>
+<div class="line"><span class="lineno">  388</span>                $startDate-&gt;modify(<span class="stringliteral">&#39;-7 days&#39;</span>);</div>
+<div class="line"><span class="lineno">  389</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  390</span>            <span class="keywordflow">case</span> <span class="stringliteral">&#39;month&#39;</span>:</div>
+<div class="line"><span class="lineno">  391</span>                $startDate-&gt;modify(<span class="stringliteral">&#39;-30 days&#39;</span>);</div>
+<div class="line"><span class="lineno">  392</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  393</span>        }</div>
+<div class="line"><span class="lineno">  394</span> </div>
+<div class="line"><span class="lineno">  395</span>        $data = [];</div>
+<div class="line"><span class="lineno">  396</span>        $dbName = $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a9ca9b593c235803eb63e94cc43599527">getDbName</a>();</div>
+<div class="line"><span class="lineno">  397</span> </div>
+<div class="line"><span class="lineno">  398</span>        <span class="keywordflow">foreach</span> ($sensorTypes as $type) {</div>
+<div class="line"><span class="lineno">  399</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  400</span>                $response = $this-&gt;httpClient-&gt;request(<span class="stringliteral">&#39;GET&#39;</span>, $url, [</div>
+<div class="line"><span class="lineno">  401</span>                    <span class="stringliteral">&#39;headers&#39;</span> =&gt; [</div>
+<div class="line"><span class="lineno">  402</span>                        <span class="stringliteral">&#39;dbname&#39;</span>   =&gt; $dbName,</div>
+<div class="line"><span class="lineno">  403</span>                        <span class="stringliteral">&#39;username&#39;</span> =&gt; <span class="stringliteral">&#39;m1eq2&#39;</span>,</div>
+<div class="line"><span class="lineno">  404</span>                        <span class="stringliteral">&#39;userpass&#39;</span> =&gt; <span class="stringliteral">&#39;kabxaq-4qopra-quXvit&#39;</span>,</div>
+<div class="line"><span class="lineno">  405</span>                    ],</div>
+<div class="line"><span class="lineno">  406</span>                    <span class="stringliteral">&#39;query&#39;</span> =&gt; [</div>
+<div class="line"><span class="lineno">  407</span>                        <span class="stringliteral">&#39;nom&#39;</span>   =&gt; $type,</div>
+<div class="line"><span class="lineno">  408</span>                        <span class="stringliteral">&#39;date1&#39;</span> =&gt; $startDate-&gt;format(<span class="stringliteral">&#39;Y-m-d&#39;</span>),</div>
+<div class="line"><span class="lineno">  409</span>                        <span class="stringliteral">&#39;date2&#39;</span> =&gt; $now-&gt;format(<span class="stringliteral">&#39;Y-m-d&#39;</span>),</div>
+<div class="line"><span class="lineno">  410</span>                    ],</div>
+<div class="line"><span class="lineno">  411</span>                ]);</div>
+<div class="line"><span class="lineno">  412</span> </div>
+<div class="line"><span class="lineno">  413</span>                <span class="keywordflow">if</span> ($response-&gt;getStatusCode() === 200) {</div>
+<div class="line"><span class="lineno">  414</span>                    $responseData = $response-&gt;toArray();</div>
+<div class="line"><span class="lineno">  415</span>                    $data[$type] = $responseData;</div>
+<div class="line"><span class="lineno">  416</span>                } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  417</span>                    <span class="keywordflow">throw</span> new \RuntimeException(<span class="stringliteral">&quot;API error: {$response-&gt;getStatusCode()}&quot;</span>);</div>
+<div class="line"><span class="lineno">  418</span>                }</div>
+<div class="line"><span class="lineno">  419</span>            } <span class="keywordflow">catch</span> (\Exception $e) {</div>
+<div class="line"><span class="lineno">  420</span>                <span class="keywordflow">throw</span> new \RuntimeException(<span class="stringliteral">&#39;Error fetching data: &#39;</span> . $e-&gt;getMessage());</div>
+<div class="line"><span class="lineno">  421</span>            }</div>
+<div class="line"><span class="lineno">  422</span>        }</div>
+<div class="line"><span class="lineno">  423</span> </div>
+<div class="line"><span class="lineno">  424</span>        <span class="comment">// $historyFile = $this-&gt;jsonDirectory . &#39;/history/&#39; . $acquisitionSystem-&gt;getRoom()-&gt;getName() . &#39;_history.json&#39;;</span></div>
+<div class="line"><span class="lineno">  425</span>        <span class="comment">// file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));</span></div>
+<div class="line"><span class="lineno">  426</span> </div>
+<div class="line"><span class="lineno">  427</span>        <span class="keywordflow">return</span> $data;</div>
+<div class="line"><span class="lineno">  428</span>    }</div>
 <div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a9ca9b593c235803eb63e94cc43599527"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a9ca9b593c235803eb63e94cc43599527">App::Entity::AcquisitionSystem::getDbName</a></div><div class="ttdeci">getDbName()</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00051">AcquisitionSystem.php:51</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
-<a id="a95f4c8d66a1e020e4dc3a302245b7bb2" name="a95f4c8d66a1e020e4dc3a302245b7bb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95f4c8d66a1e020e4dc3a302245b7bb2">&#9670;&#160;</a></span>loadSensorData()</h2>
+<a id="a8ddbd0ebe77b0a4c7c1be9931a3e0cd4" name="a8ddbd0ebe77b0a4c7c1be9931a3e0cd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ddbd0ebe77b0a4c7c1be9931a3e0cd4">&#9670;&#160;</a></span>updateAcquisitionSystemFromApi()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">App::Service::RoomSensorService::loadSensorData </td>
+          <td class="memname">App::Service::RoomSensorService::updateAcquisitionSystemFromApi </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a>&#160;</td>
           <td class="paramname"><em>$acquisitionSystem</em></td><td>)</td>
@@ -317,137 +286,74 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Loads sensor data from the local "live" JSON file for the given AcquisitionSystem. </p>
+<p>Updates the given AcquisitionSystem entity with the latest sensor data from the external API. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramtype">AcquisitionSystem</td><td class="paramname">$acquisitionSystem</td><td></td></tr>
+    <tr><td class="paramtype">AcquisitionSystem</td><td class="paramname">$acquisitionSystem</td><td>The AcquisitionSystem entity to be updated</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>array Decoded sensor data (empty array if file not found)</dd></dl>
 <dl class="exception"><dt>Exceptions</dt><dd>
   <table class="exception">
     <tr><td class="paramname"></td><td></td></tr>
   </table>
   </dd>
 </dl>
-<p>RuntimeException If the JSON file is invalid </p>
+<p>RuntimeException If no data is returned by the API </p><dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00084">84</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   84</span>                                                                        : array</div>
-<div class="line"><span class="lineno">   85</span>    {</div>
-<div class="line"><span class="lineno">   86</span>        $room = $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a87966a38d44cabbad9c3ff8dc44ececd">getRoom</a>();</div>
-<div class="line"><span class="lineno">   87</span>        $filePath = $this-&gt;jsonDirectory . <span class="stringliteral">&#39;/live/&#39;</span> . $room-&gt;getName() . <span class="stringliteral">&#39;.json&#39;</span>;</div>
-<div class="line"><span class="lineno">   88</span> </div>
-<div class="line"><span class="lineno">   89</span>        <span class="keywordflow">if</span> (!file_exists($filePath)) {</div>
-<div class="line"><span class="lineno">   90</span>            <span class="keywordflow">return</span> []; <span class="comment">// Fichier non trouvé =&gt; on renvoie un tableau vide</span></div>
-<div class="line"><span class="lineno">   91</span>        }</div>
-<div class="line"><span class="lineno">   92</span> </div>
-<div class="line"><span class="lineno">   93</span>        $json = file_get_contents($filePath);</div>
-<div class="line"><span class="lineno">   94</span>        $data = json_decode($json, <span class="keyword">true</span>);</div>
-<div class="line"><span class="lineno">   95</span> </div>
-<div class="line"><span class="lineno">   96</span>        <span class="keywordflow">if</span> (json_last_error() !== JSON_ERROR_NONE) {</div>
-<div class="line"><span class="lineno">   97</span>            <span class="keywordflow">throw</span> new \RuntimeException(<span class="stringliteral">&#39;Invalid JSON format in &#39;</span> . $filePath);</div>
-<div class="line"><span class="lineno">   98</span>        }</div>
-<div class="line"><span class="lineno">   99</span> </div>
-<div class="line"><span class="lineno">  100</span>        <span class="keywordflow">return</span> $data;</div>
-<div class="line"><span class="lineno">  101</span>    }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a id="aff79b2e11f513cda9ccd2e49226d8997" name="aff79b2e11f513cda9ccd2e49226d8997"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aff79b2e11f513cda9ccd2e49226d8997">&#9670;&#160;</a></span>updateAcquisitionSystemFromJson()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">App::Service::RoomSensorService::updateAcquisitionSystemFromJson </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html">AcquisitionSystem</a>&#160;</td>
-          <td class="paramname"><em>$acquisitionSystem</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Updates the AcquisitionSystem’s temperature, humidity, and CO2 from the JSON file. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramtype">AcquisitionSystem</td><td class="paramname">$acquisitionSystem</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00108">108</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  108</span>                                                                                         : <span class="keywordtype">void</span></div>
-<div class="line"><span class="lineno">  109</span>    {</div>
-<div class="line"><span class="lineno">  110</span>        <span class="comment">// 1. Récupération live depuis l’API et stockage local</span></div>
-<div class="line"><span class="lineno">  111</span>        $this-&gt;<a class="code hl_function" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a12898da04b72d6327b9bbbcd00857882">fetchAndStoreLiveDataForAS</a>($acquisitionSystem);</div>
-<div class="line"><span class="lineno">  112</span> </div>
-<div class="line"><span class="lineno">  113</span>        <span class="comment">// 2. Lecture du JSON &quot;live&quot;</span></div>
-<div class="line"><span class="lineno">  114</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  115</span>            $data = $this-&gt;<a class="code hl_function" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a95f4c8d66a1e020e4dc3a302245b7bb2">loadSensorData</a>($acquisitionSystem);</div>
-<div class="line"><span class="lineno">  116</span>        } <span class="keywordflow">catch</span> (</div>
-<div class="line"><span class="lineno">  117</span>        ClientExceptionInterface|</div>
-<div class="line"><span class="lineno">  118</span>        DecodingExceptionInterface|</div>
-<div class="line"><span class="lineno">  119</span>        RedirectionExceptionInterface|</div>
-<div class="line"><span class="lineno">  120</span>        TransportExceptionInterface|</div>
-<div class="line"><span class="lineno">  121</span>        ServerExceptionInterface $e</div>
-<div class="line"><span class="lineno">  122</span>        ) {</div>
-<div class="line"><span class="lineno">  123</span>            $data = [];</div>
-<div class="line"><span class="lineno">  124</span>        }</div>
-<div class="line"><span class="lineno">  125</span> </div>
-<div class="line"><span class="lineno">  126</span>        <span class="keywordflow">if</span> (empty($data)) {</div>
-<div class="line"><span class="lineno">  127</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  128</span>        }</div>
-<div class="line"><span class="lineno">  129</span> </div>
-<div class="line"><span class="lineno">  130</span>        <span class="comment">// 3. Mettre à jour l’AcquisitionSystem avec les données</span></div>
-<div class="line"><span class="lineno">  131</span>        $lastCapturedAt = null;</div>
-<div class="line"><span class="lineno">  132</span> </div>
-<div class="line"><span class="lineno">  133</span>        <span class="keywordflow">foreach</span> ($data as $entry) {</div>
-<div class="line"><span class="lineno">  134</span>            <span class="keywordflow">if</span> (isset($entry[<span class="stringliteral">&#39;nom&#39;</span>], $entry[<span class="stringliteral">&#39;valeur&#39;</span>])) {</div>
-<div class="line"><span class="lineno">  135</span>                <span class="keywordflow">switch</span> ($entry[<span class="stringliteral">&#39;nom&#39;</span>]) {</div>
-<div class="line"><span class="lineno">  136</span>                    <span class="keywordflow">case</span> <span class="stringliteral">&#39;temp&#39;</span>:</div>
-<div class="line"><span class="lineno">  137</span>                        $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a9f37b2aea051671100e9eae000a10500">setTemperature</a>((<span class="keywordtype">float</span>) $entry[<span class="stringliteral">&#39;valeur&#39;</span>]);</div>
-<div class="line"><span class="lineno">  138</span>                        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  139</span>                    <span class="keywordflow">case</span> <span class="stringliteral">&#39;hum&#39;</span>:</div>
-<div class="line"><span class="lineno">  140</span>                        $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a47f07d78b55301979aa2485ea28ec731">setHumidity</a>((<span class="keywordtype">int</span>) $entry[<span class="stringliteral">&#39;valeur&#39;</span>]);</div>
-<div class="line"><span class="lineno">  141</span>                        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  142</span>                    <span class="keywordflow">case</span> <span class="stringliteral">&#39;co2&#39;</span>:</div>
-<div class="line"><span class="lineno">  143</span>                        $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a1ec03065c2bd27899cf22215cf00a91f">setCo2</a>((<span class="keywordtype">int</span>) $entry[<span class="stringliteral">&#39;valeur&#39;</span>]);</div>
-<div class="line"><span class="lineno">  144</span>                        <span class="keywordflow">break</span>;</div>
-<div class="line"><span class="lineno">  145</span>                }</div>
-<div class="line"><span class="lineno">  146</span>            }</div>
-<div class="line"><span class="lineno">  147</span> </div>
-<div class="line"><span class="lineno">  148</span>            <span class="comment">// Gestion de la date de capture la plus récente</span></div>
-<div class="line"><span class="lineno">  149</span>            <span class="keywordflow">if</span> (isset($entry[<span class="stringliteral">&#39;dateCapture&#39;</span>])) {</div>
-<div class="line"><span class="lineno">  150</span>                <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  151</span>                    $captureDate = new \DateTime($entry[<span class="stringliteral">&#39;dateCapture&#39;</span>]);</div>
-<div class="line"><span class="lineno">  152</span>                    <span class="keywordflow">if</span> ($lastCapturedAt === null || $captureDate &gt; $lastCapturedAt) {</div>
-<div class="line"><span class="lineno">  153</span>                        $lastCapturedAt = $captureDate;</div>
-<div class="line"><span class="lineno">  154</span>                    }</div>
-<div class="line"><span class="lineno">  155</span>                } <span class="keywordflow">catch</span> (\Exception $e) {</div>
-<div class="line"><span class="lineno">  156</span>                    <span class="comment">// Possibilité de logguer les erreurs de conversion</span></div>
-<div class="line"><span class="lineno">  157</span>                }</div>
-<div class="line"><span class="lineno">  158</span>            }</div>
-<div class="line"><span class="lineno">  159</span>        }</div>
-<div class="line"><span class="lineno">  160</span> </div>
-<div class="line"><span class="lineno">  161</span>        <span class="keywordflow">if</span> ($lastCapturedAt !== null) {</div>
-<div class="line"><span class="lineno">  162</span>            $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a3bc21dfe4c4001d30efdeba402f99696">setLastCapturedAt</a>($lastCapturedAt);</div>
-<div class="line"><span class="lineno">  163</span>        }</div>
-<div class="line"><span class="lineno">  164</span> </div>
-<div class="line"><span class="lineno">  165</span>        <span class="comment">// 4. Sauvegarder en BDD</span></div>
-<div class="line"><span class="lineno">  166</span>        $em = $this-&gt;getEntityManager();</div>
-<div class="line"><span class="lineno">  167</span>        $em-&gt;persist($acquisitionSystem);</div>
-<div class="line"><span class="lineno">  168</span>        $em-&gt;flush();</div>
-<div class="line"><span class="lineno">  169</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00103">103</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  103</span>                                                                                        : <span class="keywordtype">void</span></div>
+<div class="line"><span class="lineno">  104</span>    {</div>
+<div class="line"><span class="lineno">  105</span>        <span class="comment">// Fetch sensor data from the external API</span></div>
+<div class="line"><span class="lineno">  106</span>        $sensorData = $this-&gt;fetchSensorDataFromApi($acquisitionSystem);</div>
+<div class="line"><span class="lineno">  107</span> </div>
+<div class="line"><span class="lineno">  108</span>        <span class="keywordflow">if</span> (empty($sensorData)) {</div>
+<div class="line"><span class="lineno">  109</span>            <span class="keywordflow">throw</span> new \RuntimeException(<span class="stringliteral">&quot;No sensor data fetched for acquisition system: &quot;</span> . $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a30513a88794fd78e26d2ebfca1ec0f26">getName</a>());</div>
+<div class="line"><span class="lineno">  110</span>        }</div>
+<div class="line"><span class="lineno">  111</span> </div>
+<div class="line"><span class="lineno">  112</span>        <span class="comment">// Update the AcquisitionSystem entity</span></div>
+<div class="line"><span class="lineno">  113</span>        $lastCapturedAt = null;</div>
+<div class="line"><span class="lineno">  114</span>        <span class="keywordflow">foreach</span> ($sensorData as $entry) {</div>
+<div class="line"><span class="lineno">  115</span>            <span class="keywordflow">if</span> (isset($entry[<span class="stringliteral">&#39;nom&#39;</span>], $entry[<span class="stringliteral">&#39;valeur&#39;</span>])) {</div>
+<div class="line"><span class="lineno">  116</span>                <span class="keywordflow">switch</span> ($entry[<span class="stringliteral">&#39;nom&#39;</span>]) {</div>
+<div class="line"><span class="lineno">  117</span>                    <span class="keywordflow">case</span> <span class="stringliteral">&#39;temp&#39;</span>:</div>
+<div class="line"><span class="lineno">  118</span>                        $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a9f37b2aea051671100e9eae000a10500">setTemperature</a>((<span class="keywordtype">float</span>) $entry[<span class="stringliteral">&#39;valeur&#39;</span>]);</div>
+<div class="line"><span class="lineno">  119</span>                        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  120</span>                    <span class="keywordflow">case</span> <span class="stringliteral">&#39;hum&#39;</span>:</div>
+<div class="line"><span class="lineno">  121</span>                        $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a47f07d78b55301979aa2485ea28ec731">setHumidity</a>((<span class="keywordtype">int</span>) $entry[<span class="stringliteral">&#39;valeur&#39;</span>]);</div>
+<div class="line"><span class="lineno">  122</span>                        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  123</span>                    <span class="keywordflow">case</span> <span class="stringliteral">&#39;co2&#39;</span>:</div>
+<div class="line"><span class="lineno">  124</span>                        $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a1ec03065c2bd27899cf22215cf00a91f">setCo2</a>((<span class="keywordtype">int</span>) $entry[<span class="stringliteral">&#39;valeur&#39;</span>]);</div>
+<div class="line"><span class="lineno">  125</span>                        <span class="keywordflow">break</span>;</div>
+<div class="line"><span class="lineno">  126</span>                }</div>
+<div class="line"><span class="lineno">  127</span>            }</div>
+<div class="line"><span class="lineno">  128</span>            <span class="comment">// Handle the most recent capture date</span></div>
+<div class="line"><span class="lineno">  129</span>            <span class="keywordflow">if</span> (isset($entry[<span class="stringliteral">&#39;dateCapture&#39;</span>])) {</div>
+<div class="line"><span class="lineno">  130</span>                <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  131</span>                    $captureDate = new \DateTime($entry[<span class="stringliteral">&#39;dateCapture&#39;</span>]);</div>
+<div class="line"><span class="lineno">  132</span>                    <span class="keywordflow">if</span> ($lastCapturedAt === null || $captureDate &gt; $lastCapturedAt) {</div>
+<div class="line"><span class="lineno">  133</span>                        $lastCapturedAt = $captureDate;</div>
+<div class="line"><span class="lineno">  134</span>                    }</div>
+<div class="line"><span class="lineno">  135</span>                } <span class="keywordflow">catch</span> (\Exception $e) {</div>
+<div class="line"><span class="lineno">  136</span>                    <span class="keywordflow">throw</span> new \RuntimeException(</div>
+<div class="line"><span class="lineno">  137</span>                        <span class="stringliteral">&quot;Invalid date format in entry: &quot;</span> . json_encode($entry) . <span class="stringliteral">&quot;. Error: &quot;</span> . $e-&gt;getMessage()</div>
+<div class="line"><span class="lineno">  138</span>                    );</div>
+<div class="line"><span class="lineno">  139</span>                }</div>
+<div class="line"><span class="lineno">  140</span>            }</div>
+<div class="line"><span class="lineno">  141</span>        }</div>
+<div class="line"><span class="lineno">  142</span>        <span class="keywordflow">if</span> ($lastCapturedAt !== null) {</div>
+<div class="line"><span class="lineno">  143</span>            $acquisitionSystem-&gt;<a class="code hl_function" href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a3bc21dfe4c4001d30efdeba402f99696">setLastCapturedAt</a>($lastCapturedAt);</div>
+<div class="line"><span class="lineno">  144</span>        }</div>
+<div class="line"><span class="lineno">  145</span> </div>
+<div class="line"><span class="lineno">  146</span>        $em = $this-&gt;getEntityManager();</div>
+<div class="line"><span class="lineno">  147</span>        $em-&gt;persist($acquisitionSystem);</div>
+<div class="line"><span class="lineno">  148</span>        $em-&gt;flush();</div>
+<div class="line"><span class="lineno">  149</span>    }</div>
 <div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a1ec03065c2bd27899cf22215cf00a91f"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a1ec03065c2bd27899cf22215cf00a91f">App::Entity::AcquisitionSystem::setCo2</a></div><div class="ttdeci">setCo2(?int $co2)</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00092">AcquisitionSystem.php:92</a></div></div>
+<div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a30513a88794fd78e26d2ebfca1ec0f26"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a30513a88794fd78e26d2ebfca1ec0f26">App::Entity::AcquisitionSystem::getName</a></div><div class="ttdeci">getName()</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00132">AcquisitionSystem.php:132</a></div></div>
 <div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a3bc21dfe4c4001d30efdeba402f99696"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a3bc21dfe4c4001d30efdeba402f99696">App::Entity::AcquisitionSystem::setLastCapturedAt</a></div><div class="ttdeci">setLastCapturedAt(?\DateTimeInterface $dateTime)</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00149">AcquisitionSystem.php:149</a></div></div>
 <div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a47f07d78b55301979aa2485ea28ec731"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a47f07d78b55301979aa2485ea28ec731">App::Entity::AcquisitionSystem::setHumidity</a></div><div class="ttdeci">setHumidity(?int $humidity)</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00080">AcquisitionSystem.php:80</a></div></div>
 <div class="ttc" id="aclassApp_1_1Entity_1_1AcquisitionSystem_html_a9f37b2aea051671100e9eae000a10500"><div class="ttname"><a href="../../d6/d7c/classApp_1_1Entity_1_1AcquisitionSystem.html#a9f37b2aea051671100e9eae000a10500">App::Entity::AcquisitionSystem::setTemperature</a></div><div class="ttdeci">setTemperature(?float $temperature)</div><div class="ttdef"><b>Definition</b> <a href="../../dd/d45/AcquisitionSystem_8php_source.html#l00068">AcquisitionSystem.php:68</a></div></div>
-<div class="ttc" id="aclassApp_1_1Service_1_1RoomSensorService_html_a12898da04b72d6327b9bbbcd00857882"><div class="ttname"><a href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a12898da04b72d6327b9bbbcd00857882">App::Service::RoomSensorService::fetchAndStoreLiveDataForAS</a></div><div class="ttdeci">fetchAndStoreLiveDataForAS(AcquisitionSystem $acquisitionSystem)</div><div class="ttdoc">Fetches &quot;live&quot; sensor data from the external API for the given AcquisitionSystem, then writes data to...</div><div class="ttdef"><b>Definition</b> <a href="../../d0/dc4/RoomSensorService_8php_source.html#l00063">RoomSensorService.php:63</a></div></div>
-<div class="ttc" id="aclassApp_1_1Service_1_1RoomSensorService_html_a95f4c8d66a1e020e4dc3a302245b7bb2"><div class="ttname"><a href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a95f4c8d66a1e020e4dc3a302245b7bb2">App::Service::RoomSensorService::loadSensorData</a></div><div class="ttdeci">loadSensorData(AcquisitionSystem $acquisitionSystem)</div><div class="ttdoc">Loads sensor data from the local &quot;live&quot; JSON file for the given AcquisitionSystem.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/dc4/RoomSensorService_8php_source.html#l00084">RoomSensorService.php:84</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -467,143 +373,143 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Updates the state of the given room based on sensor data and thresholds. Also handles the creation of maintenance tasks if sensor data is not working. </p>
+<p>Updates the state of the given room based on sensor data and thresholds. Also handles creation of maintenance tasks if sensor data is invalid. </p>
 <p>Heating Period: November (11) to April (4) Non-Heating Period: May (5) to October (10)</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramtype">Room</td><td class="paramname">$room</td><td></td></tr>
+    <tr><td class="paramtype">Room</td><td class="paramname">$room</td><td>The Room entity to update</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00231">231</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  231</span>                                               : <span class="keywordtype">void</span></div>
-<div class="line"><span class="lineno">  232</span>    {</div>
-<div class="line"><span class="lineno">  233</span>        $acquisitionSystem = $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#ab4f65b5af3be5d64aadcf5b41fc850f6">getAcquisitionSystem</a>();</div>
-<div class="line"><span class="lineno">  234</span>        <span class="keywordflow">if</span> (!$acquisitionSystem) {</div>
-<div class="line"><span class="lineno">  235</span>            <span class="comment">// Pas d’AcquisitionSystem =&gt; On peut décider de faire autre chose</span></div>
-<div class="line"><span class="lineno">  236</span>            <span class="keywordflow">return</span>;</div>
-<div class="line"><span class="lineno">  237</span>        }</div>
-<div class="line"><span class="lineno">  238</span> </div>
-<div class="line"><span class="lineno">  239</span>        <span class="comment">// Met à jour l’AcquisitionSystem depuis le JSON</span></div>
-<div class="line"><span class="lineno">  240</span>        $this-&gt;<a class="code hl_function" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#aff79b2e11f513cda9ccd2e49226d8997">updateAcquisitionSystemFromJson</a>($acquisitionSystem);</div>
-<div class="line"><span class="lineno">  241</span> </div>
-<div class="line"><span class="lineno">  242</span>        <span class="comment">// Par défaut, on considère qu’on n’a pas de data</span></div>
-<div class="line"><span class="lineno">  243</span>        $state = RoomStateEnum::NO_DATA;</div>
-<div class="line"><span class="lineno">  244</span> </div>
-<div class="line"><span class="lineno">  245</span>        <span class="comment">// Récupérer les données capteur</span></div>
-<div class="line"><span class="lineno">  246</span>        $temperature = $acquisitionSystem-&gt;getTemperature();</div>
-<div class="line"><span class="lineno">  247</span>        $humidity    = $acquisitionSystem-&gt;getHumidity();</div>
-<div class="line"><span class="lineno">  248</span>        $co2         = $acquisitionSystem-&gt;getCo2();</div>
-<div class="line"><span class="lineno">  249</span> </div>
-<div class="line"><span class="lineno">  250</span>        <span class="comment">// Vérifier si on est en période de chauffage</span></div>
-<div class="line"><span class="lineno">  251</span>        $currentMonth = (int)(<span class="keyword">new</span> \DateTime())-&gt;format(<span class="charliteral">&#39;m&#39;</span>);</div>
-<div class="line"><span class="lineno">  252</span>        <span class="comment">// Si le mois est &gt;= 11 OU &lt;= 4 =&gt; période de chauffage</span></div>
-<div class="line"><span class="lineno">  253</span>        $isHeatingPeriod = ($currentMonth &gt;= 11 || $currentMonth &lt;= 4);</div>
-<div class="line"><span class="lineno">  254</span> </div>
-<div class="line"><span class="lineno">  255</span>        $thresholds = $this-&gt;thresholdRepository-&gt;getDefaultThresholds();</div>
-<div class="line"><span class="lineno">  256</span> </div>
-<div class="line"><span class="lineno">  257</span>        <span class="comment">// 1. Déterminer l’état des capteurs</span></div>
-<div class="line"><span class="lineno">  258</span>        $sensorState = SensorStateEnum::LINKED; <span class="comment">// Valeur par défaut</span></div>
-<div class="line"><span class="lineno">  259</span>        <span class="keywordflow">if</span> (</div>
-<div class="line"><span class="lineno">  260</span>            $temperature === null &amp;&amp; $humidity === null &amp;&amp; $co2 === null</div>
-<div class="line"><span class="lineno">  261</span>            || $thresholds-&gt;isTemperatureAberrant($temperature)</div>
-<div class="line"><span class="lineno">  262</span>            || $thresholds-&gt;isHumidityAberrant($humidity)</div>
-<div class="line"><span class="lineno">  263</span>            || $thresholds-&gt;isCo2Aberrant($co2)</div>
-<div class="line"><span class="lineno">  264</span>        ) {</div>
-<div class="line"><span class="lineno">  265</span>            $sensorState = SensorStateEnum::NOT_WORKING;</div>
-<div class="line"><span class="lineno">  266</span>        }</div>
-<div class="line"><span class="lineno">  267</span> </div>
-<div class="line"><span class="lineno">  268</span>        <span class="comment">// 2. Évaluer la température</span></div>
-<div class="line"><span class="lineno">  269</span>        <span class="keywordflow">if</span> ($temperature !== null &amp;&amp; !$thresholds-&gt;isTemperatureAberrant($temperature)) {</div>
-<div class="line"><span class="lineno">  270</span>            <span class="keywordflow">if</span> ($isHeatingPeriod) {</div>
-<div class="line"><span class="lineno">  271</span>                <span class="keywordflow">if</span> (</div>
-<div class="line"><span class="lineno">  272</span>                    $temperature &lt; $thresholds-&gt;getHeatingTempCriticalMin() ||</div>
-<div class="line"><span class="lineno">  273</span>                    $temperature &gt; $thresholds-&gt;getHeatingTempCriticalMax()</div>
-<div class="line"><span class="lineno">  274</span>                ) {</div>
-<div class="line"><span class="lineno">  275</span>                    $state = RoomStateEnum::CRITICAL;</div>
-<div class="line"><span class="lineno">  276</span>                } elseif (</div>
-<div class="line"><span class="lineno">  277</span>                    $temperature &lt; $thresholds-&gt;getHeatingTempWarningMin() ||</div>
-<div class="line"><span class="lineno">  278</span>                    $temperature &gt; $thresholds-&gt;getHeatingTempWarningMax()</div>
-<div class="line"><span class="lineno">  279</span>                ) {</div>
-<div class="line"><span class="lineno">  280</span>                    <span class="comment">// Ne passer en AT_RISK que si pas déjà CRITICAL</span></div>
-<div class="line"><span class="lineno">  281</span>                    <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
-<div class="line"><span class="lineno">  282</span>                        $state = RoomStateEnum::AT_RISK;</div>
-<div class="line"><span class="lineno">  283</span>                    }</div>
-<div class="line"><span class="lineno">  284</span>                }</div>
-<div class="line"><span class="lineno">  285</span>            } <span class="keywordflow">else</span> {</div>
-<div class="line"><span class="lineno">  286</span>                <span class="comment">// Non-heating period</span></div>
-<div class="line"><span class="lineno">  287</span>                <span class="keywordflow">if</span> (</div>
-<div class="line"><span class="lineno">  288</span>                    $temperature &lt; $thresholds-&gt;getNonHeatingTempCriticalMin() ||</div>
-<div class="line"><span class="lineno">  289</span>                    $temperature &gt; $thresholds-&gt;getNonHeatingTempCriticalMax()</div>
-<div class="line"><span class="lineno">  290</span>                ) {</div>
-<div class="line"><span class="lineno">  291</span>                    $state = RoomStateEnum::CRITICAL;</div>
-<div class="line"><span class="lineno">  292</span>                } elseif (</div>
-<div class="line"><span class="lineno">  293</span>                    $temperature &lt; $thresholds-&gt;getNonHeatingTempWarningMin() ||</div>
-<div class="line"><span class="lineno">  294</span>                    $temperature &gt; $thresholds-&gt;getNonHeatingTempWarningMax()</div>
-<div class="line"><span class="lineno">  295</span>                ) {</div>
-<div class="line"><span class="lineno">  296</span>                    <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
-<div class="line"><span class="lineno">  297</span>                        $state = RoomStateEnum::AT_RISK;</div>
-<div class="line"><span class="lineno">  298</span>                    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html#l00208">208</a> of file <a class="el" href="../../d0/dc4/RoomSensorService_8php_source.html">RoomSensorService.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  208</span>                                               : <span class="keywordtype">void</span></div>
+<div class="line"><span class="lineno">  209</span>    {</div>
+<div class="line"><span class="lineno">  210</span>        $acquisitionSystem = $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#ab4f65b5af3be5d64aadcf5b41fc850f6">getAcquisitionSystem</a>();</div>
+<div class="line"><span class="lineno">  211</span>        <span class="keywordflow">if</span> (!$acquisitionSystem) {</div>
+<div class="line"><span class="lineno">  212</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><span class="lineno">  213</span>        }</div>
+<div class="line"><span class="lineno">  214</span> </div>
+<div class="line"><span class="lineno">  215</span>        <span class="comment">// 1. Update the AcquisitionSystem directly from the API</span></div>
+<div class="line"><span class="lineno">  216</span>        $this-&gt;<a class="code hl_function" href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a8ddbd0ebe77b0a4c7c1be9931a3e0cd4">updateAcquisitionSystemFromApi</a>($acquisitionSystem);</div>
+<div class="line"><span class="lineno">  217</span> </div>
+<div class="line"><span class="lineno">  218</span>        <span class="comment">// 2. Default room state</span></div>
+<div class="line"><span class="lineno">  219</span>        $state = RoomStateEnum::NO_DATA;</div>
+<div class="line"><span class="lineno">  220</span> </div>
+<div class="line"><span class="lineno">  221</span>        <span class="comment">// 3. Retrieve sensor values</span></div>
+<div class="line"><span class="lineno">  222</span>        $temperature = $acquisitionSystem-&gt;getTemperature();</div>
+<div class="line"><span class="lineno">  223</span>        $humidity    = $acquisitionSystem-&gt;getHumidity();</div>
+<div class="line"><span class="lineno">  224</span>        $co2         = $acquisitionSystem-&gt;getCo2();</div>
+<div class="line"><span class="lineno">  225</span> </div>
+<div class="line"><span class="lineno">  226</span>        <span class="comment">// 4. Determine if we are in heating period</span></div>
+<div class="line"><span class="lineno">  227</span>        $currentMonth = (int)(<span class="keyword">new</span> \DateTime())-&gt;format(<span class="charliteral">&#39;m&#39;</span>);</div>
+<div class="line"><span class="lineno">  228</span>        $isHeatingPeriod = ($currentMonth &gt;= 11 || $currentMonth &lt;= 4);</div>
+<div class="line"><span class="lineno">  229</span> </div>
+<div class="line"><span class="lineno">  230</span>        $thresholds = $this-&gt;thresholdRepository-&gt;getDefaultThresholds();</div>
+<div class="line"><span class="lineno">  231</span> </div>
+<div class="line"><span class="lineno">  232</span>        <span class="comment">// 5. Determine sensor state</span></div>
+<div class="line"><span class="lineno">  233</span>        $sensorState = SensorStateEnum::LINKED;</div>
+<div class="line"><span class="lineno">  234</span>        <span class="keywordflow">if</span> (</div>
+<div class="line"><span class="lineno">  235</span>            ($temperature === null &amp;&amp; $humidity === null &amp;&amp; $co2 === null)</div>
+<div class="line"><span class="lineno">  236</span>            || $thresholds-&gt;isTemperatureAberrant($temperature)</div>
+<div class="line"><span class="lineno">  237</span>            || $thresholds-&gt;isHumidityAberrant($humidity)</div>
+<div class="line"><span class="lineno">  238</span>            || $thresholds-&gt;isCo2Aberrant($co2)</div>
+<div class="line"><span class="lineno">  239</span>        ) {</div>
+<div class="line"><span class="lineno">  240</span>            $sensorState = SensorStateEnum::NOT_WORKING;</div>
+<div class="line"><span class="lineno">  241</span>        }</div>
+<div class="line"><span class="lineno">  242</span> </div>
+<div class="line"><span class="lineno">  243</span>        <span class="comment">// 6. Evaluate temperature</span></div>
+<div class="line"><span class="lineno">  244</span>        <span class="keywordflow">if</span> ($temperature !== null &amp;&amp; !$thresholds-&gt;isTemperatureAberrant($temperature)) {</div>
+<div class="line"><span class="lineno">  245</span>            <span class="keywordflow">if</span> ($isHeatingPeriod) {</div>
+<div class="line"><span class="lineno">  246</span>                <span class="comment">// Heating period</span></div>
+<div class="line"><span class="lineno">  247</span>                <span class="keywordflow">if</span> (</div>
+<div class="line"><span class="lineno">  248</span>                    $temperature &lt; $thresholds-&gt;getHeatingTempCriticalMin() ||</div>
+<div class="line"><span class="lineno">  249</span>                    $temperature &gt; $thresholds-&gt;getHeatingTempCriticalMax()</div>
+<div class="line"><span class="lineno">  250</span>                ) {</div>
+<div class="line"><span class="lineno">  251</span>                    $state = RoomStateEnum::CRITICAL;</div>
+<div class="line"><span class="lineno">  252</span>                } elseif (</div>
+<div class="line"><span class="lineno">  253</span>                    $temperature &lt; $thresholds-&gt;getHeatingTempWarningMin() ||</div>
+<div class="line"><span class="lineno">  254</span>                    $temperature &gt; $thresholds-&gt;getHeatingTempWarningMax()</div>
+<div class="line"><span class="lineno">  255</span>                ) {</div>
+<div class="line"><span class="lineno">  256</span>                    <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
+<div class="line"><span class="lineno">  257</span>                        $state = RoomStateEnum::AT_RISK;</div>
+<div class="line"><span class="lineno">  258</span>                    }</div>
+<div class="line"><span class="lineno">  259</span>                }</div>
+<div class="line"><span class="lineno">  260</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><span class="lineno">  261</span>                <span class="comment">// Non-heating period</span></div>
+<div class="line"><span class="lineno">  262</span>                <span class="keywordflow">if</span> (</div>
+<div class="line"><span class="lineno">  263</span>                    $temperature &lt; $thresholds-&gt;getNonHeatingTempCriticalMin() ||</div>
+<div class="line"><span class="lineno">  264</span>                    $temperature &gt; $thresholds-&gt;getNonHeatingTempCriticalMax()</div>
+<div class="line"><span class="lineno">  265</span>                ) {</div>
+<div class="line"><span class="lineno">  266</span>                    $state = RoomStateEnum::CRITICAL;</div>
+<div class="line"><span class="lineno">  267</span>                } elseif (</div>
+<div class="line"><span class="lineno">  268</span>                    $temperature &lt; $thresholds-&gt;getNonHeatingTempWarningMin() ||</div>
+<div class="line"><span class="lineno">  269</span>                    $temperature &gt; $thresholds-&gt;getNonHeatingTempWarningMax()</div>
+<div class="line"><span class="lineno">  270</span>                ) {</div>
+<div class="line"><span class="lineno">  271</span>                    <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
+<div class="line"><span class="lineno">  272</span>                        $state = RoomStateEnum::AT_RISK;</div>
+<div class="line"><span class="lineno">  273</span>                    }</div>
+<div class="line"><span class="lineno">  274</span>                }</div>
+<div class="line"><span class="lineno">  275</span>            }</div>
+<div class="line"><span class="lineno">  276</span>        }</div>
+<div class="line"><span class="lineno">  277</span> </div>
+<div class="line"><span class="lineno">  278</span>        <span class="comment">// 7. Evaluate CO2</span></div>
+<div class="line"><span class="lineno">  279</span>        <span class="keywordflow">if</span> ($co2 !== null &amp;&amp; !$thresholds-&gt;isCo2Aberrant($co2)) {</div>
+<div class="line"><span class="lineno">  280</span>            <span class="keywordflow">if</span> ($co2 &lt; $thresholds-&gt;getCo2CriticalMin() || $co2 &gt; $thresholds-&gt;getCo2ErrorMax()) {</div>
+<div class="line"><span class="lineno">  281</span>                $state = RoomStateEnum::CRITICAL;</div>
+<div class="line"><span class="lineno">  282</span>            } elseif ($co2 &gt; $thresholds-&gt;getCo2WarningMin() &amp;&amp; $co2 &lt;= $thresholds-&gt;getCo2CriticalMax()) {</div>
+<div class="line"><span class="lineno">  283</span>                <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
+<div class="line"><span class="lineno">  284</span>                    $state = RoomStateEnum::AT_RISK;</div>
+<div class="line"><span class="lineno">  285</span>                }</div>
+<div class="line"><span class="lineno">  286</span>            }</div>
+<div class="line"><span class="lineno">  287</span>        }</div>
+<div class="line"><span class="lineno">  288</span> </div>
+<div class="line"><span class="lineno">  289</span>        <span class="comment">// 8. Evaluate humidity</span></div>
+<div class="line"><span class="lineno">  290</span>        <span class="keywordflow">if</span> ($humidity !== null &amp;&amp; !$thresholds-&gt;isHumidityAberrant($humidity)) {</div>
+<div class="line"><span class="lineno">  291</span>            <span class="keywordflow">if</span> ($humidity &lt; $thresholds-&gt;getHumCriticalMin()) {</div>
+<div class="line"><span class="lineno">  292</span>                $state = RoomStateEnum::CRITICAL;</div>
+<div class="line"><span class="lineno">  293</span>            } elseif (</div>
+<div class="line"><span class="lineno">  294</span>                $humidity &lt; $thresholds-&gt;getHumWarningMin()</div>
+<div class="line"><span class="lineno">  295</span>                || ($humidity &gt; $thresholds-&gt;getHumWarningMax() &amp;&amp; $humidity &lt;= $thresholds-&gt;getHumCriticalMax())</div>
+<div class="line"><span class="lineno">  296</span>            ) {</div>
+<div class="line"><span class="lineno">  297</span>                <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
+<div class="line"><span class="lineno">  298</span>                    $state = RoomStateEnum::AT_RISK;</div>
 <div class="line"><span class="lineno">  299</span>                }</div>
-<div class="line"><span class="lineno">  300</span>            }</div>
-<div class="line"><span class="lineno">  301</span>        }</div>
-<div class="line"><span class="lineno">  302</span> </div>
-<div class="line"><span class="lineno">  303</span>        <span class="comment">// 3. Évaluer le CO2</span></div>
-<div class="line"><span class="lineno">  304</span>        <span class="keywordflow">if</span> ($co2 !== null &amp;&amp; !$thresholds-&gt;isCo2Aberrant($co2)) {</div>
-<div class="line"><span class="lineno">  305</span>            <span class="keywordflow">if</span> ($co2 &lt; $thresholds-&gt;getCo2CriticalMin() || $co2 &gt; $thresholds-&gt;getCo2ErrorMax()) {</div>
-<div class="line"><span class="lineno">  306</span>                $state = RoomStateEnum::CRITICAL;</div>
-<div class="line"><span class="lineno">  307</span>            } elseif ($co2 &gt; $thresholds-&gt;getCo2WarningMin() &amp;&amp; $co2 &lt;= $thresholds-&gt;getCo2CriticalMax()) {</div>
-<div class="line"><span class="lineno">  308</span>                <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
-<div class="line"><span class="lineno">  309</span>                    $state = RoomStateEnum::AT_RISK;</div>
-<div class="line"><span class="lineno">  310</span>                }</div>
-<div class="line"><span class="lineno">  311</span>            }</div>
-<div class="line"><span class="lineno">  312</span>        }</div>
-<div class="line"><span class="lineno">  313</span> </div>
-<div class="line"><span class="lineno">  314</span>        <span class="comment">// 4. Évaluer l’humidité</span></div>
-<div class="line"><span class="lineno">  315</span>        <span class="keywordflow">if</span> ($humidity !== null &amp;&amp; !$thresholds-&gt;isHumidityAberrant($humidity)) {</div>
-<div class="line"><span class="lineno">  316</span>            <span class="keywordflow">if</span> ($humidity &lt; $thresholds-&gt;getHumCriticalMin()) {</div>
-<div class="line"><span class="lineno">  317</span>                $state = RoomStateEnum::CRITICAL;</div>
-<div class="line"><span class="lineno">  318</span>            } elseif (</div>
-<div class="line"><span class="lineno">  319</span>                $humidity &lt; $thresholds-&gt;getHumWarningMin() ||</div>
-<div class="line"><span class="lineno">  320</span>                ($humidity &gt; $thresholds-&gt;getHumWarningMax() &amp;&amp; $humidity &lt;= $thresholds-&gt;getHumCriticalMax())</div>
-<div class="line"><span class="lineno">  321</span>            ) {</div>
-<div class="line"><span class="lineno">  322</span>                <span class="keywordflow">if</span> ($state !== RoomStateEnum::CRITICAL) {</div>
-<div class="line"><span class="lineno">  323</span>                    $state = RoomStateEnum::AT_RISK;</div>
-<div class="line"><span class="lineno">  324</span>                }</div>
-<div class="line"><span class="lineno">  325</span>            } elseif ($humidity &gt; $thresholds-&gt;getHumCriticalMax()) {</div>
-<div class="line"><span class="lineno">  326</span>                $state = RoomStateEnum::CRITICAL;</div>
-<div class="line"><span class="lineno">  327</span>            }</div>
-<div class="line"><span class="lineno">  328</span>        }</div>
-<div class="line"><span class="lineno">  329</span> </div>
-<div class="line"><span class="lineno">  330</span>        <span class="keywordflow">if</span> (</div>
-<div class="line"><span class="lineno">  331</span>            $state === RoomStateEnum::NO_DATA &amp;&amp;</div>
-<div class="line"><span class="lineno">  332</span>            ($temperature !== null || $humidity !== null || $co2 !== null)</div>
-<div class="line"><span class="lineno">  333</span>        ) {</div>
-<div class="line"><span class="lineno">  334</span>            $state = RoomStateEnum::STABLE;</div>
-<div class="line"><span class="lineno">  335</span>        }</div>
-<div class="line"><span class="lineno">  336</span> </div>
-<div class="line"><span class="lineno">  337</span>        <span class="comment">// 5. Créer une tâche de maintenance si capteur KO et qu’on n’est pas dans NO_DATA</span></div>
-<div class="line"><span class="lineno">  338</span>        <span class="keywordflow">if</span> ($sensorState === SensorStateEnum::NOT_WORKING &amp;&amp; $state !== RoomStateEnum::NO_DATA) {</div>
-<div class="line"><span class="lineno">  339</span>            $this-&gt;createTaskForTechnician($room);</div>
-<div class="line"><span class="lineno">  340</span>        }</div>
-<div class="line"><span class="lineno">  341</span> </div>
-<div class="line"><span class="lineno">  342</span>        <span class="comment">// 6. Mise à jour finale du Room et de l’AcquisitionSystem</span></div>
-<div class="line"><span class="lineno">  343</span>        $utcDateTime = new \DateTime(<span class="stringliteral">&#39;now&#39;</span>, <span class="keyword">new</span> \DateTimeZone(<span class="stringliteral">&#39;Europe/Paris&#39;</span>));</div>
-<div class="line"><span class="lineno">  344</span>        $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a2228a0977a3c8815352e6b954fb30b74">setLastUpdatedAt</a>($utcDateTime);</div>
-<div class="line"><span class="lineno">  345</span>        $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a45205b352524a51a1148e61e3fc11810">setSensorState</a>($sensorState);</div>
-<div class="line"><span class="lineno">  346</span>        $acquisitionSystem-&gt;setState($sensorState);</div>
-<div class="line"><span class="lineno">  347</span>        $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a329a1b4a80059c5e77ce4bc823d14612">setState</a>($state);</div>
-<div class="line"><span class="lineno">  348</span> </div>
-<div class="line"><span class="lineno">  349</span>        $em = $this-&gt;getEntityManager();</div>
-<div class="line"><span class="lineno">  350</span>        $em-&gt;persist($room);</div>
-<div class="line"><span class="lineno">  351</span>        $em-&gt;flush();</div>
-<div class="line"><span class="lineno">  352</span>    }</div>
-<div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_a2228a0977a3c8815352e6b954fb30b74"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a2228a0977a3c8815352e6b954fb30b74">App::Entity::Room::setLastUpdatedAt</a></div><div class="ttdeci">setLastUpdatedAt(?\DateTimeInterface $dateTime)</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00175">Room.php:175</a></div></div>
+<div class="line"><span class="lineno">  300</span>            } elseif ($humidity &gt; $thresholds-&gt;getHumCriticalMax()) {</div>
+<div class="line"><span class="lineno">  301</span>                $state = RoomStateEnum::CRITICAL;</div>
+<div class="line"><span class="lineno">  302</span>            }</div>
+<div class="line"><span class="lineno">  303</span>        }</div>
+<div class="line"><span class="lineno">  304</span> </div>
+<div class="line"><span class="lineno">  305</span>        <span class="comment">// If we have sensor data but haven&#39;t triggered any risk, set to STABLE</span></div>
+<div class="line"><span class="lineno">  306</span>        <span class="keywordflow">if</span> (</div>
+<div class="line"><span class="lineno">  307</span>            $state === RoomStateEnum::NO_DATA &amp;&amp;</div>
+<div class="line"><span class="lineno">  308</span>            ($temperature !== null || $humidity !== null || $co2 !== null)</div>
+<div class="line"><span class="lineno">  309</span>        ) {</div>
+<div class="line"><span class="lineno">  310</span>            $state = RoomStateEnum::STABLE;</div>
+<div class="line"><span class="lineno">  311</span>        }</div>
+<div class="line"><span class="lineno">  312</span> </div>
+<div class="line"><span class="lineno">  313</span>        <span class="comment">// 9. If the sensor is NOT_WORKING but we do have data, create a maintenance task</span></div>
+<div class="line"><span class="lineno">  314</span>        <span class="keywordflow">if</span> ($sensorState === SensorStateEnum::NOT_WORKING &amp;&amp; $state !== RoomStateEnum::NO_DATA) {</div>
+<div class="line"><span class="lineno">  315</span>            $this-&gt;createTaskForTechnician($room);</div>
+<div class="line"><span class="lineno">  316</span>        }</div>
+<div class="line"><span class="lineno">  317</span> </div>
+<div class="line"><span class="lineno">  318</span>        <span class="comment">// 10. Update Room and AcquisitionSystem</span></div>
+<div class="line"><span class="lineno">  319</span>        $utcDateTime = new \DateTime(<span class="stringliteral">&#39;now&#39;</span>, <span class="keyword">new</span> \DateTimeZone(<span class="stringliteral">&#39;Europe/Paris&#39;</span>));</div>
+<div class="line"><span class="lineno">  320</span>        $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a2228a0977a3c8815352e6b954fb30b74">setLastUpdatedAt</a>($utcDateTime);</div>
+<div class="line"><span class="lineno">  321</span>        $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a45205b352524a51a1148e61e3fc11810">setSensorState</a>($sensorState);</div>
+<div class="line"><span class="lineno">  322</span>        $acquisitionSystem-&gt;setState($sensorState);</div>
+<div class="line"><span class="lineno">  323</span>        $room-&gt;<a class="code hl_function" href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a329a1b4a80059c5e77ce4bc823d14612">setState</a>($state);</div>
+<div class="line"><span class="lineno">  324</span> </div>
+<div class="line"><span class="lineno">  325</span>        $em = $this-&gt;getEntityManager();</div>
+<div class="line"><span class="lineno">  326</span>        $em-&gt;persist($room);</div>
+<div class="line"><span class="lineno">  327</span>        $em-&gt;flush();</div>
+<div class="line"><span class="lineno">  328</span>    }</div>
+<div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_a2228a0977a3c8815352e6b954fb30b74"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a2228a0977a3c8815352e6b954fb30b74">App::Entity::Room::setLastUpdatedAt</a></div><div class="ttdeci">setLastUpdatedAt(?\DateTimeInterface $dateTime)</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00164">Room.php:164</a></div></div>
 <div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_a329a1b4a80059c5e77ce4bc823d14612"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a329a1b4a80059c5e77ce4bc823d14612">App::Entity::Room::setState</a></div><div class="ttdeci">setState(RoomStateEnum $state)</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00095">Room.php:95</a></div></div>
-<div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_a45205b352524a51a1148e61e3fc11810"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a45205b352524a51a1148e61e3fc11810">App::Entity::Room::setSensorState</a></div><div class="ttdeci">setSensorState(SensorStateEnum $sensorState)</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00117">Room.php:117</a></div></div>
-<div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_ab4f65b5af3be5d64aadcf5b41fc850f6"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#ab4f65b5af3be5d64aadcf5b41fc850f6">App::Entity::Room::getAcquisitionSystem</a></div><div class="ttdeci">getAcquisitionSystem()</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00181">Room.php:181</a></div></div>
-<div class="ttc" id="aclassApp_1_1Service_1_1RoomSensorService_html_aff79b2e11f513cda9ccd2e49226d8997"><div class="ttname"><a href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#aff79b2e11f513cda9ccd2e49226d8997">App::Service::RoomSensorService::updateAcquisitionSystemFromJson</a></div><div class="ttdeci">updateAcquisitionSystemFromJson(AcquisitionSystem $acquisitionSystem)</div><div class="ttdoc">Updates the AcquisitionSystem’s temperature, humidity, and CO2 from the JSON file.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/dc4/RoomSensorService_8php_source.html#l00108">RoomSensorService.php:108</a></div></div>
+<div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_a45205b352524a51a1148e61e3fc11810"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#a45205b352524a51a1148e61e3fc11810">App::Entity::Room::setSensorState</a></div><div class="ttdeci">setSensorState(SensorStateEnum $sensorState)</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00106">Room.php:106</a></div></div>
+<div class="ttc" id="aclassApp_1_1Entity_1_1Room_html_ab4f65b5af3be5d64aadcf5b41fc850f6"><div class="ttname"><a href="../../d7/db3/classApp_1_1Entity_1_1Room.html#ab4f65b5af3be5d64aadcf5b41fc850f6">App::Entity::Room::getAcquisitionSystem</a></div><div class="ttdeci">getAcquisitionSystem()</div><div class="ttdef"><b>Definition</b> <a href="../../d3/d13/Room_8php_source.html#l00170">Room.php:170</a></div></div>
+<div class="ttc" id="aclassApp_1_1Service_1_1RoomSensorService_html_a8ddbd0ebe77b0a4c7c1be9931a3e0cd4"><div class="ttname"><a href="../../d8/d2a/classApp_1_1Service_1_1RoomSensorService.html#a8ddbd0ebe77b0a4c7c1be9931a3e0cd4">App::Service::RoomSensorService::updateAcquisitionSystemFromApi</a></div><div class="ttdeci">updateAcquisitionSystemFromApi(AcquisitionSystem $acquisitionSystem)</div><div class="ttdoc">Updates the given AcquisitionSystem entity with the latest sensor data from the external API.</div><div class="ttdef"><b>Definition</b> <a href="../../d0/dc4/RoomSensorService_8php_source.html#l00103">RoomSensorService.php:103</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>

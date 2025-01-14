@@ -14,7 +14,6 @@ use Symfony\Component\HttpClient\HttpClient;
 class ApiTest extends WebTestCase
 {
     private EntityManagerInterface $entityManager;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -60,13 +59,9 @@ class ApiTest extends WebTestCase
                 'nomsa' => $acquisitionSystem->getName(),
             ],
         ]);
-
         $this->assertSame(200, $response->getStatusCode());
-
         $data = json_decode($response->getContent(), true);
         $this->assertNotEmpty($data, 'Expected some data in the response.');
-
-
     }
 
     /**

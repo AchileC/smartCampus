@@ -113,16 +113,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a711fdbc8957d1ddf582f08f3adea3a9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests the unassignment of an acquisition system from a room.  <br /></td></tr>
 <tr class="separator:a711fdbc8957d1ddf582f08f3adea3a9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7179060377fc946553299f359d3fb086" id="r_a7179060377fc946553299f359d3fb086"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/db3/classApp_1_1Controller_1_1RoomController.html#a7179060377fc946553299f359d3fb086">cancelInstallation</a> (string $name, <a class="el" href="../../d5/da7/classApp_1_1Repository_1_1RoomRepository.html">RoomRepository</a> $roomRepository, <a class="el" href="../../d1/db1/classApp_1_1Repository_1_1ActionRepository.html">ActionRepository</a> $actionRepository, EntityManagerInterface $entityManager)</td></tr>
-<tr class="memdesc:a7179060377fc946553299f359d3fb086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels an ongoing installation action.  <br /></td></tr>
+<tr class="memdesc:a7179060377fc946553299f359d3fb086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancels an ongoing installation/uninstallation action.  <br /></td></tr>
 <tr class="separator:a7179060377fc946553299f359d3fb086"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc35914f7b105f65026c6c997f070538" id="r_acc35914f7b105f65026c6c997f070538"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/db3/classApp_1_1Controller_1_1RoomController.html#acc35914f7b105f65026c6c997f070538">analytics</a> (string $name, string $dbname, <a class="el" href="../../d5/da7/classApp_1_1Repository_1_1RoomRepository.html">RoomRepository</a> $roomRepository, Request $request)</td></tr>
+<tr class="memdesc:acc35914f7b105f65026c6c997f070538"><td class="mdescLeft">&#160;</td><td class="mdescRight">Displays analytics for a specific room.  <br /></td></tr>
 <tr class="separator:acc35914f7b105f65026c6c997f070538"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Manages room-related operations. </p>
 <p>Handles listing, adding, updating, deleting, and managing room assignments. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00033">33</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00034">34</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="aa591f96ab822f4a08280ff8d89f21e12" name="aa591f96ab822f4a08280ff8d89f21e12"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa591f96ab822f4a08280ff8d89f21e12">&#9670;&#160;</a></span>__construct()</h2>
@@ -159,11 +160,11 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00044">44</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">   47</span>      {</div>
-<div class="line"><span class="lineno">   48</span>        $this-&gt;weatherApiService = $weatherApiService;</div>
-<div class="line"><span class="lineno">   49</span>        $this-&gt;roomSensorService = $roomSensorService;</div>
-<div class="line"><span class="lineno">   50</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00045">45</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   48</span>      {</div>
+<div class="line"><span class="lineno">   49</span>        $this-&gt;weatherApiService = $weatherApiService;</div>
+<div class="line"><span class="lineno">   50</span>        $this-&gt;roomSensorService = $roomSensorService;</div>
+<div class="line"><span class="lineno">   51</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -203,33 +204,32 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Response The rendered form page or a redirect to the rooms listing. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00194">194</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  197</span>     : Response</div>
-<div class="line"><span class="lineno">  198</span>    {</div>
-<div class="line"><span class="lineno">  199</span> </div>
-<div class="line"><span class="lineno">  200</span>        $this-&gt;denyAccessUnlessGranted(<span class="stringliteral">&#39;ROLE_MANAGER&#39;</span>);</div>
-<div class="line"><span class="lineno">  201</span> </div>
-<div class="line"><span class="lineno">  202</span>        $room = <span class="keyword">new</span> Room();</div>
-<div class="line"><span class="lineno">  203</span>        $room-&gt;setSensorState(SensorStateEnum::NOT_LINKED);</div>
-<div class="line"><span class="lineno">  204</span>        $room-&gt;setState(RoomStateEnum::NO_DATA);</div>
-<div class="line"><span class="lineno">  205</span>        $form = $this-&gt;createForm(AddRoomType::class, $room, [<span class="stringliteral">&#39;validation_groups&#39;</span> =&gt; [<span class="stringliteral">&#39;Default&#39;</span>, <span class="stringliteral">&#39;add&#39;</span>]]);</div>
-<div class="line"><span class="lineno">  206</span>        $form-&gt;handleRequest($request);</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00188">188</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  191</span>     : Response {</div>
+<div class="line"><span class="lineno">  192</span>        $this-&gt;denyAccessUnlessGranted(<span class="stringliteral">&#39;ROLE_MANAGER&#39;</span>);</div>
+<div class="line"><span class="lineno">  193</span> </div>
+<div class="line"><span class="lineno">  194</span>        $room = <span class="keyword">new</span> Room();</div>
+<div class="line"><span class="lineno">  195</span>        $room-&gt;setSensorState(SensorStateEnum::NOT_LINKED);</div>
+<div class="line"><span class="lineno">  196</span>        $room-&gt;setState(RoomStateEnum::NO_DATA);</div>
+<div class="line"><span class="lineno">  197</span> </div>
+<div class="line"><span class="lineno">  198</span>        $form = $this-&gt;createForm(AddRoomType::class, $room, [<span class="stringliteral">&#39;validation_groups&#39;</span> =&gt; [<span class="stringliteral">&#39;Default&#39;</span>, <span class="stringliteral">&#39;add&#39;</span>]]);</div>
+<div class="line"><span class="lineno">  199</span>        $form-&gt;handleRequest($request);</div>
+<div class="line"><span class="lineno">  200</span> </div>
+<div class="line"><span class="lineno">  201</span>        <span class="keywordflow">if</span> ($form-&gt;isSubmitted()) {</div>
+<div class="line"><span class="lineno">  202</span>            <span class="keywordflow">if</span> ($form-&gt;isValid()) {</div>
+<div class="line"><span class="lineno">  203</span>                $entityManager-&gt;persist($room);</div>
+<div class="line"><span class="lineno">  204</span>                $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  205</span> </div>
+<div class="line"><span class="lineno">  206</span>                $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Room added successfully.&#39;</span>);</div>
 <div class="line"><span class="lineno">  207</span> </div>
-<div class="line"><span class="lineno">  208</span>        <span class="keywordflow">if</span> ($form-&gt;isSubmitted()) {</div>
-<div class="line"><span class="lineno">  209</span>            <span class="keywordflow">if</span> ($form-&gt;isValid()) {</div>
-<div class="line"><span class="lineno">  210</span>                $entityManager-&gt;persist($room);</div>
-<div class="line"><span class="lineno">  211</span>                $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  212</span> </div>
-<div class="line"><span class="lineno">  213</span>                $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Room added successfully.&#39;</span>);</div>
-<div class="line"><span class="lineno">  214</span> </div>
-<div class="line"><span class="lineno">  215</span>                <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  216</span>            }</div>
-<div class="line"><span class="lineno">  217</span>        }</div>
-<div class="line"><span class="lineno">  218</span> </div>
-<div class="line"><span class="lineno">  219</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/add.html.twig&#39;</span>, [</div>
-<div class="line"><span class="lineno">  220</span>            <span class="stringliteral">&#39;form&#39;</span> =&gt; $form-&gt;createView(),</div>
-<div class="line"><span class="lineno">  221</span>        ]);</div>
-<div class="line"><span class="lineno">  222</span>    }</div>
+<div class="line"><span class="lineno">  208</span>                <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  209</span>            }</div>
+<div class="line"><span class="lineno">  210</span>        }</div>
+<div class="line"><span class="lineno">  211</span> </div>
+<div class="line"><span class="lineno">  212</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/add.html.twig&#39;</span>, [</div>
+<div class="line"><span class="lineno">  213</span>            <span class="stringliteral">&#39;form&#39;</span> =&gt; $form-&gt;createView(),</div>
+<div class="line"><span class="lineno">  214</span>        ]);</div>
+<div class="line"><span class="lineno">  215</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -270,52 +270,53 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Displays analytics for a specific room.</p>
+
+<p>Displays analytics for a specific room. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramtype">string</td><td class="paramname">$name</td><td>The name of the room </td></tr>
     <tr><td class="paramtype">string</td><td class="paramname">$dbname</td><td>The database name associated with the room's acquisition system </td></tr>
     <tr><td class="paramtype">RoomRepository</td><td class="paramname">$roomRepository</td><td>The repository to fetch room data </td></tr>
-    <tr><td class="paramtype">Request</td><td class="paramname">$request</td><td>The HTTP request </td></tr>
+    <tr><td class="paramtype">Request</td><td class="paramname">$request</td><td>The HTTP request</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Response The response rendering the analytics page </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00526">526</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  531</span>     : Response {</div>
-<div class="line"><span class="lineno">  532</span> </div>
-<div class="line"><span class="lineno">  533</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  534</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  535</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
-<div class="line"><span class="lineno">  536</span>        }</div>
-<div class="line"><span class="lineno">  537</span> </div>
-<div class="line"><span class="lineno">  538</span>        $acquisitionSystem = $room-&gt;getAcquisitionSystem();</div>
-<div class="line"><span class="lineno">  539</span> </div>
-<div class="line"><span class="lineno">  540</span>        <span class="keywordflow">if</span> (!$acquisitionSystem) {</div>
-<div class="line"><span class="lineno">  541</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(<span class="stringliteral">&#39;This room has no acquisition system&#39;</span>);</div>
-<div class="line"><span class="lineno">  542</span>        }</div>
-<div class="line"><span class="lineno">  543</span> </div>
-<div class="line"><span class="lineno">  544</span>        <span class="keywordflow">if</span> ($acquisitionSystem-&gt;getDbName() !== $dbname) {</div>
-<div class="line"><span class="lineno">  545</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(<span class="stringliteral">&#39;Invalid dbname for this room&#39;</span>);</div>
-<div class="line"><span class="lineno">  546</span>        }</div>
-<div class="line"><span class="lineno">  547</span> </div>
-<div class="line"><span class="lineno">  548</span>        $range = $request-&gt;query-&gt;get(<span class="stringliteral">&#39;range&#39;</span>, <span class="stringliteral">&#39;month&#39;</span>); <span class="comment">// Default to &#39;month&#39;</span></div>
-<div class="line"><span class="lineno">  549</span> </div>
-<div class="line"><span class="lineno">  550</span>        <span class="comment">// Fetch data from the API</span></div>
-<div class="line"><span class="lineno">  551</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  552</span>            $historicalData = $this-&gt;roomSensorService-&gt;fetchHistoricalDataFromApi($acquisitionSystem, $range);</div>
-<div class="line"><span class="lineno">  553</span>        } <span class="keywordflow">catch</span> (\Exception $e) {</div>
-<div class="line"><span class="lineno">  554</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;error&#39;</span>, <span class="stringliteral">&#39;Failed to fetch data: &#39;</span> . $e-&gt;getMessage());</div>
-<div class="line"><span class="lineno">  555</span>            $historicalData = [];</div>
-<div class="line"><span class="lineno">  556</span>        }</div>
-<div class="line"><span class="lineno">  557</span> </div>
-<div class="line"><span class="lineno">  558</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/analytics.html.twig&#39;</span>, [</div>
-<div class="line"><span class="lineno">  559</span>            <span class="stringliteral">&#39;room&#39;</span> =&gt; $room,</div>
-<div class="line"><span class="lineno">  560</span>            <span class="stringliteral">&#39;historicalData&#39;</span> =&gt; $historicalData,</div>
-<div class="line"><span class="lineno">  561</span>            <span class="stringliteral">&#39;range&#39;</span> =&gt; $range,</div>
-<div class="line"><span class="lineno">  562</span>        ]);</div>
-<div class="line"><span class="lineno">  563</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00510">510</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  515</span>     : Response {</div>
+<div class="line"><span class="lineno">  516</span>        $this-&gt;denyAccessUnlessGranted(<span class="stringliteral">&#39;ROLE_MANAGER&#39;</span>);</div>
+<div class="line"><span class="lineno">  517</span> </div>
+<div class="line"><span class="lineno">  518</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  519</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  520</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  521</span>        }</div>
+<div class="line"><span class="lineno">  522</span> </div>
+<div class="line"><span class="lineno">  523</span>        $acquisitionSystem = $room-&gt;getAcquisitionSystem();</div>
+<div class="line"><span class="lineno">  524</span>        <span class="keywordflow">if</span> (!$acquisitionSystem) {</div>
+<div class="line"><span class="lineno">  525</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(<span class="stringliteral">&#39;This room has no acquisition system.&#39;</span>);</div>
+<div class="line"><span class="lineno">  526</span>        }</div>
+<div class="line"><span class="lineno">  527</span> </div>
+<div class="line"><span class="lineno">  528</span>        <span class="keywordflow">if</span> ($acquisitionSystem-&gt;getDbName() !== $dbname) {</div>
+<div class="line"><span class="lineno">  529</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(<span class="stringliteral">&#39;Invalid dbname for this room.&#39;</span>);</div>
+<div class="line"><span class="lineno">  530</span>        }</div>
+<div class="line"><span class="lineno">  531</span> </div>
+<div class="line"><span class="lineno">  532</span>        $range = $request-&gt;query-&gt;get(<span class="stringliteral">&#39;range&#39;</span>, <span class="stringliteral">&#39;month&#39;</span>);</div>
+<div class="line"><span class="lineno">  533</span> </div>
+<div class="line"><span class="lineno">  534</span>        <span class="comment">// Fetch historical data from the external API</span></div>
+<div class="line"><span class="lineno">  535</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  536</span>            $historicalData = $this-&gt;roomSensorService-&gt;fetchHistoricalDataFromApi($acquisitionSystem, $range);</div>
+<div class="line"><span class="lineno">  537</span>        } <span class="keywordflow">catch</span> (\Exception $e) {</div>
+<div class="line"><span class="lineno">  538</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;error&#39;</span>, <span class="stringliteral">&#39;Failed to fetch data: &#39;</span> . $e-&gt;getMessage());</div>
+<div class="line"><span class="lineno">  539</span>            $historicalData = [];</div>
+<div class="line"><span class="lineno">  540</span>        }</div>
+<div class="line"><span class="lineno">  541</span> </div>
+<div class="line"><span class="lineno">  542</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/analytics.html.twig&#39;</span>, [</div>
+<div class="line"><span class="lineno">  543</span>            <span class="stringliteral">&#39;room&#39;</span>           =&gt; $room,</div>
+<div class="line"><span class="lineno">  544</span>            <span class="stringliteral">&#39;historicalData&#39;</span> =&gt; $historicalData,</div>
+<div class="line"><span class="lineno">  545</span>            <span class="stringliteral">&#39;range&#39;</span>          =&gt; $range,</div>
+<div class="line"><span class="lineno">  546</span>        ]);</div>
+<div class="line"><span class="lineno">  547</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -357,14 +358,14 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Cancels an ongoing installation action. </p>
-<p>Reverts the room's state and removes associated tasks.</p>
+<p>Cancels an ongoing installation/uninstallation action. </p>
+<p>Removes all associated tasks for the specified room.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramtype">string</td><td class="paramname">$name</td><td>The name of the room. </td></tr>
     <tr><td class="paramtype">RoomRepository</td><td class="paramname">$roomRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Room entities. </td></tr>
-    <tr><td class="paramtype">EntityManagerInterface</td><td class="paramname">$entityManager</td><td>The entity manager for database operations. </td></tr>
-    <tr><td class="paramtype">ActionRepository</td><td class="paramname">$actionRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Action entities.</td></tr>
+    <tr><td class="paramtype">ActionRepository</td><td class="paramname">$actionRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Action entities. </td></tr>
+    <tr><td class="paramtype">EntityManagerInterface</td><td class="paramname">$entityManager</td><td>The entity manager for database operations.</td></tr>
   </table>
   </dd>
 </dl>
@@ -376,30 +377,29 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00487">487</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  492</span>     : Response {</div>
-<div class="line"><span class="lineno">  493</span> </div>
-<div class="line"><span class="lineno">  494</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  495</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  496</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
-<div class="line"><span class="lineno">  497</span>        }</div>
-<div class="line"><span class="lineno">  498</span> </div>
-<div class="line"><span class="lineno">  499</span>        $ongoingTasks = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
-<div class="line"><span class="lineno">  500</span> </div>
-<div class="line"><span class="lineno">  501</span>        <span class="keywordflow">if</span> (empty($ongoingTasks)) {</div>
-<div class="line"><span class="lineno">  502</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;info&#39;</span>, <span class="stringliteral">&#39;Aucune tâche d’installation/désinstallation en cours pour cette salle.&#39;</span>);</div>
-<div class="line"><span class="lineno">  503</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  504</span>        }</div>
-<div class="line"><span class="lineno">  505</span> </div>
-<div class="line"><span class="lineno">  506</span>        <span class="keywordflow">foreach</span> ($ongoingTasks as $task) {</div>
-<div class="line"><span class="lineno">  507</span>            $entityManager-&gt;remove($task);</div>
-<div class="line"><span class="lineno">  508</span>        }</div>
-<div class="line"><span class="lineno">  509</span> </div>
-<div class="line"><span class="lineno">  510</span>        $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  511</span> </div>
-<div class="line"><span class="lineno">  512</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Tâche d’installation/désinstallation annulée avec succès.&#39;</span>);</div>
-<div class="line"><span class="lineno">  513</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  514</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00471">471</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  476</span>     : Response {</div>
+<div class="line"><span class="lineno">  477</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  478</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  479</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  480</span>        }</div>
+<div class="line"><span class="lineno">  481</span> </div>
+<div class="line"><span class="lineno">  482</span>        $ongoingTasks = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
+<div class="line"><span class="lineno">  483</span> </div>
+<div class="line"><span class="lineno">  484</span>        <span class="keywordflow">if</span> (empty($ongoingTasks)) {</div>
+<div class="line"><span class="lineno">  485</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;info&#39;</span>, <span class="stringliteral">&#39;No ongoing installation/uninstallation task for this room.&#39;</span>);</div>
+<div class="line"><span class="lineno">  486</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  487</span>        }</div>
+<div class="line"><span class="lineno">  488</span> </div>
+<div class="line"><span class="lineno">  489</span>        <span class="keywordflow">foreach</span> ($ongoingTasks as $task) {</div>
+<div class="line"><span class="lineno">  490</span>            $entityManager-&gt;remove($task);</div>
+<div class="line"><span class="lineno">  491</span>        }</div>
+<div class="line"><span class="lineno">  492</span> </div>
+<div class="line"><span class="lineno">  493</span>        $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  494</span> </div>
+<div class="line"><span class="lineno">  495</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Installation/uninstallation task canceled successfully.&#39;</span>);</div>
+<div class="line"><span class="lineno">  496</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  497</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -442,7 +442,6 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Deletes a specific room. </p>
-<p>Removes the room and unlinks any associated acquisition system.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramtype">string</td><td class="paramname">$name</td><td>The name of the room to delete. </td></tr>
@@ -461,34 +460,33 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00341">341</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  346</span>     : Response</div>
-<div class="line"><span class="lineno">  347</span>    {</div>
-<div class="line"><span class="lineno">  348</span>        $submittedToken = $request-&gt;request-&gt;get(<span class="stringliteral">&#39;_token&#39;</span>);</div>
-<div class="line"><span class="lineno">  349</span> </div>
-<div class="line"><span class="lineno">  350</span>        <span class="comment">// Verify the CSRF token</span></div>
-<div class="line"><span class="lineno">  351</span>        <span class="keywordflow">if</span> (!$this-&gt;isCsrfTokenValid(<span class="stringliteral">&#39;delete_room&#39;</span>, $submittedToken)) {</div>
-<div class="line"><span class="lineno">  352</span>            <span class="keywordflow">throw</span> $this-&gt;createAccessDeniedException(<span class="stringliteral">&#39;Invalid CSRF token.&#39;</span>);</div>
-<div class="line"><span class="lineno">  353</span>        }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00326">326</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  331</span>     : Response {</div>
+<div class="line"><span class="lineno">  332</span>        $submittedToken = $request-&gt;request-&gt;get(<span class="stringliteral">&#39;_token&#39;</span>);</div>
+<div class="line"><span class="lineno">  333</span> </div>
+<div class="line"><span class="lineno">  334</span>        <span class="comment">// Verify CSRF token</span></div>
+<div class="line"><span class="lineno">  335</span>        <span class="keywordflow">if</span> (!$this-&gt;isCsrfTokenValid(<span class="stringliteral">&#39;delete_room&#39;</span>, $submittedToken)) {</div>
+<div class="line"><span class="lineno">  336</span>            <span class="keywordflow">throw</span> $this-&gt;createAccessDeniedException(<span class="stringliteral">&#39;Invalid CSRF token.&#39;</span>);</div>
+<div class="line"><span class="lineno">  337</span>        }</div>
+<div class="line"><span class="lineno">  338</span> </div>
+<div class="line"><span class="lineno">  339</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  340</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  341</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  342</span>        }</div>
+<div class="line"><span class="lineno">  343</span> </div>
+<div class="line"><span class="lineno">  344</span>        $acquisitionSystem = $room-&gt;getAcquisitionSystem();</div>
+<div class="line"><span class="lineno">  345</span>        <span class="keywordflow">if</span> ($acquisitionSystem !== null) {</div>
+<div class="line"><span class="lineno">  346</span>            $acquisitionSystem-&gt;setRoom(null);</div>
+<div class="line"><span class="lineno">  347</span>            $acquisitionSystem-&gt;setState(SensorStateEnum::NOT_LINKED);</div>
+<div class="line"><span class="lineno">  348</span>            $entityManager-&gt;persist($acquisitionSystem);</div>
+<div class="line"><span class="lineno">  349</span>        }</div>
+<div class="line"><span class="lineno">  350</span>        $entityManager-&gt;remove($room);</div>
+<div class="line"><span class="lineno">  351</span>        $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  352</span> </div>
+<div class="line"><span class="lineno">  353</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Room deleted successfully.&#39;</span>);</div>
 <div class="line"><span class="lineno">  354</span> </div>
-<div class="line"><span class="lineno">  355</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  356</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  357</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
-<div class="line"><span class="lineno">  358</span>        }</div>
-<div class="line"><span class="lineno">  359</span> </div>
-<div class="line"><span class="lineno">  360</span>        $acquisitionSystem = $room-&gt;getAcquisitionSystem();</div>
-<div class="line"><span class="lineno">  361</span>        <span class="keywordflow">if</span> ($acquisitionSystem !== null) {</div>
-<div class="line"><span class="lineno">  362</span>            $acquisitionSystem-&gt;setRoom(null);</div>
-<div class="line"><span class="lineno">  363</span>            $acquisitionSystem-&gt;setState(SensorStateEnum::NOT_LINKED);</div>
-<div class="line"><span class="lineno">  364</span>            $entityManager-&gt;persist($acquisitionSystem);</div>
-<div class="line"><span class="lineno">  365</span>        }</div>
-<div class="line"><span class="lineno">  366</span>        $entityManager-&gt;remove($room);</div>
-<div class="line"><span class="lineno">  367</span>        $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  368</span> </div>
-<div class="line"><span class="lineno">  369</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Room deleted successfully.&#39;</span>);</div>
-<div class="line"><span class="lineno">  370</span> </div>
-<div class="line"><span class="lineno">  371</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  372</span>    }</div>
+<div class="line"><span class="lineno">  355</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  356</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -543,38 +541,37 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00239">239</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  243</span>     : Response</div>
-<div class="line"><span class="lineno">  244</span>    {</div>
-<div class="line"><span class="lineno">  245</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  246</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  247</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
-<div class="line"><span class="lineno">  248</span>        }</div>
-<div class="line"><span class="lineno">  249</span> </div>
-<div class="line"><span class="lineno">  250</span>        <span class="keywordflow">if</span> (!$this-&gt;getUser() &amp;&amp; $room-&gt;getSensorState() === SensorStateEnum::NOT_LINKED) {</div>
-<div class="line"><span class="lineno">  251</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> AccessDeniedHttpException(<span class="stringliteral">&#39;This room is not yet equipped.&#39;</span>);</div>
-<div class="line"><span class="lineno">  252</span>        }</div>
-<div class="line"><span class="lineno">  253</span> </div>
-<div class="line"><span class="lineno">  254</span>        <span class="comment">// Update the room&#39;s state based on JSON and sensor data</span></div>
-<div class="line"><span class="lineno">  255</span>        $this-&gt;roomSensorService-&gt;updateRoomState($room);</div>
-<div class="line"><span class="lineno">  256</span> </div>
-<div class="line"><span class="lineno">  257</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><span class="lineno">  258</span>            <span class="comment">// Call the service to get weather forecasts</span></div>
-<div class="line"><span class="lineno">  259</span>            $this-&gt;weatherApiService-&gt;fetchWeatherData(<span class="stringliteral">&#39;46.16&#39;</span>, <span class="stringliteral">&#39;-1.15&#39;</span>, <span class="stringliteral">&#39;Xu9ot3p6Bx4iIcfE&#39;</span>);</div>
-<div class="line"><span class="lineno">  260</span>            $forecast = $this-&gt;weatherApiService-&gt;getForecast();</div>
-<div class="line"><span class="lineno">  261</span>            $todayForecast = $forecast[0] ?? null;</div>
-<div class="line"><span class="lineno">  262</span>        } <span class="keywordflow">catch</span> (\RuntimeException $e) {</div>
-<div class="line"><span class="lineno">  263</span>            <span class="comment">// Handle API errors by displaying a warning message</span></div>
-<div class="line"><span class="lineno">  264</span>            $todayForecast = $forecast[0] ?? null;</div>
-<div class="line"><span class="lineno">  265</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;warning&#39;</span>, <span class="stringliteral">&#39;Unable to retrieve weather forecasts.&#39;</span>);</div>
-<div class="line"><span class="lineno">  266</span>        }</div>
-<div class="line"><span class="lineno">  267</span> </div>
-<div class="line"><span class="lineno">  268</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/detail.html.twig&#39;</span>, [</div>
-<div class="line"><span class="lineno">  269</span>            <span class="stringliteral">&#39;room&#39;</span> =&gt; $room,</div>
-<div class="line"><span class="lineno">  270</span>            <span class="stringliteral">&#39;todayForecast&#39;</span> =&gt; $todayForecast,</div>
-<div class="line"><span class="lineno">  271</span>            <span class="stringliteral">&#39;thresholds&#39;</span> =&gt; $thresholdRepository-&gt;getDefaultThresholds(),</div>
-<div class="line"><span class="lineno">  272</span>        ]);</div>
-<div class="line"><span class="lineno">  273</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00232">232</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  236</span>     : Response {</div>
+<div class="line"><span class="lineno">  237</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  238</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  239</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  240</span>        }</div>
+<div class="line"><span class="lineno">  241</span> </div>
+<div class="line"><span class="lineno">  242</span>        <span class="keywordflow">if</span> (!$this-&gt;getUser() &amp;&amp; $room-&gt;getSensorState() === SensorStateEnum::NOT_LINKED) {</div>
+<div class="line"><span class="lineno">  243</span>            <span class="keywordflow">throw</span> <span class="keyword">new</span> AccessDeniedHttpException(<span class="stringliteral">&#39;This room is not yet equipped.&#39;</span>);</div>
+<div class="line"><span class="lineno">  244</span>        }</div>
+<div class="line"><span class="lineno">  245</span> </div>
+<div class="line"><span class="lineno">  246</span>        <span class="comment">// Update the room&#39;s state directly from API/sensor data</span></div>
+<div class="line"><span class="lineno">  247</span>        $this-&gt;roomSensorService-&gt;updateRoomState($room);</div>
+<div class="line"><span class="lineno">  248</span> </div>
+<div class="line"><span class="lineno">  249</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><span class="lineno">  250</span>            <span class="comment">// Get weather forecast</span></div>
+<div class="line"><span class="lineno">  251</span>            $this-&gt;weatherApiService-&gt;fetchWeatherData(<span class="stringliteral">&#39;46.16&#39;</span>, <span class="stringliteral">&#39;-1.15&#39;</span>, <span class="stringliteral">&#39;Xu9ot3p6Bx4iIcfE&#39;</span>);</div>
+<div class="line"><span class="lineno">  252</span>            $forecast = $this-&gt;weatherApiService-&gt;getForecast();</div>
+<div class="line"><span class="lineno">  253</span>            $todayForecast = $forecast[0] ?? null;</div>
+<div class="line"><span class="lineno">  254</span>        } <span class="keywordflow">catch</span> (\RuntimeException $e) {</div>
+<div class="line"><span class="lineno">  255</span>            <span class="comment">// Handle API errors by displaying a warning message</span></div>
+<div class="line"><span class="lineno">  256</span>            $todayForecast = $forecast[0] ?? null;</div>
+<div class="line"><span class="lineno">  257</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;warning&#39;</span>, <span class="stringliteral">&#39;Unable to retrieve weather forecasts.&#39;</span>);</div>
+<div class="line"><span class="lineno">  258</span>        }</div>
+<div class="line"><span class="lineno">  259</span> </div>
+<div class="line"><span class="lineno">  260</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/detail.html.twig&#39;</span>, [</div>
+<div class="line"><span class="lineno">  261</span>            <span class="stringliteral">&#39;room&#39;</span>       =&gt; $room,</div>
+<div class="line"><span class="lineno">  262</span>            <span class="stringliteral">&#39;todayForecast&#39;</span> =&gt; $todayForecast,</div>
+<div class="line"><span class="lineno">  263</span>            <span class="stringliteral">&#39;thresholds&#39;</span> =&gt; $thresholdRepository-&gt;getDefaultThresholds(),</div>
+<div class="line"><span class="lineno">  264</span>        ]);</div>
+<div class="line"><span class="lineno">  265</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -629,6 +626,7 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramtype">string</td><td class="paramname">$name</td><td>The name of the room. </td></tr>
     <tr><td class="paramtype">RoomRepository</td><td class="paramname">$roomRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Room entities. </td></tr>
     <tr><td class="paramtype">AcquisitionSystemRepository</td><td class="paramname">$acquisitionSystemRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage AcquisitionSystem entities. </td></tr>
+    <tr><td class="paramtype">ActionRepository</td><td class="paramname">$actionRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Action entities. </td></tr>
     <tr><td class="paramtype">EntityManagerInterface</td><td class="paramname">$entityManager</td><td>The entity manager for database operations.</td></tr>
   </table>
   </dd>
@@ -641,35 +639,34 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00389">389</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  395</span>     : Response {</div>
-<div class="line"><span class="lineno">  396</span> </div>
-<div class="line"><span class="lineno">  397</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  398</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  399</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
-<div class="line"><span class="lineno">  400</span>        }</div>
-<div class="line"><span class="lineno">  401</span> </div>
-<div class="line"><span class="lineno">  402</span>        <span class="comment">// Vérifier s’il existe déjà une tâche en cours (ASSIGNMENT ou UNASSIGNMENT)</span></div>
-<div class="line"><span class="lineno">  403</span>        $ongoingTask = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
-<div class="line"><span class="lineno">  404</span>        <span class="keywordflow">if</span> ($ongoingTask) {</div>
-<div class="line"><span class="lineno">  405</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;warning&#39;</span>, <span class="stringliteral">&#39;Une tâche d’(dés)installation est déjà en cours pour cette salle.&#39;</span>);</div>
-<div class="line"><span class="lineno">  406</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  407</span>        }</div>
-<div class="line"><span class="lineno">  408</span> </div>
-<div class="line"><span class="lineno">  409</span>        <span class="comment">// Pas de tâche en cours =&gt; on peut créer l’action</span></div>
-<div class="line"><span class="lineno">  410</span>        $action = <span class="keyword">new</span> Action();</div>
-<div class="line"><span class="lineno">  411</span>        $action-&gt;setInfo(ActionInfoEnum::ASSIGNMENT);</div>
-<div class="line"><span class="lineno">  412</span>        $action-&gt;setState(ActionStateEnum::TO_DO);</div>
-<div class="line"><span class="lineno">  413</span>        $action-&gt;setCreatedAt(<span class="keyword">new</span> \DateTime());</div>
-<div class="line"><span class="lineno">  414</span>        $action-&gt;setRoom($room);</div>
-<div class="line"><span class="lineno">  415</span> </div>
-<div class="line"><span class="lineno">  416</span>        $entityManager-&gt;persist($action);</div>
-<div class="line"><span class="lineno">  417</span>        $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  418</span> </div>
-<div class="line"><span class="lineno">  419</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Tâche d’installation créée.&#39;</span>);</div>
-<div class="line"><span class="lineno">  420</span> </div>
-<div class="line"><span class="lineno">  421</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  422</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00374">374</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  380</span>     : Response {</div>
+<div class="line"><span class="lineno">  381</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  382</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  383</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  384</span>        }</div>
+<div class="line"><span class="lineno">  385</span> </div>
+<div class="line"><span class="lineno">  386</span>        <span class="comment">// Check if an assignment/unassignment task is already in progress</span></div>
+<div class="line"><span class="lineno">  387</span>        $ongoingTask = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
+<div class="line"><span class="lineno">  388</span>        <span class="keywordflow">if</span> ($ongoingTask) {</div>
+<div class="line"><span class="lineno">  389</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;warning&#39;</span>, <span class="stringliteral">&#39;An (un)installation task is already in progress for this room.&#39;</span>);</div>
+<div class="line"><span class="lineno">  390</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  391</span>        }</div>
+<div class="line"><span class="lineno">  392</span> </div>
+<div class="line"><span class="lineno">  393</span>        <span class="comment">// No ongoing task =&gt; create the action</span></div>
+<div class="line"><span class="lineno">  394</span>        $action = <span class="keyword">new</span> Action();</div>
+<div class="line"><span class="lineno">  395</span>        $action-&gt;setInfo(ActionInfoEnum::ASSIGNMENT);</div>
+<div class="line"><span class="lineno">  396</span>        $action-&gt;setState(ActionStateEnum::TO_DO);</div>
+<div class="line"><span class="lineno">  397</span>        $action-&gt;setCreatedAt(<span class="keyword">new</span> \DateTime());</div>
+<div class="line"><span class="lineno">  398</span>        $action-&gt;setRoom($room);</div>
+<div class="line"><span class="lineno">  399</span> </div>
+<div class="line"><span class="lineno">  400</span>        $entityManager-&gt;persist($action);</div>
+<div class="line"><span class="lineno">  401</span>        $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  402</span> </div>
+<div class="line"><span class="lineno">  403</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Installation task created.&#39;</span>);</div>
+<div class="line"><span class="lineno">  404</span> </div>
+<div class="line"><span class="lineno">  405</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  406</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -717,6 +714,7 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramtype">string</td><td class="paramname">$name</td><td>The name of the room. </td></tr>
     <tr><td class="paramtype">RoomRepository</td><td class="paramname">$roomRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Room entities. </td></tr>
+    <tr><td class="paramtype">ActionRepository</td><td class="paramname">$actionRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Action entities. </td></tr>
     <tr><td class="paramtype">EntityManagerInterface</td><td class="paramname">$entityManager</td><td>The entity manager for database operations.</td></tr>
   </table>
   </dd>
@@ -729,35 +727,34 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00438">438</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  443</span>     : Response</div>
-<div class="line"><span class="lineno">  444</span>    {</div>
-<div class="line"><span class="lineno">  445</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  446</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  447</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
-<div class="line"><span class="lineno">  448</span>        }</div>
-<div class="line"><span class="lineno">  449</span> </div>
-<div class="line"><span class="lineno">  450</span>        <span class="comment">// Vérifier s’il existe déjà une tâche en cours</span></div>
-<div class="line"><span class="lineno">  451</span>        $ongoingTask = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
-<div class="line"><span class="lineno">  452</span>        <span class="keywordflow">if</span> ($ongoingTask) {</div>
-<div class="line"><span class="lineno">  453</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;warning&#39;</span>, <span class="stringliteral">&#39;Une tâche d’(dés)installation est déjà en cours pour cette salle.&#39;</span>);</div>
-<div class="line"><span class="lineno">  454</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  455</span>        }</div>
-<div class="line"><span class="lineno">  456</span> </div>
-<div class="line"><span class="lineno">  457</span>        <span class="comment">// Créer l’action</span></div>
-<div class="line"><span class="lineno">  458</span>        $action = <span class="keyword">new</span> Action();</div>
-<div class="line"><span class="lineno">  459</span>        $action-&gt;setInfo(ActionInfoEnum::UNASSIGNMENT);</div>
-<div class="line"><span class="lineno">  460</span>        $action-&gt;setState(ActionStateEnum::TO_DO);</div>
-<div class="line"><span class="lineno">  461</span>        $action-&gt;setCreatedAt(<span class="keyword">new</span> \DateTime());</div>
-<div class="line"><span class="lineno">  462</span>        $action-&gt;setRoom($room);</div>
-<div class="line"><span class="lineno">  463</span> </div>
-<div class="line"><span class="lineno">  464</span>        $entityManager-&gt;persist($action);</div>
-<div class="line"><span class="lineno">  465</span>        $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  466</span> </div>
-<div class="line"><span class="lineno">  467</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Tâche de désinstallation créée.&#39;</span>);</div>
-<div class="line"><span class="lineno">  468</span> </div>
-<div class="line"><span class="lineno">  469</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  470</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00423">423</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  428</span>     : Response {</div>
+<div class="line"><span class="lineno">  429</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  430</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  431</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  432</span>        }</div>
+<div class="line"><span class="lineno">  433</span> </div>
+<div class="line"><span class="lineno">  434</span>        <span class="comment">// Check if an assignment/unassignment task is already in progress</span></div>
+<div class="line"><span class="lineno">  435</span>        $ongoingTask = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
+<div class="line"><span class="lineno">  436</span>        <span class="keywordflow">if</span> ($ongoingTask) {</div>
+<div class="line"><span class="lineno">  437</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;warning&#39;</span>, <span class="stringliteral">&#39;An (un)installation task is already in progress for this room.&#39;</span>);</div>
+<div class="line"><span class="lineno">  438</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  439</span>        }</div>
+<div class="line"><span class="lineno">  440</span> </div>
+<div class="line"><span class="lineno">  441</span>        <span class="comment">// Create the action</span></div>
+<div class="line"><span class="lineno">  442</span>        $action = <span class="keyword">new</span> Action();</div>
+<div class="line"><span class="lineno">  443</span>        $action-&gt;setInfo(ActionInfoEnum::UNASSIGNMENT);</div>
+<div class="line"><span class="lineno">  444</span>        $action-&gt;setState(ActionStateEnum::TO_DO);</div>
+<div class="line"><span class="lineno">  445</span>        $action-&gt;setCreatedAt(<span class="keyword">new</span> \DateTime());</div>
+<div class="line"><span class="lineno">  446</span>        $action-&gt;setRoom($room);</div>
+<div class="line"><span class="lineno">  447</span> </div>
+<div class="line"><span class="lineno">  448</span>        $entityManager-&gt;persist($action);</div>
+<div class="line"><span class="lineno">  449</span>        $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  450</span> </div>
+<div class="line"><span class="lineno">  451</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Uninstallation task created.&#39;</span>);</div>
+<div class="line"><span class="lineno">  452</span> </div>
+<div class="line"><span class="lineno">  453</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
+<div class="line"><span class="lineno">  454</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -806,11 +803,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Updates an existing room. </p>
-<p>Allows editing the details of a specific room.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramtype">string</td><td class="paramname">$name</td><td>The name of the room to update. </td></tr>
     <tr><td class="paramtype">RoomRepository</td><td class="paramname">$roomRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Room entities. </td></tr>
+    <tr><td class="paramtype">ActionRepository</td><td class="paramname">$actionRepository</td><td><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> to manage Action entities. </td></tr>
     <tr><td class="paramtype">Request</td><td class="paramname">$request</td><td>The current HTTP request. </td></tr>
     <tr><td class="paramtype">EntityManagerInterface</td><td class="paramname">$entityManager</td><td>The entity manager for database operations.</td></tr>
   </table>
@@ -824,32 +821,31 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00292">292</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  298</span>     : Response</div>
-<div class="line"><span class="lineno">  299</span>    {</div>
-<div class="line"><span class="lineno">  300</span>        $room = $roomRepository-&gt;findByName($name);</div>
-<div class="line"><span class="lineno">  301</span>        <span class="keywordflow">if</span> (!$room) {</div>
-<div class="line"><span class="lineno">  302</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<p class="definition">Definition at line <a class="el" href="../../d5/d97/RoomController_8php_source.html#l00281">281</a> of file <a class="el" href="../../d5/d97/RoomController_8php_source.html">RoomController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  287</span>     : Response {</div>
+<div class="line"><span class="lineno">  288</span>        $room = $roomRepository-&gt;findByName($name);</div>
+<div class="line"><span class="lineno">  289</span>        <span class="keywordflow">if</span> (!$room) {</div>
+<div class="line"><span class="lineno">  290</span>            <span class="keywordflow">throw</span> $this-&gt;createNotFoundException(sprintf(<span class="stringliteral">&#39;Room &quot;%s&quot; not found&#39;</span>, $name));</div>
+<div class="line"><span class="lineno">  291</span>        }</div>
+<div class="line"><span class="lineno">  292</span> </div>
+<div class="line"><span class="lineno">  293</span>        <span class="comment">// Retrieve ongoing tasks for the room</span></div>
+<div class="line"><span class="lineno">  294</span>        $ongoingTask = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
+<div class="line"><span class="lineno">  295</span> </div>
+<div class="line"><span class="lineno">  296</span>        $form = $this-&gt;createForm(AddRoomType::class, $room);</div>
+<div class="line"><span class="lineno">  297</span>        $form-&gt;handleRequest($request);</div>
+<div class="line"><span class="lineno">  298</span> </div>
+<div class="line"><span class="lineno">  299</span>        <span class="keywordflow">if</span> ($form-&gt;isSubmitted() &amp;&amp; $form-&gt;isValid()) {</div>
+<div class="line"><span class="lineno">  300</span>            $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  301</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Room updated successfully.&#39;</span>);</div>
+<div class="line"><span class="lineno">  302</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
 <div class="line"><span class="lineno">  303</span>        }</div>
 <div class="line"><span class="lineno">  304</span> </div>
-<div class="line"><span class="lineno">  305</span>        <span class="comment">// Récupérer la (ou les) tâche(s) en cours sur la salle</span></div>
-<div class="line"><span class="lineno">  306</span>        $ongoingTask = $actionRepository-&gt;findOngoingTaskForRoom($room-&gt;getId());</div>
-<div class="line"><span class="lineno">  307</span> </div>
-<div class="line"><span class="lineno">  308</span>        $form = $this-&gt;createForm(AddRoomType::class, $room);</div>
-<div class="line"><span class="lineno">  309</span>        $form-&gt;handleRequest($request);</div>
-<div class="line"><span class="lineno">  310</span> </div>
-<div class="line"><span class="lineno">  311</span>        <span class="keywordflow">if</span> ($form-&gt;isSubmitted() &amp;&amp; $form-&gt;isValid()) {</div>
-<div class="line"><span class="lineno">  312</span>            $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  313</span>            $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Room updated successfully.&#39;</span>);</div>
-<div class="line"><span class="lineno">  314</span>            <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_rooms&#39;</span>);</div>
-<div class="line"><span class="lineno">  315</span>        }</div>
-<div class="line"><span class="lineno">  316</span> </div>
-<div class="line"><span class="lineno">  317</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/update.html.twig&#39;</span>, [</div>
-<div class="line"><span class="lineno">  318</span>            <span class="stringliteral">&#39;room&#39;</span> =&gt; $room,</div>
-<div class="line"><span class="lineno">  319</span>            <span class="stringliteral">&#39;form&#39;</span> =&gt; $form-&gt;createView(),</div>
-<div class="line"><span class="lineno">  320</span>            <span class="stringliteral">&#39;ongoingTask&#39;</span> =&gt; $ongoingTask, <span class="comment">// On passe la tâche en cours</span></div>
-<div class="line"><span class="lineno">  321</span>        ]);</div>
-<div class="line"><span class="lineno">  322</span>    }</div>
+<div class="line"><span class="lineno">  305</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;rooms/update.html.twig&#39;</span>, [</div>
+<div class="line"><span class="lineno">  306</span>            <span class="stringliteral">&#39;room&#39;</span>        =&gt; $room,</div>
+<div class="line"><span class="lineno">  307</span>            <span class="stringliteral">&#39;form&#39;</span>        =&gt; $form-&gt;createView(),</div>
+<div class="line"><span class="lineno">  308</span>            <span class="stringliteral">&#39;ongoingTask&#39;</span> =&gt; $ongoingTask,</div>
+<div class="line"><span class="lineno">  309</span>        ]);</div>
+<div class="line"><span class="lineno">  310</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>

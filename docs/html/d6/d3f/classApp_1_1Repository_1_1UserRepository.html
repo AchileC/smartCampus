@@ -100,6 +100,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a393ed66f7bc0e636516728660074d8ff" id="r_a393ed66f7bc0e636516728660074d8ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d3f/classApp_1_1Repository_1_1UserRepository.html#a393ed66f7bc0e636516728660074d8ff">findOneByExactRole</a> (string $role)</td></tr>
 <tr class="memdesc:a393ed66f7bc0e636516728660074d8ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds a user with an exact role.  <br /></td></tr>
 <tr class="separator:a393ed66f7bc0e636516728660074d8ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5d1b6675341470d0e1214e098ed677e" id="r_ac5d1b6675341470d0e1214e098ed677e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d3f/classApp_1_1Repository_1_1UserRepository.html#ac5d1b6675341470d0e1214e098ed677e">findByRole</a> (string $role)</td></tr>
+<tr class="memdesc:ac5d1b6675341470d0e1214e098ed677e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds users with the specified role.  <br /></td></tr>
+<tr class="separator:ac5d1b6675341470d0e1214e098ed677e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d7/dbb/namespaceApp_1_1Repository.html">Repository</a> for managing User entities. </p>
@@ -136,6 +139,49 @@ Public Member Functions</h2></td></tr>
 <div class="fragment"><div class="line"><span class="lineno">   27</span>    {</div>
 <div class="line"><span class="lineno">   28</span>        parent::__construct($registry, User::class);</div>
 <div class="line"><span class="lineno">   29</span>    }</div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="ac5d1b6675341470d0e1214e098ed677e" name="ac5d1b6675341470d0e1214e098ed677e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5d1b6675341470d0e1214e098ed677e">&#9670;&#160;</a></span>findByRole()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">App::Repository::UserRepository::findByRole </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>$role</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Finds users with the specified role. </p>
+<p>Searches for all users who possess the specified role.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramtype">string</td><td class="paramname">$role</td><td>The role to search for (e.g., 'ROLE_MANAGER').</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>User[] Array of User entities having the given role. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="../../d7/d89/UserRepository_8php_source.html#l00087">87</a> of file <a class="el" href="../../d7/d89/UserRepository_8php_source.html">UserRepository.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">   87</span>                                            : array</div>
+<div class="line"><span class="lineno">   88</span>    {</div>
+<div class="line"><span class="lineno">   89</span>        $users = $this-&gt;findAll();</div>
+<div class="line"><span class="lineno">   90</span>        $result = [];</div>
+<div class="line"><span class="lineno">   91</span> </div>
+<div class="line"><span class="lineno">   92</span>        <span class="keywordflow">foreach</span> ($users as $user) {</div>
+<div class="line"><span class="lineno">   93</span>            <span class="keywordflow">if</span> (in_array($role, $user-&gt;getRoles(), <span class="keyword">true</span>)) {</div>
+<div class="line"><span class="lineno">   94</span>                $result[] = $user;</div>
+<div class="line"><span class="lineno">   95</span>            }</div>
+<div class="line"><span class="lineno">   96</span>        }</div>
+<div class="line"><span class="lineno">   97</span> </div>
+<div class="line"><span class="lineno">   98</span>        <span class="keywordflow">return</span> $result;</div>
+<div class="line"><span class="lineno">   99</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>

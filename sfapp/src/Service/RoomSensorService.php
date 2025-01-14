@@ -19,35 +19,48 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * Service responsible for handling sensor data and updating Room states.
+ * @class RoomSensorService
+ * @brief Service responsible for handling sensor data and updating Room states.
  *
- * This version no longer writes the "live" data to a JSON file; instead,
- * it directly persists the fetched data into the database.
+ * This service performs the following tasks:
+ * - Fetches sensor data from an external API
+ * - Updates the AcquisitionSystem entity with the fetched data
+ * - Determines the state of a Room based on thresholds and heating periods
+ * - Creates maintenance tasks when necessary
  */
 class RoomSensorService
 {
-    /** @var ThresholdRepository */
+    /**
+     * @var ThresholdRepository $thresholdRepository
+     * Repository used to retrieve and check temperature, humidity, and CO2 thresholds.
+     */
     private ThresholdRepository $thresholdRepository;
 
-    /** @var HttpClientInterface */
+    /**
+     * @var HttpClientInterface $httpClient
+     * HTTP client used to communicate with the external API.
+     */
     private HttpClientInterface $httpClient;
 
-    /** @var EntityManagerInterface */
+    /**
+     * @var EntityManagerInterface $entityManager
+     * Entity manager for persisting and retrieving data.
+     */
     private EntityManagerInterface $entityManager;
 
     /**
-     * @var string Path to the JSON directory (used only for historical data).
-     *             The "live" usage has been removed.
+     * @var string $jsonDirectory
+     * Path to the JSON directory (used only for historical data).
      */
     private string $jsonDirectory;
 
     /**
-     * Constructor.
+     * @brief RoomSensorService constructor.
      *
-     * @param ThresholdRepository     $thresholdRepository
-     * @param HttpClientInterface     $httpClient
-     * @param EntityManagerInterface  $entityManager
-     * @param string                  $jsonDirectory   Path to the assets/json directory (only used for history now)
+     * @param ThresholdRepository    $thresholdRepository Repository for thresholds
+     * @param HttpClientInterface    $httpClient          Symfony HTTP client
+     * @param EntityManagerInterface $entityManager       Entity manager
+     * @param string                 $jsonDirectory       Path to the JSON directory (for history)
      */
     public function __construct(
         ThresholdRepository $thresholdRepository,
@@ -62,7 +75,7 @@ class RoomSensorService
     }
 
     /**
-     * Returns the EntityManager.
+     * @brief Returns the entity manager.
      *
      * @return EntityManagerInterface
      */
@@ -76,20 +89,23 @@ class RoomSensorService
        ====================================================== */
 
     /**
-     * Fetches sensor data from the external API and directly updates
-     * the given AcquisitionSystem entity with the latest values.
+     * @brief Updates the given AcquisitionSystem entity with the latest sensor data from the external API.
      *
-     * @param AcquisitionSystem $acquisitionSystem
+     * @param AcquisitionSystem $acquisitionSystem The AcquisitionSystem entity to be updated
+     *
+     * @throws \RuntimeException If no data is returned by the API
+     * @return void
      */
     public function updateAcquisitionSystemFromApi(AcquisitionSystem $acquisitionSystem): void
     {
-        //Fetch live data from the  API
+        // Fetch sensor data from the external API
         $sensorData = $this->fetchSensorDataFromApi($acquisitionSystem);
 
         if (empty($sensorData)) {
             throw new \RuntimeException("No sensor data fetched for acquisition system: " . $acquisitionSystem->getName());
         }
-        // Update the AcquisitionSystem with the fetched data
+
+        // Update the AcquisitionSystem entity
         $lastCapturedAt = null;
         foreach ($sensorData as $entry) {
             if (isset($entry['nom'], $entry['valeur'])) {
@@ -113,27 +129,28 @@ class RoomSensorService
                         $lastCapturedAt = $captureDate;
                     }
                 } catch (\Exception $e) {
-                    throw new \RuntimeException("Invalid date format in entry: " . json_encode($entry) . ". Error: " . $e->getMessage());
+                    throw new \RuntimeException(
+                        "Invalid date format in entry: " . json_encode($entry) . ". Error: " . $e->getMessage()
+                    );
                 }
             }
         }
         if ($lastCapturedAt !== null) {
             $acquisitionSystem->setLastCapturedAt($lastCapturedAt);
         }
+
         $em = $this->getEntityManager();
         $em->persist($acquisitionSystem);
         $em->flush();
-
     }
 
-
     /**
-     * Fetches sensor data ("temp", "hum", and "co2") from the external API.
+     * @brief Fetches sensor data (temp, hum, and co2) from the external API.
      *
-     * @param AcquisitionSystem $acquisitionSystem
-     * @return array Combined sensor data from the API
+     * @param AcquisitionSystem $acquisitionSystem The AcquisitionSystem entity containing connection info
      *
-     * @throws \RuntimeException if the external API returns a non-200 status code
+     * @throws \RuntimeException If the API returns a non-200 status code
+     * @return array Associative array containing sensor data
      */
     private function fetchSensorDataFromApi(AcquisitionSystem $acquisitionSystem): array
     {
@@ -162,7 +179,7 @@ class RoomSensorService
                 );
             }
 
-            // Merge new data into a single array
+            // Merge the new data into a single array
             $combinedData = array_merge($combinedData, $response->toArray());
         }
 
@@ -174,13 +191,15 @@ class RoomSensorService
        ====================================================== */
 
     /**
-     * Updates the state of the given room based on sensor data and thresholds.
-     * Also handles the creation of a maintenance task if sensor data is not working.
+     * @brief Updates the state of the given room based on sensor data and thresholds.
+     *        Also handles creation of maintenance tasks if sensor data is invalid.
      *
      * Heating Period: November (11) to April (4)
      * Non-Heating Period: May (5) to October (10)
      *
-     * @param Room $room
+     * @param Room $room The Room entity to update
+     *
+     * @return void
      */
     public function updateRoomState(Room $room): void
     {
@@ -188,24 +207,25 @@ class RoomSensorService
         if (!$acquisitionSystem) {
             return;
         }
-        // Update the AcquisitionSystem directly from the API
+
+        // 1. Update the AcquisitionSystem directly from the API
         $this->updateAcquisitionSystemFromApi($acquisitionSystem);
 
-        // Default state is NO_DATA until proven otherwise
+        // 2. Default room state
         $state = RoomStateEnum::NO_DATA;
 
-        // Retrieve sensor values
+        // 3. Retrieve sensor values
         $temperature = $acquisitionSystem->getTemperature();
         $humidity    = $acquisitionSystem->getHumidity();
         $co2         = $acquisitionSystem->getCo2();
 
-        // Determine if we are in the heating period (month >= 11 or <= 4)
+        // 4. Determine if we are in heating period
         $currentMonth = (int)(new \DateTime())->format('m');
         $isHeatingPeriod = ($currentMonth >= 11 || $currentMonth <= 4);
 
         $thresholds = $this->thresholdRepository->getDefaultThresholds();
 
-        // 1. Determine sensor state
+        // 5. Determine sensor state
         $sensorState = SensorStateEnum::LINKED;
         if (
             ($temperature === null && $humidity === null && $co2 === null)
@@ -216,10 +236,10 @@ class RoomSensorService
             $sensorState = SensorStateEnum::NOT_WORKING;
         }
 
-        // 2. Evaluate temperature
+        // 6. Evaluate temperature
         if ($temperature !== null && !$thresholds->isTemperatureAberrant($temperature)) {
             if ($isHeatingPeriod) {
-                // Check critical vs warning for heating period
+                // Heating period
                 if (
                     $temperature < $thresholds->getHeatingTempCriticalMin() ||
                     $temperature > $thresholds->getHeatingTempCriticalMax()
@@ -251,7 +271,7 @@ class RoomSensorService
             }
         }
 
-        // 3. Evaluate CO2
+        // 7. Evaluate CO2
         if ($co2 !== null && !$thresholds->isCo2Aberrant($co2)) {
             if ($co2 < $thresholds->getCo2CriticalMin() || $co2 > $thresholds->getCo2ErrorMax()) {
                 $state = RoomStateEnum::CRITICAL;
@@ -262,7 +282,7 @@ class RoomSensorService
             }
         }
 
-        // 4. Evaluate humidity
+        // 8. Evaluate humidity
         if ($humidity !== null && !$thresholds->isHumidityAberrant($humidity)) {
             if ($humidity < $thresholds->getHumCriticalMin()) {
                 $state = RoomStateEnum::CRITICAL;
@@ -278,8 +298,7 @@ class RoomSensorService
             }
         }
 
-        // If we actually have sensor data (temp/hum/co2) but haven't triggered any risk,
-        // set the state to STABLE
+        // If we have sensor data but haven't triggered any risk, set to STABLE
         if (
             $state === RoomStateEnum::NO_DATA &&
             ($temperature !== null || $humidity !== null || $co2 !== null)
@@ -287,12 +306,12 @@ class RoomSensorService
             $state = RoomStateEnum::STABLE;
         }
 
-        // 5. If sensor is NOT_WORKING but we do have data, create a maintenance task
+        // 9. If the sensor is NOT_WORKING but we do have data, create a maintenance task
         if ($sensorState === SensorStateEnum::NOT_WORKING && $state !== RoomStateEnum::NO_DATA) {
             $this->createTaskForTechnician($room);
         }
 
-        // 6. Final update of the Room and AcquisitionSystem
+        // 10. Update Room and AcquisitionSystem
         $utcDateTime = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
         $room->setLastUpdatedAt($utcDateTime);
         $room->setSensorState($sensorState);
@@ -305,10 +324,11 @@ class RoomSensorService
     }
 
     /**
-     * Creates a maintenance task for a technician if none already exists
-     * (i.e., if there's no existing TO_DO maintenance task).
+     * @brief Creates a maintenance task for a technician if none exists (i.e., no TO_DO maintenance task).
      *
-     * @param Room $room
+     * @param Room $room The Room entity for which to create the task
+     *
+     * @return void
      */
     private function createTaskForTechnician(Room $room): void
     {
@@ -321,7 +341,7 @@ class RoomSensorService
         ]);
 
         if ($existingTask) {
-            // A maintenance task is already present
+            // A maintenance task already exists
             return;
         }
 
@@ -341,14 +361,14 @@ class RoomSensorService
        ====================================================== */
 
     /**
-     * Fetches historical data (week or month) from the external API
-     * and stores it in a local JSON file (in the /history directory).
+     * @brief Fetches historical data (week or month) from the external API
+     *        and stores it in a local JSON file (in the /history directory).
      *
-     * @param AcquisitionSystem $acquisitionSystem
-     * @param string            $range
-     * @return array            The array of data fetched
+     * @param AcquisitionSystem $acquisitionSystem The AcquisitionSystem entity containing connection info
+     * @param string            $range            The range of data to fetch ("week" or "month")
      *
-     * @throws \RuntimeException if any API error occurs
+     * @throws \RuntimeException If any API error occurs
+     * @return array The array of fetched data
      */
     public function fetchHistoricalDataFromApi(AcquisitionSystem $acquisitionSystem, string $range): array
     {
@@ -357,7 +377,8 @@ class RoomSensorService
         $now = new \DateTime();
         $startDate = clone $now;
         $now->modify('+1 day');
-        // Determine date range (7 days for week, 30 days for month)
+
+        // Determine date range (7 days for "week", 30 days for "month")
         switch ($range) {
             case 'week':
                 $startDate->modify('-7 days');
@@ -366,8 +387,10 @@ class RoomSensorService
                 $startDate->modify('-30 days');
                 break;
         }
+
         $data = [];
         $dbName = $acquisitionSystem->getDbName();
+
         foreach ($sensorTypes as $type) {
             try {
                 $response = $this->httpClient->request('GET', $url, [
@@ -393,8 +416,10 @@ class RoomSensorService
                 throw new \RuntimeException('Error fetching data: ' . $e->getMessage());
             }
         }
-        //$historyFile = $this->jsonDirectory . '/history/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
-        //file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));
+
+        // $historyFile = $this->jsonDirectory . '/history/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
+        // file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));
+
         return $data;
     }
 }

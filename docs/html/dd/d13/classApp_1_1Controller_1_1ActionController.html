@@ -345,21 +345,22 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Response The rendered history page. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="../../de/d50/ActionController_8php_source.html#l00289">289</a> of file <a class="el" href="../../de/d50/ActionController_8php_source.html">ActionController.php</a>.</p>
-<div class="fragment"><div class="line"><span class="lineno">  289</span>                                                               : Response</div>
-<div class="line"><span class="lineno">  290</span>    {</div>
-<div class="line"><span class="lineno">  291</span>        $doneActions = $actionRepository-&gt;findBy([<span class="stringliteral">&#39;state&#39;</span> =&gt; ActionStateEnum::DONE]);</div>
-<div class="line"><span class="lineno">  292</span> </div>
-<div class="line"><span class="lineno">  293</span>        $actionTypes = [</div>
-<div class="line"><span class="lineno">  294</span>            ActionInfoEnum::ASSIGNMENT-&gt;value =&gt; <span class="stringliteral">&#39;info&#39;</span>,</div>
-<div class="line"><span class="lineno">  295</span>            ActionInfoEnum::UNASSIGNMENT-&gt;value =&gt; <span class="stringliteral">&#39;warning&#39;</span>,</div>
-<div class="line"><span class="lineno">  296</span>        ];</div>
-<div class="line"><span class="lineno">  297</span> </div>
-<div class="line"><span class="lineno">  298</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;action/history.html.twig&#39;</span>, [</div>
-<div class="line"><span class="lineno">  299</span>            <span class="stringliteral">&#39;doneActions&#39;</span> =&gt; $doneActions,</div>
-<div class="line"><span class="lineno">  300</span>            <span class="stringliteral">&#39;actionTypes&#39;</span> =&gt; $actionTypes,</div>
-<div class="line"><span class="lineno">  301</span>        ]);</div>
-<div class="line"><span class="lineno">  302</span>    }</div>
+<p class="definition">Definition at line <a class="el" href="../../de/d50/ActionController_8php_source.html#l00297">297</a> of file <a class="el" href="../../de/d50/ActionController_8php_source.html">ActionController.php</a>.</p>
+<div class="fragment"><div class="line"><span class="lineno">  297</span>                                                               : Response</div>
+<div class="line"><span class="lineno">  298</span>    {</div>
+<div class="line"><span class="lineno">  299</span>        $doneActions = $actionRepository-&gt;findBy([<span class="stringliteral">&#39;state&#39;</span> =&gt; ActionStateEnum::DONE]);</div>
+<div class="line"><span class="lineno">  300</span> </div>
+<div class="line"><span class="lineno">  301</span>        $actionTypes = [</div>
+<div class="line"><span class="lineno">  302</span>            ActionInfoEnum::ASSIGNMENT-&gt;value =&gt; <span class="stringliteral">&#39;info&#39;</span>,</div>
+<div class="line"><span class="lineno">  303</span>            ActionInfoEnum::UNASSIGNMENT-&gt;value =&gt; <span class="stringliteral">&#39;warning&#39;</span>,</div>
+<div class="line"><span class="lineno">  304</span>            ActionInfoEnum::MAINTENANCE-&gt;value =&gt; <span class="stringliteral">&#39;danger&#39;</span>,</div>
+<div class="line"><span class="lineno">  305</span>        ];</div>
+<div class="line"><span class="lineno">  306</span> </div>
+<div class="line"><span class="lineno">  307</span>        <span class="keywordflow">return</span> $this-&gt;render(<span class="stringliteral">&#39;action/history.html.twig&#39;</span>, [</div>
+<div class="line"><span class="lineno">  308</span>            <span class="stringliteral">&#39;doneActions&#39;</span> =&gt; $doneActions,</div>
+<div class="line"><span class="lineno">  309</span>            <span class="stringliteral">&#39;actionTypes&#39;</span> =&gt; $actionTypes,</div>
+<div class="line"><span class="lineno">  310</span>        ]);</div>
+<div class="line"><span class="lineno">  311</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -543,27 +544,35 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  254</span> </div>
 <div class="line"><span class="lineno">  255</span>        $action-&gt;setState(ActionStateEnum::DONE); <span class="comment">// Change state to DONE</span></div>
 <div class="line"><span class="lineno">  256</span> </div>
-<div class="line"><span class="lineno">  257</span>        $manager = $userRepository-&gt;findOneByExactRole(<span class="stringliteral">&#39;ROLE_MANAGER&#39;</span>);</div>
+<div class="line"><span class="lineno">  257</span>        $managers = $userRepository-&gt;findByRole(<span class="stringliteral">&#39;ROLE_MANAGER&#39;</span>);</div>
 <div class="line"><span class="lineno">  258</span> </div>
-<div class="line"><span class="lineno">  259</span>        <span class="keywordflow">if</span> ($manager) {</div>
-<div class="line"><span class="lineno">  260</span>            $notification = <span class="keyword">new</span> Notification();</div>
-<div class="line"><span class="lineno">  261</span>            $notification-&gt;setRead(<span class="keyword">false</span>);</div>
-<div class="line"><span class="lineno">  262</span>            $notification-&gt;setMessage(sprintf(</div>
-<div class="line"><span class="lineno">  263</span>                <span class="stringliteral">&quot;Task &#39;%s&#39; completed in &#39;%s&#39;.&quot;</span>,</div>
-<div class="line"><span class="lineno">  264</span>                $action-&gt;getInfo()-&gt;value,</div>
-<div class="line"><span class="lineno">  265</span>                $action-&gt;getRoom()-&gt;getName()</div>
-<div class="line"><span class="lineno">  266</span>            ));</div>
-<div class="line"><span class="lineno">  267</span>            $notification-&gt;setCreateAt(<span class="keyword">new</span> \DateTimeImmutable());</div>
-<div class="line"><span class="lineno">  268</span>            $notification-&gt;setRecipient($manager);</div>
-<div class="line"><span class="lineno">  269</span>            $notification-&gt;setRoom($action-&gt;getRoom());</div>
-<div class="line"><span class="lineno">  270</span> </div>
-<div class="line"><span class="lineno">  271</span>            $entityManager-&gt;persist($notification);</div>
-<div class="line"><span class="lineno">  272</span>            $entityManager-&gt;flush();</div>
-<div class="line"><span class="lineno">  273</span>        }</div>
-<div class="line"><span class="lineno">  274</span> </div>
-<div class="line"><span class="lineno">  275</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Action has been validated.&#39;</span>);</div>
-<div class="line"><span class="lineno">  276</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_todolist&#39;</span>);</div>
-<div class="line"><span class="lineno">  277</span>    }</div>
+<div class="line"><span class="lineno">  259</span>        <span class="comment">// Ajout de la vérification pour s&#39;assurer qu&#39;il y a au moins un manager</span></div>
+<div class="line"><span class="lineno">  260</span>        <span class="keywordflow">if</span> (empty($managers)) {</div>
+<div class="line"><span class="lineno">  261</span>            $managerUser = $userRepository-&gt;findOneBy([<span class="stringliteral">&#39;username&#39;</span> =&gt; <span class="stringliteral">&#39;manager&#39;</span>]);</div>
+<div class="line"><span class="lineno">  262</span>            <span class="keywordflow">if</span> ($managerUser) {</div>
+<div class="line"><span class="lineno">  263</span>                $managers = [$managerUser];</div>
+<div class="line"><span class="lineno">  264</span>            }</div>
+<div class="line"><span class="lineno">  265</span>        }</div>
+<div class="line"><span class="lineno">  266</span> </div>
+<div class="line"><span class="lineno">  267</span>        <span class="keywordflow">foreach</span> ($managers as $manager) {</div>
+<div class="line"><span class="lineno">  268</span>            $notification = <span class="keyword">new</span> Notification();</div>
+<div class="line"><span class="lineno">  269</span>            $notification-&gt;setRead(<span class="keyword">false</span>);</div>
+<div class="line"><span class="lineno">  270</span>            $notification-&gt;setMessage(sprintf(</div>
+<div class="line"><span class="lineno">  271</span>                <span class="stringliteral">&quot;Task &#39;%s&#39; completed in &#39;%s&#39;.&quot;</span>,</div>
+<div class="line"><span class="lineno">  272</span>                $action-&gt;getInfo()-&gt;value,</div>
+<div class="line"><span class="lineno">  273</span>                $action-&gt;getRoom()-&gt;getName()</div>
+<div class="line"><span class="lineno">  274</span>            ));</div>
+<div class="line"><span class="lineno">  275</span>            $notification-&gt;setCreateAt(<span class="keyword">new</span> \DateTimeImmutable());</div>
+<div class="line"><span class="lineno">  276</span>            $notification-&gt;setRecipient($manager);</div>
+<div class="line"><span class="lineno">  277</span>            $notification-&gt;setRoom($action-&gt;getRoom());</div>
+<div class="line"><span class="lineno">  278</span> </div>
+<div class="line"><span class="lineno">  279</span>            $entityManager-&gt;persist($notification);</div>
+<div class="line"><span class="lineno">  280</span> </div>
+<div class="line"><span class="lineno">  281</span>        }</div>
+<div class="line"><span class="lineno">  282</span>        $entityManager-&gt;flush();</div>
+<div class="line"><span class="lineno">  283</span>        $this-&gt;addFlash(<span class="stringliteral">&#39;success&#39;</span>, <span class="stringliteral">&#39;Action has been validated.&#39;</span>);</div>
+<div class="line"><span class="lineno">  284</span>        <span class="keywordflow">return</span> $this-&gt;redirectToRoute(<span class="stringliteral">&#39;app_todolist&#39;</span>);</div>
+<div class="line"><span class="lineno">  285</span>    }</div>
 </div><!-- fragment -->
 </div>
 </div>
