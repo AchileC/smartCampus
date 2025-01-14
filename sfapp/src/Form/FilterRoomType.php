@@ -18,61 +18,58 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FilterRoomType extends AbstractType
 {
-    private TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var TranslatorInterface|null $translator */
+        $translator = $options['translator'];
+
         $builder
             ->add('name', TextType::class, [
                 'label' => null,
                 'required' => false,
-                'attr' => ['placeholder' => $this->translator->trans('filter.name.placeholder')],
+                // Si $translator est fourni, on peut l'utiliser :
+                'attr' => [
+                    'placeholder' => $translator
+                        ? $translator->trans('filter.name.placeholder')
+                        : 'filter.name.placeholder'
+                ],
             ])
             ->add('floor', ChoiceType::class, [
                 'choices' => [
-                    $this->translator->trans('filter.floor.ground') => FloorEnum::GROUND,
-                    $this->translator->trans('filter.floor.first') => FloorEnum::FIRST,
-                    $this->translator->trans('filter.floor.second') => FloorEnum::SECOND,
-                    $this->translator->trans('filter.floor.third') => FloorEnum::THIRD,
+                    $translator ? $translator->trans('filter.floor.ground') : 'Ground' => FloorEnum::GROUND,
+                    $translator ? $translator->trans('filter.floor.first') : '1st'   => FloorEnum::FIRST,
+                    $translator ? $translator->trans('filter.floor.second') : '2nd' => FloorEnum::SECOND,
+                    $translator ? $translator->trans('filter.floor.third') : '3rd'  => FloorEnum::THIRD,
                 ],
+                'choice_value' => fn(?FloorEnum $floor) => $floor?->value,
                 'required' => false,
-                'placeholder' => $this->translator->trans('filter.floor.placeholder'),
+                'placeholder' => $translator
+                    ? $translator->trans('filter.floor.placeholder')
+                    : 'Choose a floor',
                 'label' => null,
             ])
             ->add('state', ChoiceType::class, [
                 'choices' => [
-                    $this->translator->trans('filter.state.stable') => RoomStateEnum::STABLE,
-                    $this->translator->trans('filter.state.at_risk') => RoomStateEnum::AT_RISK,
-                    $this->translator->trans('filter.state.critical') => RoomStateEnum::CRITICAL,
+                    $translator ? $translator->trans('filter.state.stable')   : 'Stable'   => RoomStateEnum::STABLE,
+                    $translator ? $translator->trans('filter.state.at_risk')  : 'At Risk'  => RoomStateEnum::AT_RISK,
+                    $translator ? $translator->trans('filter.state.critical') : 'Critical' => RoomStateEnum::CRITICAL,
                 ],
                 'required' => false,
-                'placeholder' => $this->translator->trans('filter.state.placeholder'),
+                'placeholder' => $translator
+                    ? $translator->trans('filter.state.placeholder')
+                    : 'Choose a state',
                 'label' => null,
-                'choice_label' => function ($choice, $key, $value) {
-                    return $key;
-                },
-                'choice_value' => function (?RoomStateEnum $state) {
-                    return $state?->value; // Convert enum to string
-                },
+                'choice_label' => fn($choice, $key) => $key,
+                'choice_value' => fn(?RoomStateEnum $state) => $state?->value,
                 'data' => $options['state'] ?? null,
-            ]);
-
-        $builder
+            ])
             ->add('filter', SubmitType::class, [
-                'label' => $this->translator->trans('filter.buttons.search'),
-                'attr' => ['class' => 'btn btn-primary']
+                'label' => $translator ? $translator->trans('filter.buttons.search') : 'Search',
+                'attr' => ['class' => 'btn btn-primary'],
             ])
             ->add('reset', SubmitType::class, [
-                'label' => $this->translator->trans('filter.buttons.reset'),
-                'attr' => [
-                    'class' => 'btn btn-secondary',
-                    'formnovalidate' => 'formnovalidate',
-                ],
+                'label' => $translator ? $translator->trans('filter.buttons.reset') : 'Reset',
+                'attr' => ['class' => 'btn btn-secondary', 'formnovalidate' => 'formnovalidate'],
             ]);
     }
 
@@ -83,6 +80,7 @@ class FilterRoomType extends AbstractType
             'required_fields' => false,
             'validation_groups' => ['Default'],
             'state' => null,
+            'translator' => null, // <- On déclare une option "translator"
         ]);
     }
 }
