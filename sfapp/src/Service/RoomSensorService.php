@@ -357,8 +357,7 @@ class RoomSensorService
         $now = new \DateTime();
         $startDate = clone $now;
         $now->modify('+1 day');
-
-        // Determine date range (7 days for 'week', 30 days for 'month' or default)
+        // Determine date range (7 days for week, 30 days for month)
         switch ($range) {
             case 'week':
                 $startDate->modify('-7 days');
@@ -366,14 +365,9 @@ class RoomSensorService
             case 'month':
                 $startDate->modify('-30 days');
                 break;
-            default:
-                $startDate->modify('-30 days');
-                break;
         }
-
         $data = [];
         $dbName = $acquisitionSystem->getDbName();
-
         foreach ($sensorTypes as $type) {
             try {
                 $response = $this->httpClient->request('GET', $url, [
@@ -399,11 +393,8 @@ class RoomSensorService
                 throw new \RuntimeException('Error fetching data: ' . $e->getMessage());
             }
         }
-
-        // We keep the history functionality as-is
-        $historyFile = $this->jsonDirectory . '/history/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
-        file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));
-
+        //$historyFile = $this->jsonDirectory . '/history/' . $acquisitionSystem->getRoom()->getName() . '_history.json';
+        //file_put_contents($historyFile, json_encode($data, JSON_PRETTY_PRINT));
         return $data;
     }
 }
