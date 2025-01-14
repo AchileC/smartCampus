@@ -177,7 +177,6 @@ class HomeControllerTest extends WebTestCase
 
     public function testActionsDisplayed(): void
     {
-
         $this->login('manager');
         $roomname = 'Test room';
         $room = $this->createRoom($roomname, RoomStateEnum::NO_DATA, SensorStateEnum::NOT_LINKED);
